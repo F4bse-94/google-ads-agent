@@ -139,13 +139,31 @@ git commit -m "Weekly report KW{{iso_week}} + memory update
 git push origin main
 ```
 
-### 9. Gmail senden
+### 9. Report per Email ausliefern (Mail-Bridge via n8n-Webhook)
 
-Gmail-MCP: `send_email`
-- to: `f.smogulla@gmail.com`
-- subject: `Weekly Google Ads Report — KW {{iso_week}} | Status: {{status_emoji}}` (z.B. "Weekly Google Ads Report — KW 17 | Status: 🟡 YELLOW")
-- body: **Executive Summary (Sektion 0) als HTML**, NICHT den kompletten Report. Plus Link zu GitHub-Report.
-- **WICHTIG:** Der `MEMORY_UPDATE_PAYLOAD`-JSON-Block darf NICHT in der Email erscheinen — nur der menschenlesbare Teil (Sektionen 0-12).
+Begruendung (siehe `docs/next-session-todos.md` und Workflow `sio56m2zxbOtSStz`): Der claude.ai Gmail-Connector liefert nur `create_draft`, kein `send_email`. Deshalb geht die Zustellung ueber einen dedizierten n8n-Webhook-Workflow ("Mail Bridge"), der intern den Gmail-Node in n8n mit eigener OAuth-Credential nutzt.
+
+**HTTP POST** (via Bash `curl` oder HTTP-Request-Tool):
+
+```bash
+curl -X POST https://n8n.srv867988.hstgr.cloud/webhook/send-weekly-report \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "f.smogulla@gmail.com",
+    "subject": "Weekly Google Ads Report — KW 17 | Status: 🟡 YELLOW",
+    "body_html": "<!DOCTYPE html><html><body>...Executive Summary HTML...</body></html>"
+  }'
+```
+
+**Pflicht-Felder im Body:**
+- `to` — Empfaenger (default Fabian)
+- `subject` — `Weekly Google Ads Report — KW {{iso_week}} | Status: {{status_emoji}}`
+- `body_html` — **Executive Summary (Sektion 0) als HTML**, NICHT der komplette Report. Plus Link zu GitHub-Report am Ende.
+
+**WICHTIG:**
+- Der `MEMORY_UPDATE_PAYLOAD`-JSON-Block darf NICHT im `body_html` erscheinen — nur der menschenlesbare Teil (Sektion 0 + Link).
+- Response ist JSON mit `status: "sent"` und `gmail_message_id`. Bei 4xx/5xx: im Session-Log flaggen, Report ist trotzdem in GitHub committed (Fabian kann Link manuell aus Session-URL abrufen).
+- Falls der Mail-Bridge-Webhook 404 zurueckgibt (Workflow in n8n nicht aktiv): Fallback auf Gmail-MCP `create_draft` und im Session-Summary warnen, dass die Mail als Draft liegt.
 
 ## Qualitaets-Checkliste (Self-Check vor Email-Versand)
 

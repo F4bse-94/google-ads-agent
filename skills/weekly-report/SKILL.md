@@ -64,12 +64,23 @@ Composer:
 
 **Wichtig — Source-of-Truth-Regel:** Composer schreibt **nur** den Report-Markdown. Die 4 Memory-Files werden **ausschliesslich** vom Python-Script aktualisiert. Kein Composer-Inline-Write auf `01_session_log.md` etc. Begruendung: Deterministik + Dedup-Logik (z.B. Negatives-Dedup) ist im Script, nicht im LLM.
 
-### Phase F — Email
+### Phase F — Email via n8n Mail-Bridge
 
-Gmail-MCP send_email:
+Composer macht HTTP POST an den n8n Mail-Bridge Workflow (ID `sio56m2zxbOtSStz`):
+
+```
+POST https://n8n.srv867988.hstgr.cloud/webhook/send-weekly-report
+Content-Type: application/json
+
+{ "to": "f.smogulla@gmail.com", "subject": "...", "body_html": "..." }
+```
+
 - Executive Summary (Sektion 0) als HTML
 - GitHub-Report-Link im Body
 - `MEMORY_UPDATE_PAYLOAD`-Block NICHT mit in die Email
+- Fallback bei 404: Gmail-MCP `create_draft`, plus Warning im Session-Summary
+
+Begruendung: claude.ai Gmail-Connector bietet nur `create_draft`, nicht `send_email`. Die n8n Mail-Bridge nutzt den nativen Gmail-Node mit eigener OAuth-Credential und ist als dedizierter Webhook-Workflow ausgelagert.
 
 ### Phase G — Session-Summary
 
