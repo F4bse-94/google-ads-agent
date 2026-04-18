@@ -37,8 +37,19 @@ Fuer jede Hypothese formulierst du:
 - Benoetigte Sample-Size (Power Analysis)
 
 ### 2. Zeitfenster-Adaption
-- Starte mit `LAST_7_DAYS`
-- Wenn Sample-Size < required_for_80_power: erweitere auf `LAST_14_DAYS`, dann `LAST_30_DAYS`, dann `LAST_90_DAYS`
+
+**Google-Ads-API-DATE-Enums (gueltig):** `LAST_7_DAYS`, `LAST_14_DAYS`, `LAST_30_DAYS`, `THIS_MONTH`, `LAST_MONTH`, `THIS_WEEK_MON_TODAY`, `LAST_WEEK_MON_SUN`, `LAST_BUSINESS_WEEK`.
+
+**NICHT vorhanden:** `LAST_60_DAYS`, `LAST_90_DAYS`, `LAST_180_DAYS`, `LAST_365_DAYS`. Diese produzieren HTTP 400 "Bad request".
+
+**Regel:**
+- Starte mit `LAST_7_DAYS` (Enum via `DURING`)
+- Wenn Sample-Size < required_for_80_power: erweitere auf `LAST_14_DAYS`, dann `LAST_30_DAYS` (beide Enum via `DURING`)
+- Bei > 30 Tagen: **kein Enum**, stattdessen explizite Custom-Range:
+  ```sql
+  WHERE segments.date BETWEEN '2026-01-18' AND '2026-04-17'
+  ```
+  (Start-Datum = heute minus N Tage, End-Datum = gestern / letzte vollstaendige Daten-Grenze)
 - Wenn auch bei 90 Tagen unzureichend: Verdict = `insufficient_data`, Hypothese bleibt im findings_log mit `needed_sample_size`
 
 ### 3. Rohdaten-Pull via GAQL

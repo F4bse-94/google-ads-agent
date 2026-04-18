@@ -57,6 +57,14 @@ Diese Maßnahmen stehen konkret im [KW16-Report Abschnitt 11](../memory/reports/
 | P2 | **Asset-Performance "PENDING" als "NO_DATA_AVAILABLE" statt leere Labels.** Google gibt einfach keine Ratings wenn Impressions < 5000. Composer sollte das explizit so melden statt leere Tabelle. | Report-Qualitaet |
 | P3 | **Memory-Writer-Script mit besserem Dedup.** Aktuelle Regex-Logik matched manchmal zu grob (mehrspaltige Tabellen). Verbesserungs-Idee: Parse Markdown-Tabellen richtig, matche pro Zeile spezifisch die Term-Spalte. | `scripts/memory_writer.py` |
 
+### Post-Smoke-Test Issues (KW16/2026-04-18 Cloud-Routine erster Run)
+
+| Priority | Task | Begruendung |
+|---|---|---|
+| P1 | **Reporting-Workflow `geographic_performance` HTTP 400 bei Custom-Date-Range.** Der Query nutzt `WHERE segments.date DURING {{ $json.dateRange }}` — GAQL akzeptiert `DURING` aber nur mit Enum-Constants (LAST_7_DAYS etc.), NICHT mit Custom-Ranges wie `2026-04-11,2026-04-17`. Fuer Custom-Ranges muss der n8n-Workflow eine IF-Bedingung einbauen: wenn Enum -> `DURING`, wenn Custom -> `BETWEEN 'X' AND 'Y'`. Betrifft alle Reporting-Tools mit dateRange-Param (geographic, device, hourly, search_terms, budget_pacing, keyword, ad, campaign). | Reporting-MCP Robustheit |
+| P1 | **Sub-Agent Stream-Timeouts haerten.** Im ersten Cloud-Run: 2x Market-Competitive + 2x Search-Keyword-Hunter Stalled-Timeouts (>600s ohne Progress). Ursachen: DataForSEO SERP-Calls sind langsam, Search-Terms-Analyse holt zu viele Rohdaten. Loesungsansaetze: (a) Sub-Agent-Scope reduzieren (weniger SERPs pro Run, Top-20 statt Top-100 Search-Terms), (b) harte Max-Duration-Boundary im Struct-Briefing (10 Min timeout + graceful partial return), (c) Composer-Rendering-Splitting in 3 Teil-Renderer (Exec+Overview / Data / Recommendations) statt einem Monster-Output. | Anthropic Stream-Idle-Timeout |
+| P2 | ~~**Statistician `LAST_90_DAYS`-Enum existiert nicht in Google Ads API.**~~ **GEFIXT 2026-04-18** in `.claude/agents/statistician.md` — ab > 30 Tagen Custom-Range (`BETWEEN 'X' AND 'Y'`) statt Enum. | |
+
 ### Open Items aus KW16-Report
 
 | OI-ID | Item | Revisit |
