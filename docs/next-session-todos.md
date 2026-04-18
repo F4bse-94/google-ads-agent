@@ -1,6 +1,24 @@
 # Next Session — Offene Todos
 
-**Stand:** 2026-04-17 (Ende Session). MVP-Pipeline funktional (2 Test-Runs durch, Memory live auf GitHub). Phase 6 (Cloud-Routine-Deploy) ist nächster technischer Meilenstein.
+**Stand:** 2026-04-18 (Ende Session). Phase 6 Deploy weitgehend fertig — Infrastruktur steht (neuer Repo F4bse-94/google-ads-agent, Mail-Bridge als MCP, api-quirks.md, Composer haertet). **Blocking fuer naechste Session:** Fabian muss Routine-Prompt + Setup-Skript in claude.ai manuell synchronisieren (siehe Abschnitt 0), dann ersten autonomen Run starten.
+
+Detaillierte Session-Historie: [sessions/2026-04-18-session-summary.md](sessions/2026-04-18-session-summary.md)
+
+---
+
+## 0. BLOCKING — Routine-Config in claude.ai aktualisieren
+
+**Vor jedem weiteren Run, Fabian manuell:**
+
+1. **Setup-Skript** → auf nur `pip install scipy statsmodels numpy` reduzieren (die alten `rm -rf` + `ln -sfn`-Zeilen raus)
+2. **Orchestrator-Prompt** → komplett ersetzen durch Stand aus [routines/weekly-report.md](../routines/weekly-report.md) Abschnitt "Routine-Prompt". Fabian hat einen Copy-Paste-Block aus der Session-Chat-History 2026-04-18.
+3. **Mail-Bridge Connector** in claude.ai angelegt (ja, erledigt ✅)
+4. Speichern + Workflow aktiv lassen
+
+**Test:** "Run now" → sollte diesmal **autonom** durchlaufen (Autonomie-Regel, Bootstrap-Symlink-Reset, Self-Fallback aktiv). Erwartung: Report in `google-ads-memory/reports/`, Email an `f.smogulla@gmail.com`, Session-Summary ohne Rueckfragen.
+
+---
+
 
 ## 1. Sofort-Actions im Google Ads Account (Fabian / ZweiDigital, manuell in Google Ads UI)
 
@@ -27,32 +45,27 @@ Diese Maßnahmen stehen konkret im [KW16-Report Abschnitt 11](../memory/reports/
 
 ### Phase 6 — Cloud-Routine deployen
 
-**Voraussetzungen abgeschlossen:**
-- ✅ `n8n-projects` auf GitHub (`F4bse-94/n8n-projects`, privat)
-- ✅ `google-ads-memory` auf GitHub (`F4bse-94/google-ads-memory`, privat)
-- ✅ Bearer-Auth auf allen 9 n8n-MCPs live
-- ✅ Routine-Config komplett dokumentiert in [routines/weekly-report.md](../routines/weekly-report.md)
+**Status:** Weitgehend fertig, nur claude.ai-Sync fehlt (siehe Abschnitt 0).
 
-**Schritte:**
-1. In `claude.ai/settings/connectors`:
-   - Gmail-Connector aktivieren (Scope `send_email`)
-   - GitHub-Connector aktivieren (Scope `repo` fuer `google-ads-memory`)
-   - 9 Custom HTTP MCP Connectors anlegen (URLs + Bearer-Token aus `.mcp.json`)
-2. In `claude.ai/code/routines`:
-   - "New routine" mit Prompt aus `routines/weekly-report.md`
-   - Repositories hinzufuegen: `n8n-projects` + `google-ads-memory`
-   - Environment-Var `N8N_MCP_TOKEN`
-   - Scheduled Trigger: Mo 07:00 Europe/Berlin
-3. Smoke-Test: "Run now" klicken, Session beobachten
-4. Naechster Montag: erster echter Lauf
+**Voraussetzungen abgeschlossen (2026-04-18):**
+- ✅ Repo-Split: eigener Repo `F4bse-94/google-ads-agent` (Fresh Commit, keine History-Uebernahme aus n8n-projects)
+- ✅ `google-ads-memory` Repo live auf GitHub, als Submodule im neuen Repo
+- ✅ 10 claude.ai-Connectors angelegt (Gmail, GitHub, 8 Google-Ads-MCPs, DataForSEO, Mail-Bridge MCP)
+- ✅ Bearer-Auth auf allen n8n-MCPs **deaktiviert** (PoC-Kompromiss — Security-Todo s.u.)
+- ✅ Mail-Bridge als MCP-Workflow (`MWsWFnQubZ1Z21QL`, Path `/mcp/mail-bridge`) statt Gmail-Connector (der nur `create_draft` bietet)
+- ✅ Gmail OAuth2 Credential in n8n (`WuFfkaTplA3haMId`, `fabian.smog@googlemail.com`)
+- ✅ Composer-Robustheit: Background-Dispatch, Split-Write, Self-Fallback, ISO-Woche-Fix, api-quirks-Reference
+- ✅ Bootstrap-Symlink-Reset im Orchestrator-Prompt (statt Setup-Script, wegen Git-Klon-Timing)
+
+**Offener Schritt:** Routine-Config-Sync in claude.ai (Abschnitt 0) + erster autonomer Run.
 
 ### Architektur-Verbesserungen
 
 | Priority | Task | Begruendung |
 |---|---|---|
-| **P0** | **MCP-Endpoints absichern (aktuell offen fuer PoC).** Am 2026-04-18 wurde Bearer-Auth auf allen 9 n8n MCP Triggern deaktiviert, damit claude.ai Custom Connector UI sie anbinden kann (UI unterstuetzt keine statischen Authorization-Header). Konsequenz: URLs zu `https://n8n.srv867988.hstgr.cloud/mcp/*` sind oeffentlich zugaenglich — wer die URL kennt, kann MVV Google Ads Daten abfragen. Nach erstem erfolgreichen Routine-Run (spaetestens 7 Tage) einen Auth-Layer einziehen. Favorisierter Pfad: Cloudflare Worker Proxy (Query-Param-Token, setzt dann Bearer an n8n). Alternativen: n8n Code-Node-Auth via `?token=`, oder Warten auf Header-Support im claude.ai-UI. | Kundendaten-Schutz |
-| P1 | **Source-of-Truth-Konflikt Memory-Writer klaeren.** Aktuell schreibt BEIDE — Composer (inline beim Rendering) UND das Python-Script (`scripts/memory_writer.py`). Das fuehrt zu Doppelungen in `01_session_log.md` + `02_findings_log.md`. Entscheidung noetig: (a) Composer schreibt NUR JSON-Anhang, Script macht alle File-Updates, ODER (b) Composer macht beides, Script ist Backup/Recovery-Tool. Empfehlung: (a), weil deterministisch und testbar. | SoT fuer Memory-Updates |
-| P1 | **WoW-Vergleich funktional verifizieren.** In v2 sind WoW-Deltas vorhanden — aber ob der Performance-Analyst wirklich zwei separate MCP-Calls macht (current + previous) ist nicht im Log sichtbar. Test: Ein Run mit expliziter "Zeig die Raw-Responses"-Anweisung. | Qualitaetssicherung |
+| **P0** | **MCP-Endpoints absichern (aktuell offen fuer PoC).** Am 2026-04-18 wurde Bearer-Auth auf allen 9 n8n MCP Triggern + Mail-Bridge MCP deaktiviert, damit claude.ai Custom Connector UI sie anbinden kann (UI unterstuetzt keine statischen Authorization-Header). Konsequenz: URLs zu `https://n8n.srv867988.hstgr.cloud/mcp/*` sind oeffentlich zugaenglich — wer die URL kennt, kann MVV Google Ads Daten abfragen und Mails ueber den Gmail-Account senden. Nach erstem erfolgreichen Routine-Run (spaetestens 7 Tage) einen Auth-Layer einziehen. Favorisierter Pfad: Cloudflare Worker Proxy (Query-Param-Token, setzt dann Bearer an n8n). Alternativen: n8n Code-Node-Auth via `?token=`, oder Warten auf Header-Support im claude.ai-UI. | Kundendaten-Schutz |
+| ~~P1~~ | ~~**Source-of-Truth-Konflikt Memory-Writer klaeren.**~~ **GEFIXT 2026-04-18** (commit `066e250`): Composer schreibt nur Report + MEMORY_UPDATE_PAYLOAD-JSON-Block, `scripts/memory_writer.py` macht alle 4 File-Updates. Harte Boundary im Composer-Prompt. | |
+| ~~P1~~ | ~~**WoW-Vergleich funktional verifizieren.**~~ **GEFIXT 2026-04-18** (commit `066e250`): `data_quality.wow_verification` ist Pflicht-Feld im Performance-Analyst-Output mit beiden Timestamps + `both_successful`-Flag. Composer flagged WOW_UNVERIFIED falls fehlt. | |
 | P2 | **GAQL-Query fuer Bundesland-Level-Geo (`user_location_view`) fixen.** In v1 und v2 hat der Call gefehlt (Sektion 6b nur Laender-Level). Muss in `performance-analyst.md` oder eigenem Skill ergaenzt werden. | Sektion 6b unvollstaendig |
 | P2 | **Asset-Performance "PENDING" als "NO_DATA_AVAILABLE" statt leere Labels.** Google gibt einfach keine Ratings wenn Impressions < 5000. Composer sollte das explizit so melden statt leere Tabelle. | Report-Qualitaet |
 | P3 | **Memory-Writer-Script mit besserem Dedup.** Aktuelle Regex-Logik matched manchmal zu grob (mehrspaltige Tabellen). Verbesserungs-Idee: Parse Markdown-Tabellen richtig, matche pro Zeile spezifisch die Term-Spalte. | `scripts/memory_writer.py` |
@@ -61,9 +74,18 @@ Diese Maßnahmen stehen konkret im [KW16-Report Abschnitt 11](../memory/reports/
 
 | Priority | Task | Begruendung |
 |---|---|---|
-| P1 | **Reporting-Workflow `geographic_performance` HTTP 400 bei Custom-Date-Range.** Der Query nutzt `WHERE segments.date DURING {{ $json.dateRange }}` — GAQL akzeptiert `DURING` aber nur mit Enum-Constants (LAST_7_DAYS etc.), NICHT mit Custom-Ranges wie `2026-04-11,2026-04-17`. Fuer Custom-Ranges muss der n8n-Workflow eine IF-Bedingung einbauen: wenn Enum -> `DURING`, wenn Custom -> `BETWEEN 'X' AND 'Y'`. Betrifft alle Reporting-Tools mit dateRange-Param (geographic, device, hourly, search_terms, budget_pacing, keyword, ad, campaign). | Reporting-MCP Robustheit |
-| P1 | **Sub-Agent Stream-Timeouts haerten.** Im ersten Cloud-Run: 2x Market-Competitive + 2x Search-Keyword-Hunter Stalled-Timeouts (>600s ohne Progress). Ursachen: DataForSEO SERP-Calls sind langsam, Search-Terms-Analyse holt zu viele Rohdaten. Loesungsansaetze: (a) Sub-Agent-Scope reduzieren (weniger SERPs pro Run, Top-20 statt Top-100 Search-Terms), (b) harte Max-Duration-Boundary im Struct-Briefing (10 Min timeout + graceful partial return), (c) Composer-Rendering-Splitting in 3 Teil-Renderer (Exec+Overview / Data / Recommendations) statt einem Monster-Output. | Anthropic Stream-Idle-Timeout |
-| P2 | ~~**Statistician `LAST_90_DAYS`-Enum existiert nicht in Google Ads API.**~~ **GEFIXT 2026-04-18** in `.claude/agents/statistician.md` — ab > 30 Tagen Custom-Range (`BETWEEN 'X' AND 'Y'`) statt Enum. | |
+| P1 | **Reporting-Workflow `geographic_performance` HTTP 400 bei Custom-Date-Range.** Der Query nutzt `WHERE segments.date DURING {{ $json.dateRange }}` — GAQL akzeptiert `DURING` aber nur mit Enum-Constants (LAST_7_DAYS etc.), NICHT mit Custom-Ranges wie `2026-04-11,2026-04-17`. Fuer Custom-Ranges muss der n8n-Workflow eine IF-Bedingung einbauen: wenn Enum -> `DURING`, wenn Custom -> `BETWEEN 'X' AND 'Y'`. Betrifft alle Reporting-Tools mit dateRange-Param (geographic, device, hourly, search_terms, budget_pacing, keyword, ad, campaign). **Workaround bereits dokumentiert** in `skills/weekly-report/references/api-quirks.md` QUIRK-1 (Agent nutzt GAQL-Fallback). Langfristfix im n8n-Workflow selbst. | Reporting-MCP Robustheit |
+| ~~P1~~ | ~~**Sub-Agent Stream-Timeouts haerten.**~~ **TEILWEISE GEFIXT 2026-04-18** (commit `78f5e09`): Composer auf Background-Dispatch, Split-Write, Self-Fallback. Verbleibend: strictere Max-Duration-Boundaries in Sub-Agent-Briefings, DataForSEO in kleineren Chunks. Dokumentiert als QUIRK-7 in api-quirks.md. Re-evaluieren nach naechstem Run. | |
+| ~~P2~~ | ~~**Statistician `LAST_90_DAYS`-Enum existiert nicht in Google Ads API.**~~ **GEFIXT 2026-04-18** (commit `0a2b915`) in `.claude/agents/statistician.md` — ab > 30 Tagen Custom-Range (`BETWEEN 'X' AND 'Y'`) statt Enum. Plus als QUIRK-2 in api-quirks.md. | |
+
+### Session 2026-04-18 — neue Post-Smoke-Test-Items
+
+| Priority | Task | Begruendung |
+|---|---|---|
+| P1 | **DataForSEO `keyword_suggestions` 128k-Token-Limit Risiko.** Tritt auf wenn bulk-Seeds gross. Workaround in QUIRK-4 dokumentiert (max 3 Seeds pro Call). Bei wiederkehrendem Problem: Sub-Agent-Scope in `.claude/agents/search-keyword-hunter.md` haerten (Whitelist-Pattern fuer search_volume). | Stream-Timeout-Risiko |
+| P2 | **Alten Webhook-Mail-Bridge loeschen** (n8n-Workflow `sio56m2zxbOtSStz`). Wurde ersetzt durch MCP-Version `MWsWFnQubZ1Z21QL`. Nach erstem erfolgreichen Run mit MCP-Mail-Bridge safe zum Loeschen. | Cleanup |
+| P2 | **`.mcp.json` Bearer-Token entfernen** (oder rotieren). Aktuell ist der Token `upkL5r84LOG...` noch in der lokalen `.mcp.json` — gitignored, aber wenn Fabian lokal entwickelt ohne Bearer-Auth in n8n, ist der Header im Call nutzlos. Cleanup: entweder Bearer in n8n reaktivieren und lokal via `.mcp.json` nutzen, oder Token aus `.mcp.json` raus und Authentication auf "none" setzen (konsistent mit Cloud-Setup). | Lokale Konsistenz |
+| P3 | **Composer-Rendering weiter verfeinern**: Drei-Teile-Split statt zwei (Exec+Overview / Data / Recommendations) falls Stream-Timeouts trotz Split-Write auftreten. | Weitere Haerung |
 
 ### Open Items aus KW16-Report
 
