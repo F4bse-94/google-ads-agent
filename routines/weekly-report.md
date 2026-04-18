@@ -50,23 +50,25 @@ Neues Routine, Klick "New routine". Felder ausfuellen:
 **Prompt:** siehe [Abschnitt unten](#routine-prompt).
 
 **Repositories** (zwei hinzufuegen):
-- `F4bse-94/n8n-projects` — Branch-Push: `claude/*` (Default, nicht aendern)
+- `F4bse-94/google-ads-agent` — Branch-Push: `claude/*` (Default, nicht aendern)
 - `F4bse-94/google-ads-memory` — Branch-Push: `main` (Checkbox "Allow unrestricted branch pushes" aktivieren, damit Memory-Updates direkt auf main gehen)
 
 **Environment:**
 - Default Cloud Environment nutzen
-- Env Variable hinzufuegen: `N8N_MCP_TOKEN` mit dem Bearer-Token-Wert
 - Setup-Script (**pflicht** — Symlink + Python-Deps):
   ```bash
-  # Symlink macht lokale 'memory/'-Pfade in allen Agent/Skill-Files gueltig,
-  # obwohl Routine die zwei Repos parallel klont (memory wuerde sonst fehlen).
-  ln -sfn "$(pwd)/google-ads-memory" "n8n-projects/google-ads-agent/memory"
+  # google-ads-agent/memory ist ein Submodule — Routine initialisiert Submodule nicht
+  # automatisch, also ist das Verzeichnis leer. Entfernen und durch Symlink
+  # auf den parallel geklonten google-ads-memory Repo ersetzen. So bleiben alle
+  # 'memory/<file>.md'-Pfade in Agent/Skill-Files gueltig.
+  rm -rf google-ads-agent/memory
+  ln -sfn "$(pwd)/google-ads-memory" "google-ads-agent/memory"
 
   # Python-Deps fuer Statistiker (scipy tests + bonferroni correction)
   pip install scipy statsmodels numpy
   ```
 
-  **Warum Symlink?** Die Routine klont `n8n-projects/` und `google-ads-memory/` parallel nebeneinander. Lokale Entwicklung hat `memory/` als Git-Submodule *innerhalb* von `google-ads-agent/` — ohne Symlink wuerden alle `memory/<file>.md`-Referenzen in Agent-Prompts ins Leere zeigen. Siehe [Learning: Claude Code Routines Gotchas #2](../../docs/learnings/claude-code-routines-gotchas.md#2-git-submodule-werden-nicht-automatisch-initialisiert).
+  **Warum Symlink?** Die Routine klont `google-ads-agent/` und `google-ads-memory/` parallel nebeneinander. Lokale Entwicklung hat `memory/` als Git-Submodule *innerhalb* von `google-ads-agent/` — ohne Symlink in der Cloud wuerden alle `memory/<file>.md`-Referenzen in Agent-Prompts ins Leere zeigen. Siehe [Learning: Claude Code Routines Gotchas #2](../docs/learnings/claude-code-routines-gotchas.md#2-git-submodule-werden-nicht-automatisch-initialisiert).
 
 **Connectors:** Alle 11 (Gmail + GitHub + 9 MCPs) aktivieren.
 
@@ -91,15 +93,15 @@ Dies ist der exakte Prompt-Text, den du in das Routine-Prompt-Feld kopierst. Er 
 Du bist der Orchestrator fuer das MVV Enamic Ads Weekly Report System.
 
 VOR ALLEM ANDEREN: Arbeitsverzeichnis setzen.
-  cd n8n-projects/google-ads-agent
-Der Setup-Script hat bereits `memory/` als Symlink auf `../../google-ads-memory/` gesetzt. Alle Agent- und Skill-Files referenzieren `memory/<file>.md` mit dieser Erwartung. Verifiziere mit: `ls -la memory/00_strategy_manifest.md` — wenn das File nicht gefunden wird, brich mit klarer Fehlermeldung ab (Symlink-Setup hat gefehlt).
+  cd google-ads-agent
+Der Setup-Script hat bereits `memory/` als Symlink auf `../google-ads-memory/` gesetzt. Alle Agent- und Skill-Files referenzieren `memory/<file>.md` mit dieser Erwartung. Verifiziere mit: `ls -la memory/00_strategy_manifest.md` — wenn das File nicht gefunden wird, brich mit klarer Fehlermeldung ab (Symlink-Setup hat gefehlt).
 
 Starte JETZT den `weekly-report` Skill aus `skills/weekly-report/SKILL.md`.
 
 Kontext:
 - Aktuelle ISO-Kalenderwoche: automatisch aus System-Datum (Europe/Berlin)
 - Account: MVV Enamic Ads (CID 2011391652)
-- Memory-Root (ueber Symlink): `memory/` → `../../google-ads-memory/`
+- Memory-Root (ueber Symlink): `memory/` → `../google-ads-memory/`
 - Agent-Definitionen: `.claude/agents/*.md`
 - Skill-Library: `skills/`
 
