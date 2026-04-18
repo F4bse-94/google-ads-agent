@@ -55,20 +55,12 @@ Neues Routine, Klick "New routine". Felder ausfuellen:
 
 **Environment:**
 - Default Cloud Environment nutzen
-- Setup-Script (**pflicht** — Symlink + Python-Deps):
+- Setup-Script (nur Python-Deps — Symlink wird im Orchestrator-Prompt gesetzt, weil Setup-Script VOR dem Repo-Klon laeuft und der Submodule-Klon den Symlink sonst ueberschreiben wuerde):
   ```bash
-  # google-ads-agent/memory ist ein Submodule — Routine initialisiert Submodule nicht
-  # automatisch, also ist das Verzeichnis leer. Entfernen und durch Symlink
-  # auf den parallel geklonten google-ads-memory Repo ersetzen. So bleiben alle
-  # 'memory/<file>.md'-Pfade in Agent/Skill-Files gueltig.
-  rm -rf google-ads-agent/memory
-  ln -sfn "$(pwd)/google-ads-memory" "google-ads-agent/memory"
-
-  # Python-Deps fuer Statistiker (scipy tests + bonferroni correction)
   pip install scipy statsmodels numpy
   ```
 
-  **Warum Symlink?** Die Routine klont `google-ads-agent/` und `google-ads-memory/` parallel nebeneinander. Lokale Entwicklung hat `memory/` als Git-Submodule *innerhalb* von `google-ads-agent/` — ohne Symlink in der Cloud wuerden alle `memory/<file>.md`-Referenzen in Agent-Prompts ins Leere zeigen. Siehe [Learning: Claude Code Routines Gotchas #2](../docs/learnings/claude-code-routines-gotchas.md#2-git-submodule-werden-nicht-automatisch-initialisiert).
+  **Warum Symlink nicht hier?** Die Routine klont `google-ads-agent/` NACH dem Setup-Script. Da `memory/` in der `.gitmodules` als Submodule deklariert ist, legt Git ein leeres `memory/`-Dir an — das wuerde einen vorab gesetzten Symlink ueberschreiben. Deshalb macht der Orchestrator-Prompt den Symlink-Reset als ersten Bash-Befehl zur Laufzeit (idempotent). Siehe [Learning: Claude Code Routines Gotchas #2](../docs/learnings/claude-code-routines-gotchas.md#2-git-submodule-werden-nicht-automatisch-initialisiert).
 
 **Connectors:** Alle 11 (Gmail + GitHub + 9 MCPs) aktivieren.
 
@@ -92,9 +84,20 @@ Dies ist der exakte Prompt-Text, den du in das Routine-Prompt-Feld kopierst. Er 
 ```
 Du bist der Orchestrator fuer das MVV Enamic Ads Weekly Report System.
 
-VOR ALLEM ANDEREN: Arbeitsverzeichnis setzen.
-  cd google-ads-agent
-Der Setup-Script hat bereits `memory/` als Symlink auf `../google-ads-memory/` gesetzt. Alle Agent- und Skill-Files referenzieren `memory/<file>.md` mit dieser Erwartung. Verifiziere mit: `ls -la memory/00_strategy_manifest.md` — wenn das File nicht gefunden wird, brich mit klarer Fehlermeldung ab (Symlink-Setup hat gefehlt).
+VOR ALLEM ANDEREN: Arbeitsverzeichnis + Memory-Symlink sicherstellen (IDEMPOTENT, keine Rueckfragen).
+
+```bash
+cd google-ads-agent
+# Submodule-Directory entfernen (falls durch Git-Klon angelegt) und durch Symlink ersetzen.
+# memory/ ist als Submodule im Repo deklariert, aber Routines initialisieren Submodules nicht —
+# das Dir ist deshalb leer und muss durch Symlink auf den parallel geklonten Memory-Repo ersetzt werden.
+rm -rf memory 2>/dev/null
+ln -sfn "$(realpath ../google-ads-memory)" memory
+# Verify — wenn das File nicht gefunden wird, ist der Memory-Repo-Klon selbst fehlgeschlagen (nicht der Symlink)
+ls -la memory/00_strategy_manifest.md || { echo "FATAL: google-ads-memory Repo nicht geklont"; exit 1; }
+```
+
+Keine Confirmation-Frage an den Nutzer — das ist Housekeeping, immer gleich, idempotent.
 
 Starte JETZT den `weekly-report` Skill aus `skills/weekly-report/SKILL.md`.
 
