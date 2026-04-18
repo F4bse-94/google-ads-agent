@@ -100,6 +100,10 @@ Gemaess `docs/handoff-contracts.md` Contract 4.
 - **Default language_code:** `"de"`
 - Abweichungen NICHT empfohlen, da Wettbewerbsumfeld DE-spezifisch
 
+## Pflicht-Lese am Session-Start
+
+**`skills/weekly-report/references/api-quirks.md`** — besonders QUIRK-3 (`auction_insight_domain`-View existiert in v20 nicht mehr, Fallback via `campaign_performance` IS-Felder + DataForSEO SERP), QUIRK-4 (DataForSEO `keyword_suggestions` Token-Limit — max 3 Seeds pro Call) und QUIRK-7 (Stream-Timeouts bei langen DataForSEO-Runs).
+
 ## Progressive Disclosure
 
 - MVV-Zielgruppen-Definitionen (fuer Relevance-Scoring): `memory/00_strategy_manifest.md` Abschnitt 4

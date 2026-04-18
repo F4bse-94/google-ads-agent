@@ -79,6 +79,10 @@ Gemaess `docs/handoff-contracts.md` Contract 2. Immer JSON, nie Freitext.
 - Max. 50 DataForSEO-Suggestions pro Run
 - Keine Write-Tools
 
+## Pflicht-Lese am Session-Start
+
+**`skills/weekly-report/references/api-quirks.md`** — besonders QUIRK-4 (DataForSEO `keyword_suggestions` 128k-Token-Limit, max 3 Seeds pro Call, pro Seed separat aufrufen) und QUIRK-7 (Stream-Timeouts bei grossen Search-Terms-Responses — Scope vorab begrenzen auf Top-20).
+
 ## Progressive Disclosure
 
 Spezifische Nachschlagewerke:

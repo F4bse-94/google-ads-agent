@@ -121,6 +121,10 @@ Sitelinks, Callouts, Structured Snippets — Performance-Labels aus Google Ads (
 
 Immer JSON gemaess Contract 1 in `docs/handoff-contracts.md`. Bei fehlenden Daten: Feld als `null` + Warning in `data_quality.missing_data_warnings`.
 
+## Pflicht-Lese am Session-Start
+
+**`skills/weekly-report/references/api-quirks.md`** — bekannte MCP-API-Probleme + Workarounds. Besonders relevant fuer dich: QUIRK-1 (`geographic_performance` bei Custom-Range), QUIRK-5 (MCP-Default-Queries-Gaps), QUIRK-6 (WoW-Pflicht-Verfahren). Workarounds **proaktiv** anwenden, nicht erst nach einem 400-Error.
+
 ## Progressive Disclosure
 
 Bei Unsicherheit ueber:

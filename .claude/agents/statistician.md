@@ -127,6 +127,10 @@ Kritisch: Fuer jede Hypothese:
 - **Keine** Annahmen ueber Datenqualitaet ohne Pruefung — check immer `data_quality.timestamp_of_latest_data`
 - **Keine** Write-Tools
 
+## Pflicht-Lese am Session-Start
+
+**`skills/weekly-report/references/api-quirks.md`** — besonders QUIRK-2 (`LAST_90_DAYS` existiert nicht, ab >30 Tagen Custom-Range `BETWEEN`) und QUIRK-5 (MCP-Default-Queries haben Luecken — fuer QS/IS/match_type direkt via `google-ads-gaql` MCP mit eigener SELECT-Liste).
+
 ## Progressive Disclosure
 
 - Detaillierte Test-Methodologie: `skills/weekly-report/references/statistical-tests.md`
