@@ -48,9 +48,16 @@ Aus `performance_analyst.exec_kpis` + `performance_analyst.campaigns` + `statist
 - CPA 500-600 EUR OR 1-2 yellow campaigns OR leicht neg. Trend → 🟡 YELLOW
 - CPA > 600 EUR OR mehrere red campaigns OR sig. neg. Trends → 🔴 RED
 
-### 3. Sektionen rendern (1-12 in Reihenfolge)
+### 3. Sektionen rendern (SPLIT-WRITE in zwei Teilen, Pflicht)
+
+**Warum Split:** Ein 20-40 KB Markdown in einem einzigen Write-Call produziert auf LLM-Seite einen grossen JSON-String-Parameter ohne Zwischen-Streaming. Stream-Idle-Timeout (>600s ohne Output-Token) kann die Ausfuehrung killen, bevor der Write abgeschlossen ist. Deshalb: Report in zwei Haelften schreiben.
+
+**Teil A — Sektionen 0-6 (initial Write):** `memory/reports/YYYY-WNN-report.md`
+**Teil B — Sektionen 7-12 + MEMORY_UPDATE_PAYLOAD (Append Write):** selbe Datei, angehaengt
 
 Mapping JSON → Template-Sektionen:
+
+**Teil A (initial Write, ~15 KB):**
 
 | Sektion | Source |
 |---|---|
@@ -61,27 +68,53 @@ Mapping JSON → Template-Sektionen:
 | 4 Search Terms Mining | `search_keyword_hunter.negatives_candidates` + `.keyword_opportunities` |
 | 5 Ad Performance | `performance_analyst.ads` + `search_keyword_hunter.ad_copy_audit` |
 | 6 Dimensionen | `performance_analyst.dimensions` |
+
+**Teil B (Append Write, ~15 KB + JSON-Payload):**
+
+| Sektion | Source |
+|---|---|
 | 7 Budget Pacing & Forecast | `performance_analyst.budget_pacing` |
 | 8 Statistical Validation | `statistician.*` (komplett) |
 | 9 Market & Competitive | `market_competitive.*` (komplett) |
 | 10 Anomalien & Trend-Breaks | `statistician.trend_tests` + aus Performance-Deltas extrahiert |
-| 11 Recommendations | **synthesiert** aus: Money-Burners (P0), High-Performers+IS-Lost (P1 skalieren), Low-QS+Spend (P1 optimieren), Negatives (P1 add), Keyword-Opps (P2), Competitive-Findings (P2-P3) |
-| 12 Open Items | `statistician.new_open_hypotheses` + `search_keyword_hunter`-/`market_competitive`-Flags |
+| 11 Recommendations | synthetisiert — Details: `skills/weekly-report/references/recommendations-priorisierung.md` |
+| 12 Open Items | `statistician.new_open_hypotheses` + `search_keyword_hunter`/`market_competitive` Flags |
+| MEMORY_UPDATE_PAYLOAD | strukturierter JSON-Block (siehe Phase 7) |
+
+**Write-Pattern (Bash-Tool oder gleichwertig):**
+
+```bash
+# Teil A — Sektionen 0-6
+cat > memory/reports/2026-WNN-report.md <<'EOF'
+# Weekly Google Ads Report — KW NN | MVV Enamic Ads
+...Sektionen 0-6...
+EOF
+
+# Teil B — Sektionen 7-12 + MEMORY_UPDATE_PAYLOAD
+cat >> memory/reports/2026-WNN-report.md <<'EOF'
+...Sektionen 7-12...
+<!-- MEMORY_UPDATE_PAYLOAD -->
+```json
+{...}
+```
+EOF
+```
+
+Alternativ mit dem Write/Edit-Tool: einmal `Write` fuer Teil A, dann `Edit` mit `old_string = "<end of part A marker>"` und `new_string = "<marker>\n\n<Teil B content>"`.
+
+**Wichtig:**
+- Nach Teil A: kurze Confirmation-Message ("Teil A committed, 15 KB geschrieben")
+- Nach Teil B: komplettes Render-Ergebnis-Log
+- Bei Stream-Timeout zwischen Teil A und B: Teil A ist bereits persistiert → kein Totalverlust
 
 ### 4. Recommendations-Synthese (einziger kreativer Schritt)
 
-Regel: JEDE Recommendation hat 5 Felder (Prio, Aktion, Impact, Effort, Begruendung). Priorisierung:
+Priorisierungs-Schema, Ableitungs-Regeln und Output-Format: `skills/weekly-report/references/recommendations-priorisierung.md` — **dort lesen, nicht hier inline**. Kurz-Merker:
 
-| Prio | Auslöser | Beispiel |
-|---|---|---|
-| P0 Critical | Money Burner, >100 EUR verbrannt, 0 Conv | "Pause KW 'strom unternehmen' (Spend 402 EUR, 0 Conv)" |
-| P1 High | High-Perf + IS Lost Budget >20% | "Budget erhoehen fuer Kampagne X (CPA 340, IS Lost Budget 35%)" |
-| P1 High | Low QS + signifikant Spend | "Landing Page Review Kampagne Y (QS 3, Spend 280 EUR)" |
-| P1 High | Negative-Kandidat high priority | "Add Negative 'xxx' (Spend 150, 0 Conv)" |
-| P2 Medium | Keyword-Opportunity high relevance | "Test KW 'xxx' (Volume 500, Comp low)" |
-| P2-P3 | Competitive-Findings | "Monitor neuer Wettbewerber xxx.de" |
-
-**Wichtig:** Aktionen sind **Vorschlaege** (READ-ONLY Phase). Kein Ausfuehren.
+- Jede Recommendation: 5 Felder (Prio, Aktion, Impact, Effort, Begruendung)
+- Prios: P0 Critical | P1 High | P2 Medium | P3 Watch
+- Max. 3 Top-Recommendations pro Sub-Agent-Quelle
+- **READ-ONLY**: Aktionen sind **Vorschlaege**, System fuehrt in Google Ads nichts aus
 
 ### 5. Executive-Summary komponieren
 

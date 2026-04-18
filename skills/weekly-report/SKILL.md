@@ -47,9 +47,17 @@ Orchestrator sammelt 4 JSON-Outputs. Validiert Schema-Compliance. Bei Fehlern:
 - Fehlende Pflichtfelder → `DATA_UNAVAILABLE`-Flag im Briefing an Composer
 - `data_quality.hours_of_lag > 36` → Warning in Appendix
 
-### Phase D — Synthesis (Report-Composer)
+### Phase D — Synthesis (Report-Composer, Background-Dispatch + Self-Fallback)
 
-Orchestrator ruft `report-composer` mit zusammengefasstem Input (Schema aus `docs/handoff-contracts.md#report-composer-input`). Composer rendert Template.
+Orchestrator dispatcht `report-composer` mit **`run_in_background: true`** (Pflicht, verhindert Foreground-Stream-Timeouts bei grossen Write-Parametern).
+
+**Briefing-Struktur:**
+- JSON mit `period`, `previous_report_path`, `output_targets` etc.
+- Sub-Agent-Outputs NICHT inline, sondern als **File-Referenzen** (z.B. `/tmp/w<NN>-staging/performance-analyst.json`). Composer liest selbst von Disk. Haelt das Briefing-Token-Count klein.
+
+**Composer rendert per Split-Write** (Details `.claude/agents/report-composer.md` Phase 3): erst Sektionen 0-6 als initial Write, dann 7-12 + MEMORY_UPDATE_PAYLOAD als Append. Bei Stream-Timeout zwischen Teil A und B ist Teil A bereits persistiert — kein Totalverlust.
+
+**Self-Fallback:** Wenn Composer scheitert (Stream-Timeout, `error`-Status, > 120s ohne Abschluss): Orchestrator uebernimmt die Komposition direkt mit dem gleichen Split-Write-Pattern. Keine Rueckfrage an Nutzer — Routine ist autonom.
 
 ### Phase E — Persist (Report + Memory-Writer, strikt getrennt)
 
