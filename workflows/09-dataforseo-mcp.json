@@ -1,0 +1,2318 @@
+{
+  "updatedAt": "2026-04-17T20:10:06.205Z",
+  "createdAt": "2025-12-25T16:03:00.544Z",
+  "id": "UnoWhmmvuvnjP4E4",
+  "name": "DataForSEO_MCP_Server_v2",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🔍 DataForSEO MCP Server v2\n\n**Architektur:** Nach GSC-Vorbild mit Tool Workflow Nodes\n\n### Tools:\n1. **serp_search** - Google SERP Ergebnisse\n2. **keyword_overview** - Keyword-Metriken\n3. **keyword_suggestions** - Keyword-Ideen\n4. **domain_overview** - Domain-Metriken\n5. **search_volume** - Bulk Suchvolumen\n6. **ranked_keywords** - Domain Rankings\n7. **competitors_domain** - Wettbewerber finden\n8. **related_keywords** - Verwandte Keywords\n\n### Setup:\n1. Workflow aktivieren\n2. Production URL kopieren (SSE Endpoint)\n3. In Langdock als MCP Server hinzufügen\n\n### Credentials:\n**HTTP Basic Auth** für DataForSEO API",
+        "height": 480,
+        "width": 400,
+        "color": 4
+      },
+      "id": "0aa05542-fd47-4528-90ba-dd692ebb0fc8",
+      "name": "Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        -528
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ Credentials\n\n**HTTP Basic Auth** muss konfiguriert sein:\n- Username: DataForSEO Login\n- Password: DataForSEO API Key\n\nIn jedem HTTP Request Node die Credentials auswählen!",
+        "height": 180,
+        "width": 350,
+        "color": 5
+      },
+      "id": "ec0b6329-3162-43e0-aef5-d1d3cafe590f",
+      "name": "Credentials",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "name": "serp_search",
+        "description": "Führt eine Google SERP-Suche durch und gibt organische Suchergebnisse zurück (Titel, URLs, Beschreibungen, Rankings). Parameter: keyword (required, das Suchwort), depth (optional, Anzahl Ergebnisse 1-100, Standard: 10), device (optional, 'desktop' oder 'mobile', Standard: 'desktop').",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "serp_search",
+            "keyword": "={{ $fromAI('keyword', 'Das Suchwort für die Google-Suche', 'string') }}",
+            "depth": "={{ $fromAI('depth', 'Optional: Anzahl Ergebnisse (Standard: 10)', 'number') }}",
+            "device": "={{ $fromAI('device', 'Optional: desktop oder mobile (Standard: desktop)', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "depth",
+              "displayName": "depth",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "device",
+              "displayName": "device",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "bbec6ba9-83f4-4f59-9d73-72df318d5984",
+      "name": "serp_search",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -1200,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "keyword_overview",
+        "description": "Analysiert detaillierte Metriken für ein Keyword: Suchvolumen, CPC, Wettbewerb, Trend-Daten. Parameter: keyword (required, das zu analysierende Keyword).",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_overview",
+            "keyword": "={{ $fromAI('keyword', 'Das Keyword für die Analyse', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "7b1d3ae1-a771-4250-9a5d-29bc6072ce92",
+      "name": "keyword_overview",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -1040,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "keyword_suggestions",
+        "description": "Generiert Keyword-Vorschläge basierend auf einem Seed-Keyword. Gibt verwandte Keyword-Ideen mit Suchvolumen zurück. Parameter: keyword (required, das Seed-Keyword), limit (optional, Anzahl Vorschläge, Standard: 50).",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_suggestions",
+            "keyword": "={{ $fromAI('keyword', 'Das Seed-Keyword für Vorschläge', 'string') }}",
+            "limit": "={{ $fromAI('limit', 'Optional: Anzahl Vorschläge (Standard: 50)', 'number') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "3182aef9-dbf3-4fc4-aa54-75593fa40246",
+      "name": "keyword_suggestions",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -880,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "domain_overview",
+        "description": "Liefert SEO-Übersichtsmetriken für eine Domain: organischer Traffic, Keyword-Anzahl, Domain-Rank. Parameter: target (required, Domain OHNE Protokoll, z.B. 'hubspot.de').",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "domain_overview",
+            "target": "={{ $fromAI('target', 'Domain ohne Protokoll (z.B. hubspot.de)', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "target",
+              "displayName": "target",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "669efac4-f409-4279-8349-f88ff6a439bd",
+      "name": "domain_overview",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -720,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "search_volume",
+        "description": "Bulk-Suchvolumen-Check für mehrere Keywords. Gibt Suchvolumen für eine Liste von Keywords zurück. Parameter: keywords (required, komma-getrennte Liste von Keywords, z.B. 'seo tools, seo agentur, seo beratung').",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "search_volume",
+            "keywords": "={{ $fromAI('keywords', 'Komma-getrennte Keywords (z.B. seo tools, seo agentur)', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "keywords",
+              "displayName": "keywords",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "9dea197d-0f3c-47df-b976-3908ffa6088e",
+      "name": "search_volume",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "ranked_keywords",
+        "description": "Zeigt alle Keywords, für die eine Domain in Google rankt. Gibt Ranking-Positionen und Keyword-Daten zurück. Parameter: target (required, Domain OHNE Protokoll), limit (optional, Anzahl Ergebnisse, Standard: 100).",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "ranked_keywords",
+            "target": "={{ $fromAI('target', 'Domain ohne Protokoll (z.B. hubspot.de)', 'string') }}",
+            "limit": "={{ $fromAI('limit', 'Optional: Anzahl Ergebnisse (Standard: 100)', 'number') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "target",
+              "displayName": "target",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "8c94b3fa-ca07-4d2e-9f03-be6cfa4450a2",
+      "name": "ranked_keywords",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "competitors_domain",
+        "description": "Findet SEO-Wettbewerber basierend auf Keyword-Überschneidungen. Gibt Domains zurück, die für ähnliche Keywords ranken. Parameter: target (required, Domain OHNE Protokoll), limit (optional, Anzahl Wettbewerber, Standard: 20).",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "competitors_domain",
+            "target": "={{ $fromAI('target', 'Domain ohne Protokoll (z.B. check24.de)', 'string') }}",
+            "limit": "={{ $fromAI('limit', 'Optional: Anzahl Wettbewerber (Standard: 20)', 'number') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "target",
+              "displayName": "target",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "a86b233c-8fae-4693-a31c-27a0c9e5f8fe",
+      "name": "competitors_domain",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "related_keywords",
+        "description": "Findet semantisch verwandte Keywords (LSI Keywords). Gibt kontextuell verwandte Keywords zurück. Parameter: keyword (required, das Seed-Keyword), limit (optional, Anzahl Ergebnisse, Standard: 50).",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "related_keywords",
+            "keyword": "={{ $fromAI('keyword', 'Das Seed-Keyword für verwandte Begriffe', 'string') }}",
+            "limit": "={{ $fromAI('limit', 'Optional: Anzahl Ergebnisse (Standard: 50)', 'number') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "removed": false
+            }
+          ]
+        }
+      },
+      "id": "fa8c83ea-a9f3-41dc-9afd-fcf505657647",
+      "name": "related_keywords",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "tool_name"
+            },
+            {
+              "name": "keyword"
+            },
+            {
+              "name": "target"
+            },
+            {
+              "name": "keywords"
+            },
+            {
+              "name": "depth",
+              "type": "number"
+            },
+            {
+              "name": "limit",
+              "type": "number"
+            },
+            {
+              "name": "device"
+            }
+          ]
+        }
+      },
+      "id": "5b89547b-d1b7-4e84-97e3-04abbe990eee",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1200,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "serp_search",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "serp_search"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "keyword_overview",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "keyword_overview"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "keyword_suggestions",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "keyword_suggestions"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "domain_overview",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "domain_overview"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "search_volume",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search_volume"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "ranked_keywords",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ranked_keywords"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "competitors_domain",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "competitors_domain"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "related_keywords",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "related_keywords"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b0a83310-e901-4e28-ad0a-935888892f26",
+      "name": "Route to Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -960,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/serp/google/organic/live/advanced",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"keyword\": \"{{ $json.keyword }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"device\": \"{{ $json.device || 'desktop' }}\",\n  \"depth\": {{ $json.depth || 10 }}\n}]",
+        "options": {}
+      },
+      "id": "9c345171-6fa4-410f-be48-a282da22dd7c",
+      "name": "API: SERP Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        -32
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_overview/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"keywords\": [\"{{ $json.keyword }}\"],\n  \"location_code\": 2276,\n  \"language_code\": \"de\"\n}]",
+        "options": {}
+      },
+      "id": "efd66b7c-0402-440e-8d79-67b8dcfbd156",
+      "name": "API: Keyword Overview",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        144
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_suggestions/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"keyword\": \"{{ $json.keyword }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 50 }}\n}]",
+        "options": {}
+      },
+      "id": "2d52f15c-201e-4c46-b1f2-23d75388d56a",
+      "name": "API: Keyword Suggestions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        304
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/domain_rank_overview/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"target\": \"{{ $json.target }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\"\n}]",
+        "options": {}
+      },
+      "id": "ab62b143-39f1-4a11-827d-e518c0e22465",
+      "name": "API: Domain Overview",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        464
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify([{\n  \"keywords\": $json.keywords.split(',').map(k => k.trim()),\n  \"location_code\": 2276,\n  \"language_code\": \"de\"\n}]) }}",
+        "options": {}
+      },
+      "id": "abf9e631-8f11-44f9-b6bb-f4923c7fcd81",
+      "name": "API: Search Volume",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        624
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/ranked_keywords/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"target\": \"{{ $json.target }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 100 }}\n}]",
+        "options": {}
+      },
+      "id": "1f632470-a6cd-493a-97f8-8f9c53ef331d",
+      "name": "API: Ranked Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        784
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/competitors_domain/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"target\": \"{{ $json.target }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 20 }}\n}]",
+        "options": {}
+      },
+      "id": "60bdc663-2ad9-4672-afbe-54f0ee0ca568",
+      "name": "API: Competitors Domain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        944
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/related_keywords/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"keyword\": \"{{ $json.keyword }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 50 }}\n}]",
+        "options": {}
+      },
+      "id": "cc3eae8f-bb93-4e49-977e-cfc9e5a84b3f",
+      "name": "API: Related Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        1104
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "LissOgIkQimPzPNO",
+          "name": "DataForSEO Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "dataforseo-mcp-v2",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        -496
+      ],
+      "id": "21dd5a0c-23ff-4ae5-b7ef-81e862037449",
+      "name": "DataForSEO_MCP_Server Trigger",
+      "webhookId": "e2180a89-ff0b-4d2f-b38b-c6e8fa5c2188",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "serp_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_overview": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_suggestions": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "domain_overview": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_volume": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ranked_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "competitors_domain": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "related_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "DataForSEO_MCP_Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route to Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Tool": {
+      "main": [
+        [
+          {
+            "node": "API: SERP Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Keyword Overview",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Keyword Suggestions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Domain Overview",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Search Volume",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Ranked Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Competitors Domain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Related Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Tool Trigger": [
+      {
+        "json": {
+          "tool_name": "keyword_overview",
+          "keyword": "SEO",
+          "target": null,
+          "keywords": null,
+          "depth": null,
+          "limit": null,
+          "device": null
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "462284f2-143e-42ef-903f-029ce655a48d",
+  "activeVersionId": "462284f2-143e-42ef-903f-029ce655a48d",
+  "versionCounter": 47,
+  "triggerCount": 1,
+  "tags": [
+    {
+      "updatedAt": "2025-12-25T15:40:41.763Z",
+      "createdAt": "2025-12-25T15:40:41.763Z",
+      "id": "NXKD6ZDbFVsLlwuM",
+      "name": "MCP Server"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:06.206Z",
+    "createdAt": "2026-04-17T20:10:06.206Z",
+    "versionId": "462284f2-143e-42ef-903f-029ce655a48d",
+    "workflowId": "UnoWhmmvuvnjP4E4",
+    "nodes": [
+      {
+        "parameters": {
+          "content": "## 🔍 DataForSEO MCP Server v2\n\n**Architektur:** Nach GSC-Vorbild mit Tool Workflow Nodes\n\n### Tools:\n1. **serp_search** - Google SERP Ergebnisse\n2. **keyword_overview** - Keyword-Metriken\n3. **keyword_suggestions** - Keyword-Ideen\n4. **domain_overview** - Domain-Metriken\n5. **search_volume** - Bulk Suchvolumen\n6. **ranked_keywords** - Domain Rankings\n7. **competitors_domain** - Wettbewerber finden\n8. **related_keywords** - Verwandte Keywords\n\n### Setup:\n1. Workflow aktivieren\n2. Production URL kopieren (SSE Endpoint)\n3. In Langdock als MCP Server hinzufügen\n\n### Credentials:\n**HTTP Basic Auth** für DataForSEO API",
+          "height": 480,
+          "width": 400,
+          "color": 4
+        },
+        "id": "0aa05542-fd47-4528-90ba-dd692ebb0fc8",
+        "name": "Info",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -1696,
+          -528
+        ]
+      },
+      {
+        "parameters": {
+          "content": "## ⚠️ Credentials\n\n**HTTP Basic Auth** muss konfiguriert sein:\n- Username: DataForSEO Login\n- Password: DataForSEO API Key\n\nIn jedem HTTP Request Node die Credentials auswählen!",
+          "height": 180,
+          "width": 350,
+          "color": 5
+        },
+        "id": "ec0b6329-3162-43e0-aef5-d1d3cafe590f",
+        "name": "Credentials",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -1696,
+          -16
+        ]
+      },
+      {
+        "parameters": {
+          "name": "serp_search",
+          "description": "Führt eine Google SERP-Suche durch und gibt organische Suchergebnisse zurück (Titel, URLs, Beschreibungen, Rankings). Parameter: keyword (required, das Suchwort), depth (optional, Anzahl Ergebnisse 1-100, Standard: 10), device (optional, 'desktop' oder 'mobile', Standard: 'desktop').",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "serp_search",
+              "keyword": "={{ $fromAI('keyword', 'Das Suchwort für die Google-Suche', 'string') }}",
+              "depth": "={{ $fromAI('depth', 'Optional: Anzahl Ergebnisse (Standard: 10)', 'number') }}",
+              "device": "={{ $fromAI('device', 'Optional: desktop oder mobile (Standard: desktop)', 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "keyword",
+                "displayName": "keyword",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "depth",
+                "displayName": "depth",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "number",
+                "removed": false
+              },
+              {
+                "id": "device",
+                "displayName": "device",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "bbec6ba9-83f4-4f59-9d73-72df318d5984",
+        "name": "serp_search",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -1200,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "keyword_overview",
+          "description": "Analysiert detaillierte Metriken für ein Keyword: Suchvolumen, CPC, Wettbewerb, Trend-Daten. Parameter: keyword (required, das zu analysierende Keyword).",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "keyword_overview",
+              "keyword": "={{ $fromAI('keyword', 'Das Keyword für die Analyse', 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "keyword",
+                "displayName": "keyword",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "7b1d3ae1-a771-4250-9a5d-29bc6072ce92",
+        "name": "keyword_overview",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -1040,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "keyword_suggestions",
+          "description": "Generiert Keyword-Vorschläge basierend auf einem Seed-Keyword. Gibt verwandte Keyword-Ideen mit Suchvolumen zurück. Parameter: keyword (required, das Seed-Keyword), limit (optional, Anzahl Vorschläge, Standard: 50).",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "keyword_suggestions",
+              "keyword": "={{ $fromAI('keyword', 'Das Seed-Keyword für Vorschläge', 'string') }}",
+              "limit": "={{ $fromAI('limit', 'Optional: Anzahl Vorschläge (Standard: 50)', 'number') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "keyword",
+                "displayName": "keyword",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "limit",
+                "displayName": "limit",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "number",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "3182aef9-dbf3-4fc4-aa54-75593fa40246",
+        "name": "keyword_suggestions",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -880,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "domain_overview",
+          "description": "Liefert SEO-Übersichtsmetriken für eine Domain: organischer Traffic, Keyword-Anzahl, Domain-Rank. Parameter: target (required, Domain OHNE Protokoll, z.B. 'hubspot.de').",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "domain_overview",
+              "target": "={{ $fromAI('target', 'Domain ohne Protokoll (z.B. hubspot.de)', 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "target",
+                "displayName": "target",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "669efac4-f409-4279-8349-f88ff6a439bd",
+        "name": "domain_overview",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -720,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "search_volume",
+          "description": "Bulk-Suchvolumen-Check für mehrere Keywords. Gibt Suchvolumen für eine Liste von Keywords zurück. Parameter: keywords (required, komma-getrennte Liste von Keywords, z.B. 'seo tools, seo agentur, seo beratung').",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "search_volume",
+              "keywords": "={{ $fromAI('keywords', 'Komma-getrennte Keywords (z.B. seo tools, seo agentur)', 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "keywords",
+                "displayName": "keywords",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "9dea197d-0f3c-47df-b976-3908ffa6088e",
+        "name": "search_volume",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -560,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "ranked_keywords",
+          "description": "Zeigt alle Keywords, für die eine Domain in Google rankt. Gibt Ranking-Positionen und Keyword-Daten zurück. Parameter: target (required, Domain OHNE Protokoll), limit (optional, Anzahl Ergebnisse, Standard: 100).",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "ranked_keywords",
+              "target": "={{ $fromAI('target', 'Domain ohne Protokoll (z.B. hubspot.de)', 'string') }}",
+              "limit": "={{ $fromAI('limit', 'Optional: Anzahl Ergebnisse (Standard: 100)', 'number') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "target",
+                "displayName": "target",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "limit",
+                "displayName": "limit",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "number",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "8c94b3fa-ca07-4d2e-9f03-be6cfa4450a2",
+        "name": "ranked_keywords",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -400,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "competitors_domain",
+          "description": "Findet SEO-Wettbewerber basierend auf Keyword-Überschneidungen. Gibt Domains zurück, die für ähnliche Keywords ranken. Parameter: target (required, Domain OHNE Protokoll), limit (optional, Anzahl Wettbewerber, Standard: 20).",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "competitors_domain",
+              "target": "={{ $fromAI('target', 'Domain ohne Protokoll (z.B. check24.de)', 'string') }}",
+              "limit": "={{ $fromAI('limit', 'Optional: Anzahl Wettbewerber (Standard: 20)', 'number') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "target",
+                "displayName": "target",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "limit",
+                "displayName": "limit",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "number",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "a86b233c-8fae-4693-a31c-27a0c9e5f8fe",
+        "name": "competitors_domain",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -240,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "related_keywords",
+          "description": "Findet semantisch verwandte Keywords (LSI Keywords). Gibt kontextuell verwandte Keywords zurück. Parameter: keyword (required, das Seed-Keyword), limit (optional, Anzahl Ergebnisse, Standard: 50).",
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $workflow.id }}"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "related_keywords",
+              "keyword": "={{ $fromAI('keyword', 'Das Seed-Keyword für verwandte Begriffe', 'string') }}",
+              "limit": "={{ $fromAI('limit', 'Optional: Anzahl Ergebnisse (Standard: 50)', 'number') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "keyword",
+                "displayName": "keyword",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "limit",
+                "displayName": "limit",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "number",
+                "removed": false
+              }
+            ]
+          }
+        },
+        "id": "fa8c83ea-a9f3-41dc-9afd-fcf505657647",
+        "name": "related_keywords",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -80,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "tool_name"
+              },
+              {
+                "name": "keyword"
+              },
+              {
+                "name": "target"
+              },
+              {
+                "name": "keywords"
+              },
+              {
+                "name": "depth",
+                "type": "number"
+              },
+              {
+                "name": "limit",
+                "type": "number"
+              },
+              {
+                "name": "device"
+              }
+            ]
+          }
+        },
+        "id": "5b89547b-d1b7-4e84-97e3-04abbe990eee",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -1200,
+          272
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "serp_search",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "serp_search"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "keyword_overview",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "keyword_overview"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "keyword_suggestions",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "keyword_suggestions"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "domain_overview",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "domain_overview"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "search_volume",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "search_volume"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "ranked_keywords",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ranked_keywords"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "competitors_domain",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "competitors_domain"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "related_keywords",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "related_keywords"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "b0a83310-e901-4e28-ad0a-935888892f26",
+        "name": "Route to Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          -960,
+          272
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/serp/google/organic/live/advanced",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[{\n  \"keyword\": \"{{ $json.keyword }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"device\": \"{{ $json.device || 'desktop' }}\",\n  \"depth\": {{ $json.depth || 10 }}\n}]",
+          "options": {}
+        },
+        "id": "9c345171-6fa4-410f-be48-a282da22dd7c",
+        "name": "API: SERP Search",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          -32
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_overview/live",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[{\n  \"keywords\": [\"{{ $json.keyword }}\"],\n  \"location_code\": 2276,\n  \"language_code\": \"de\"\n}]",
+          "options": {}
+        },
+        "id": "efd66b7c-0402-440e-8d79-67b8dcfbd156",
+        "name": "API: Keyword Overview",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          144
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_suggestions/live",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[{\n  \"keyword\": \"{{ $json.keyword }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 50 }}\n}]",
+          "options": {}
+        },
+        "id": "2d52f15c-201e-4c46-b1f2-23d75388d56a",
+        "name": "API: Keyword Suggestions",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          304
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/domain_rank_overview/live",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[{\n  \"target\": \"{{ $json.target }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\"\n}]",
+          "options": {}
+        },
+        "id": "ab62b143-39f1-4a11-827d-e518c0e22465",
+        "name": "API: Domain Overview",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          464
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify([{\n  \"keywords\": $json.keywords.split(',').map(k => k.trim()),\n  \"location_code\": 2276,\n  \"language_code\": \"de\"\n}]) }}",
+          "options": {}
+        },
+        "id": "abf9e631-8f11-44f9-b6bb-f4923c7fcd81",
+        "name": "API: Search Volume",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          624
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/ranked_keywords/live",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[{\n  \"target\": \"{{ $json.target }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 100 }}\n}]",
+          "options": {}
+        },
+        "id": "1f632470-a6cd-493a-97f8-8f9c53ef331d",
+        "name": "API: Ranked Keywords",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          784
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/competitors_domain/live",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[{\n  \"target\": \"{{ $json.target }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 20 }}\n}]",
+          "options": {}
+        },
+        "id": "60bdc663-2ad9-4672-afbe-54f0ee0ca568",
+        "name": "API: Competitors Domain",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          944
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/related_keywords/live",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "=[{\n  \"keyword\": \"{{ $json.keyword }}\",\n  \"location_code\": 2276,\n  \"language_code\": \"de\",\n  \"limit\": {{ $json.limit || 50 }}\n}]",
+          "options": {}
+        },
+        "id": "cc3eae8f-bb93-4e49-977e-cfc9e5a84b3f",
+        "name": "API: Related Keywords",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -640,
+          1104
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LissOgIkQimPzPNO",
+            "name": "DataForSEO Basic Auth"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "path": "dataforseo-mcp-v2",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          -832,
+          -496
+        ],
+        "id": "21dd5a0c-23ff-4ae5-b7ef-81e862037449",
+        "name": "DataForSEO_MCP_Server Trigger",
+        "webhookId": "e2180a89-ff0b-4d2f-b38b-c6e8fa5c2188",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "serp_search": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "keyword_overview": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "keyword_suggestions": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "domain_overview": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "search_volume": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ranked_keywords": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "competitors_domain": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "related_keywords": {
+        "ai_tool": [
+          [
+            {
+              "node": "DataForSEO_MCP_Server Trigger",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Route to Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Route to Tool": {
+        "main": [
+          [
+            {
+              "node": "API: SERP Search",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Keyword Overview",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Keyword Suggestions",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Domain Overview",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Search Volume",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Ranked Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Competitors Domain",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Related Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:06.272Z",
+        "id": 512,
+        "workflowId": "UnoWhmmvuvnjP4E4",
+        "versionId": "462284f2-143e-42ef-903f-029ce655a48d",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:06.254Z",
+        "id": 511,
+        "workflowId": "UnoWhmmvuvnjP4E4",
+        "versionId": "462284f2-143e-42ef-903f-029ce655a48d",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

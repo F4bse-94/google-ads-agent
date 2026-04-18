@@ -1,0 +1,903 @@
+{
+  "updatedAt": "2026-04-17T20:10:06.023Z",
+  "createdAt": "2026-02-20T18:10:50.222Z",
+  "id": "X9OeaCnNCTFZpxzI_xbyh",
+  "name": "Google Ads MCP - GAQL Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "google-ads-gaql-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "75230e52-058a-47ee-ad11-b0ab3dacd9c1",
+      "name": "Google Ads MCP Server - GAQL",
+      "webhookId": "4ce55176-19c8-4400-9130-88c7510e8dc1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "6c19788d-983e-4a12-a101-095bbf83232a",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        424
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "713f0907-f38b-4a55-8ee3-cd25dd2807e3",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "8de5f979-4a4a-4e2b-bbd7-1339ef6b3f91",
+              "name": "query",
+              "value": "={{ $json.query }}",
+              "type": "string"
+            },
+            {
+              "id": "4b54e3d3-9bc6-4aa8-b118-2e0fdd22e9af",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "58e1c312-d8ce-41b4-acfc-3fbc0ce86b83",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            },
+            {
+              "id": "92f1c312-d8ce-41b4-acfc-3fbc0ce86b84",
+              "name": "customerId",
+              "value": "2011391652",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cad20d49-b68d-45ff-9b16-0ddc4db2c870",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        424
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "execute_gaql",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "execute_gaql"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "search_stream",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search_stream"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3a7a41f0-b90d-491d-a9c4-44d7edff5d78",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        424
+      ]
+    },
+    {
+      "parameters": {
+        "name": "execute_gaql",
+        "description": "Executes a custom Google Ads Query Language (GAQL) query using the search endpoint.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "execute_gaql",
+            "query": "={{ $fromAI('query', 'The exact GAQL query string to execute.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "1f10acfb-9a9e-45b9-a6ad-eccb42d65bbd",
+      "name": "execute_gaql",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        8,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "search_stream",
+        "description": "Executes a custom GAQL query using the searchStream endpoint (recommended for large datasets without pagination).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "search_stream",
+            "query": "={{ $fromAI('query', 'The exact GAQL query string to execute.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "6235f2b3-df8d-445a-a361-ea4258df22f9",
+      "name": "search_stream",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        136,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.query }}\"\n}",
+        "options": {}
+      },
+      "id": "81f083c0-1edf-4c6e-a472-f7e3e71ba10b",
+      "name": "API: Execute GAQL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        328
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.query }}\"\n}",
+        "options": {}
+      },
+      "id": "19772b73-45d5-429f-8907-d1dbd2d00f95",
+      "name": "API: Search Stream",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        520
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+      },
+      "id": "525067e2-fed5-4856-b174-024d1cca9898",
+      "name": "Format GAQL Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        328
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+      },
+      "id": "2892a302-d808-427d-8d8b-abfdc1953b02",
+      "name": "Format Stream Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        520
+      ]
+    }
+  ],
+  "connections": {
+    "execute_gaql": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - GAQL",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_stream": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - GAQL",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: Execute GAQL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Search Stream",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Execute GAQL": {
+      "main": [
+        [
+          {
+            "node": "Format GAQL Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Search Stream": {
+      "main": [
+        [
+          {
+            "node": "Format Stream Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "41137371-7118-4b6b-af7a-e3204224bf05",
+  "activeVersionId": "41137371-7118-4b6b-af7a-e3204224bf05",
+  "versionCounter": 9,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:06.024Z",
+    "createdAt": "2026-04-17T20:10:06.024Z",
+    "versionId": "41137371-7118-4b6b-af7a-e3204224bf05",
+    "workflowId": "X9OeaCnNCTFZpxzI_xbyh",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "google-ads-gaql-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "75230e52-058a-47ee-ad11-b0ab3dacd9c1",
+        "name": "Google Ads MCP Server - GAQL",
+        "webhookId": "4ce55176-19c8-4400-9130-88c7510e8dc1",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "6c19788d-983e-4a12-a101-095bbf83232a",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          424
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "713f0907-f38b-4a55-8ee3-cd25dd2807e3",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "8de5f979-4a4a-4e2b-bbd7-1339ef6b3f91",
+                "name": "query",
+                "value": "={{ $json.query }}",
+                "type": "string"
+              },
+              {
+                "id": "4b54e3d3-9bc6-4aa8-b118-2e0fdd22e9af",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "58e1c312-d8ce-41b4-acfc-3fbc0ce86b83",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              },
+              {
+                "id": "92f1c312-d8ce-41b4-acfc-3fbc0ce86b84",
+                "name": "customerId",
+                "value": "2011391652",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "cad20d49-b68d-45ff-9b16-0ddc4db2c870",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          224,
+          424
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "execute_gaql",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "execute_gaql"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "search_stream",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "search_stream"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3a7a41f0-b90d-491d-a9c4-44d7edff5d78",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          448,
+          424
+        ]
+      },
+      {
+        "parameters": {
+          "name": "execute_gaql",
+          "description": "Executes a custom Google Ads Query Language (GAQL) query using the search endpoint.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "execute_gaql",
+              "query": "={{ $fromAI('query', 'The exact GAQL query string to execute.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "query",
+                "displayName": "query",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "1f10acfb-9a9e-45b9-a6ad-eccb42d65bbd",
+        "name": "execute_gaql",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          8,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "search_stream",
+          "description": "Executes a custom GAQL query using the searchStream endpoint (recommended for large datasets without pagination).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "search_stream",
+              "query": "={{ $fromAI('query', 'The exact GAQL query string to execute.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "query",
+                "displayName": "query",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "6235f2b3-df8d-445a-a361-ea4258df22f9",
+        "name": "search_stream",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          136,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:search",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"{{ $json.query }}\"\n}",
+          "options": {}
+        },
+        "id": "81f083c0-1edf-4c6e-a472-f7e3e71ba10b",
+        "name": "API: Execute GAQL",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          672,
+          328
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"{{ $json.query }}\"\n}",
+          "options": {}
+        },
+        "id": "19772b73-45d5-429f-8907-d1dbd2d00f95",
+        "name": "API: Search Stream",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          672,
+          520
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+        },
+        "id": "525067e2-fed5-4856-b174-024d1cca9898",
+        "name": "Format GAQL Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          896,
+          328
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+        },
+        "id": "2892a302-d808-427d-8d8b-abfdc1953b02",
+        "name": "Format Stream Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          896,
+          520
+        ]
+      }
+    ],
+    "connections": {
+      "execute_gaql": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - GAQL",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "search_stream": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - GAQL",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: Execute GAQL",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Search Stream",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Execute GAQL": {
+        "main": [
+          [
+            {
+              "node": "Format GAQL Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Search Stream": {
+        "main": [
+          [
+            {
+              "node": "Format Stream Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:06.072Z",
+        "id": 510,
+        "workflowId": "X9OeaCnNCTFZpxzI_xbyh",
+        "versionId": "41137371-7118-4b6b-af7a-e3204224bf05",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:06.056Z",
+        "id": 509,
+        "workflowId": "X9OeaCnNCTFZpxzI_xbyh",
+        "versionId": "41137371-7118-4b6b-af7a-e3204224bf05",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

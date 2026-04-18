@@ -1,0 +1,2505 @@
+{
+  "updatedAt": "2026-04-17T20:10:05.214Z",
+  "createdAt": "2026-02-20T18:39:22.479Z",
+  "id": "_Dnf-_VzFksABXNp6paro",
+  "name": "Google Ads MCP - Ad Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "google-ads-ad-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -32
+      ],
+      "id": "e1be0b16-2c32-4e60-bd52-d76291e83714",
+      "name": "Google Ads MCP Server - Ads",
+      "webhookId": "e0c6b8b1-08fa-47fb-9d35-31e49a34043c",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "05c73e2f-919d-43f6-adca-239274ea3a62",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "adGroupId",
+              "value": "={{ $json.adGroupId }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "adId",
+              "value": "={{ $json.adId }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "finalUrl",
+              "value": "={{ $json.finalUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "headline_1",
+              "value": "={{ $json.headline_1 }}",
+              "type": "string"
+            },
+            {
+              "id": "7",
+              "name": "headline_2",
+              "value": "={{ $json.headline_2 }}",
+              "type": "string"
+            },
+            {
+              "id": "8",
+              "name": "headline_3",
+              "value": "={{ $json.headline_3 }}",
+              "type": "string"
+            },
+            {
+              "id": "9",
+              "name": "description_1",
+              "value": "={{ $json.description_1 }}",
+              "type": "string"
+            },
+            {
+              "id": "10",
+              "name": "description_2",
+              "value": "={{ $json.description_2 }}",
+              "type": "string"
+            },
+            {
+              "id": "cred1",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "cred2",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            },
+            {
+              "id": "cred3",
+              "name": "customerId",
+              "value": "2011391652",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9d542697-7baa-4792-a9bb-de261f73e420",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "list_ads",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "list_ads"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "get_ad",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_ad"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "create_responsive_search_ad",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "create_responsive_search_ad"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "update_ad",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "update_ad"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "pause_ad",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pause_ad"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "enable_ad",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "enable_ad"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "remove_ad",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "remove_ad"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d7fee1d4-24f9-4fa1-9a32-709384263b5c",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -80,
+        896
+      ]
+    },
+    {
+      "parameters": {
+        "name": "list_ads",
+        "description": "Lists all ads within a specific ad group. Returns ad ID, status, final URLs, and copy (headlines/descriptions).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "list_ads",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to list ads from.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "3e6ff0f1-8b29-475e-8804-093e5fd546ec",
+      "name": "list_ads",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_ad",
+        "description": "Retrieves detailed information about a specific ad by its ad group ID and ad ID.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_ad",
+            "adId": "={{ $fromAI('adId', 'The ID of the ad to retrieve.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adId",
+              "displayName": "adId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "811b131d-e063-4043-8a96-7d2dd5647ab4",
+      "name": "get_ad",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "create_responsive_search_ad",
+        "description": "Creates a new Responsive Search Ad (RSA). Requires adGroupId, status (PAUSED or ENABLED), a finalUrl, 3 headlines, and 2 descriptions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "create_responsive_search_ad",
+            "adGroupId": "={{ $fromAI('adGroupId', 'ID of the Ad Group to place the ad in.', 'string') }}",
+            "status": "={{ $fromAI('status', 'Status of the ad (PAUSED or ENABLED)', 'string') }}",
+            "finalUrl": "={{ $fromAI('finalUrl', 'The Final URL for the ad.', 'string') }}",
+            "headline_1": "={{ $fromAI('headline_1', 'First headline text.', 'string') }}",
+            "headline_2": "={{ $fromAI('headline_2', 'Second headline text.', 'string') }}",
+            "headline_3": "={{ $fromAI('headline_3', 'Third headline text.', 'string') }}",
+            "description_1": "={{ $fromAI('description_1', 'First description text.', 'string') }}",
+            "description_2": "={{ $fromAI('description_2', 'Second description text.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "finalUrl",
+              "displayName": "finalUrl",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "headline_1",
+              "displayName": "headline_1",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "headline_2",
+              "displayName": "headline_2",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "headline_3",
+              "displayName": "headline_3",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "description_1",
+              "displayName": "description_1",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "description_2",
+              "displayName": "description_2",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "51bee3f5-b86b-4091-ae09-7bd7df476e6b",
+      "name": "create_responsive_search_ad",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "update_ad",
+        "description": "Updates the status of an existing Ad Group Ad (e.g., to pause or enable it). Ad copy is typically updated by creating a new ad and pausing the old one.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "update_ad",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+            "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}",
+            "status": "={{ $fromAI('status', 'New status (PAUSED or ENABLED).', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adId",
+              "displayName": "adId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "da37d460-2aea-40d2-8b97-446e869c33cd",
+      "name": "update_ad",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "pause_ad",
+        "description": "Sets an ad's status to PAUSED. Requires adGroupId and adId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "pause_ad",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+            "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adId",
+              "displayName": "adId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9be14c92-c6dd-4988-8bc5-094db685a7c1",
+      "name": "pause_ad",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "name": "enable_ad",
+        "description": "Sets an ad's status to ENABLED. Requires adGroupId and adId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "enable_ad",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+            "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adId",
+              "displayName": "adId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "08ea77b2-ec72-4984-9c3f-1f670afcddfa",
+      "name": "enable_ad",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "remove_ad",
+        "description": "Sets an ad's status to REMOVED (deleted). Requires adGroupId and adId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "remove_ad",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+            "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adId",
+              "displayName": "adId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "08a7d1a9-4fd7-4053-8392-7b76a52022b6",
+      "name": "remove_ad",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group_ad.ad.id, ad_group_ad.status, ad_group_ad.ad.final_urls, ad_group_ad.ad.type, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions, ad_group.id, campaign.id FROM ad_group_ad WHERE ad_group.id = {{ $json.adGroupId }} AND ad_group_ad.status != 'REMOVED'\"\n}",
+        "options": {}
+      },
+      "id": "e3442d6b-aecc-436a-a6b3-ff8086236b9a",
+      "name": "API: List Ads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        400
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group_ad.ad.id, ad_group_ad.status, ad_group_ad.ad.final_urls, ad_group_ad.ad.type, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions, ad_group.id, campaign.id FROM ad_group_ad WHERE ad_group_ad.ad.id = {{ $json.adId }}\"\n}",
+        "options": {}
+      },
+      "id": "f9cf586b-32e0-446e-9b70-4c839a405806",
+      "name": "API: Get Ad",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        592
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"adGroup\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"ad\": {\n          \"finalUrls\": [\"{{ $json.finalUrl }}\"],\n          \"responsiveSearchAd\": {\n            \"headlines\": [\n              {\"text\": \"{{ $json.headline_1 }}\"},\n              {\"text\": \"{{ $json.headline_2 }}\"},\n              {\"text\": \"{{ $json.headline_3 }}\"}\n            ],\n            \"descriptions\": [\n              {\"text\": \"{{ $json.description_1 }}\"},\n              {\"text\": \"{{ $json.description_2 }}\"}\n            ]\n          }\n        }\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "72ba4a50-c292-46b1-b982-4347b2c12425",
+      "name": "API: Create RSA Ad",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        784
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\",\n        \"status\": \"{{ $json.status }}\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "b84e0250-0d53-4ea8-9432-84b37a0abd3a",
+      "name": "API: Update Ad",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        976
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "82b7408c-f8cb-4cb4-9ccf-82ecbd5a9f32",
+      "name": "API: Pause Ad",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        1168
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "d78404c6-e3cb-44d4-af43-d567a8ff71e2",
+      "name": "API: Enable Ad",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        1360
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "d92d41d2-b361-491c-be14-88838d23864e",
+      "name": "API: Remove Ad",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        1552
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.adGroupAd || {} }));"
+      },
+      "id": "c06c75ba-67b2-4480-a6e3-d43294256285",
+      "name": "Format Search Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+      },
+      "id": "b431d7e3-64a3-4887-aae0-4de63bbfb3e9",
+      "name": "Format Mutate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        1168
+      ]
+    }
+  ],
+  "connections": {
+    "list_ads": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_ad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_responsive_search_ad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_ad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pause_ad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enable_ad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove_ad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: List Ads",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Get Ad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Create RSA Ad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Update Ad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Pause Ad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Enable Ad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Remove Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: List Ads": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Get Ad": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Create RSA Ad": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Update Ad": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Pause Ad": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Enable Ad": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Remove Ad": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d20f6323-650d-48a9-a5ea-743202969bf0",
+  "activeVersionId": "d20f6323-650d-48a9-a5ea-743202969bf0",
+  "versionCounter": 17,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:05.215Z",
+    "createdAt": "2026-04-17T20:10:05.215Z",
+    "versionId": "d20f6323-650d-48a9-a5ea-743202969bf0",
+    "workflowId": "_Dnf-_VzFksABXNp6paro",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "google-ads-ad-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          -208,
+          -32
+        ],
+        "id": "e1be0b16-2c32-4e60-bd52-d76291e83714",
+        "name": "Google Ads MCP Server - Ads",
+        "webhookId": "e0c6b8b1-08fa-47fb-9d35-31e49a34043c",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "05c73e2f-919d-43f6-adca-239274ea3a62",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -528,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "adGroupId",
+                "value": "={{ $json.adGroupId }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "adId",
+                "value": "={{ $json.adId }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "status",
+                "value": "={{ $json.status }}",
+                "type": "string"
+              },
+              {
+                "id": "5",
+                "name": "finalUrl",
+                "value": "={{ $json.finalUrl }}",
+                "type": "string"
+              },
+              {
+                "id": "6",
+                "name": "headline_1",
+                "value": "={{ $json.headline_1 }}",
+                "type": "string"
+              },
+              {
+                "id": "7",
+                "name": "headline_2",
+                "value": "={{ $json.headline_2 }}",
+                "type": "string"
+              },
+              {
+                "id": "8",
+                "name": "headline_3",
+                "value": "={{ $json.headline_3 }}",
+                "type": "string"
+              },
+              {
+                "id": "9",
+                "name": "description_1",
+                "value": "={{ $json.description_1 }}",
+                "type": "string"
+              },
+              {
+                "id": "10",
+                "name": "description_2",
+                "value": "={{ $json.description_2 }}",
+                "type": "string"
+              },
+              {
+                "id": "cred1",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "cred2",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              },
+              {
+                "id": "cred3",
+                "name": "customerId",
+                "value": "2011391652",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "9d542697-7baa-4792-a9bb-de261f73e420",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -304,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "list_ads",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "list_ads"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "get_ad",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "get_ad"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "create_responsive_search_ad",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "create_responsive_search_ad"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "update_ad",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "update_ad"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "pause_ad",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "pause_ad"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "enable_ad",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "enable_ad"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "remove_ad",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "remove_ad"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d7fee1d4-24f9-4fa1-9a32-709384263b5c",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          -80,
+          896
+        ]
+      },
+      {
+        "parameters": {
+          "name": "list_ads",
+          "description": "Lists all ads within a specific ad group. Returns ad ID, status, final URLs, and copy (headlines/descriptions).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "list_ads",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to list ads from.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "3e6ff0f1-8b29-475e-8804-093e5fd546ec",
+        "name": "list_ads",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -528,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "get_ad",
+          "description": "Retrieves detailed information about a specific ad by its ad group ID and ad ID.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "get_ad",
+              "adId": "={{ $fromAI('adId', 'The ID of the ad to retrieve.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adId",
+                "displayName": "adId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "811b131d-e063-4043-8a96-7d2dd5647ab4",
+        "name": "get_ad",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -400,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "create_responsive_search_ad",
+          "description": "Creates a new Responsive Search Ad (RSA). Requires adGroupId, status (PAUSED or ENABLED), a finalUrl, 3 headlines, and 2 descriptions.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "create_responsive_search_ad",
+              "adGroupId": "={{ $fromAI('adGroupId', 'ID of the Ad Group to place the ad in.', 'string') }}",
+              "status": "={{ $fromAI('status', 'Status of the ad (PAUSED or ENABLED)', 'string') }}",
+              "finalUrl": "={{ $fromAI('finalUrl', 'The Final URL for the ad.', 'string') }}",
+              "headline_1": "={{ $fromAI('headline_1', 'First headline text.', 'string') }}",
+              "headline_2": "={{ $fromAI('headline_2', 'Second headline text.', 'string') }}",
+              "headline_3": "={{ $fromAI('headline_3', 'Third headline text.', 'string') }}",
+              "description_1": "={{ $fromAI('description_1', 'First description text.', 'string') }}",
+              "description_2": "={{ $fromAI('description_2', 'Second description text.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "finalUrl",
+                "displayName": "finalUrl",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "headline_1",
+                "displayName": "headline_1",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "headline_2",
+                "displayName": "headline_2",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "headline_3",
+                "displayName": "headline_3",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "description_1",
+                "displayName": "description_1",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "description_2",
+                "displayName": "description_2",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "51bee3f5-b86b-4091-ae09-7bd7df476e6b",
+        "name": "create_responsive_search_ad",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -272,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "name": "update_ad",
+          "description": "Updates the status of an existing Ad Group Ad (e.g., to pause or enable it). Ad copy is typically updated by creating a new ad and pausing the old one.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "update_ad",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+              "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}",
+              "status": "={{ $fromAI('status', 'New status (PAUSED or ENABLED).', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adId",
+                "displayName": "adId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "da37d460-2aea-40d2-8b97-446e869c33cd",
+        "name": "update_ad",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -144,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "pause_ad",
+          "description": "Sets an ad's status to PAUSED. Requires adGroupId and adId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "pause_ad",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+              "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adId",
+                "displayName": "adId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "9be14c92-c6dd-4988-8bc5-094db685a7c1",
+        "name": "pause_ad",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -16,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "name": "enable_ad",
+          "description": "Sets an ad's status to ENABLED. Requires adGroupId and adId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "enable_ad",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+              "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adId",
+                "displayName": "adId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "08ea77b2-ec72-4984-9c3f-1f670afcddfa",
+        "name": "enable_ad",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          112,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "remove_ad",
+          "description": "Sets an ad's status to REMOVED (deleted). Requires adGroupId and adId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "remove_ad",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The Ad Group ID.', 'string') }}",
+              "adId": "={{ $fromAI('adId', 'The Ad ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adId",
+                "displayName": "adId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "08a7d1a9-4fd7-4053-8392-7b76a52022b6",
+        "name": "remove_ad",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          240,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group_ad.ad.id, ad_group_ad.status, ad_group_ad.ad.final_urls, ad_group_ad.ad.type, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions, ad_group.id, campaign.id FROM ad_group_ad WHERE ad_group.id = {{ $json.adGroupId }} AND ad_group_ad.status != 'REMOVED'\"\n}",
+          "options": {}
+        },
+        "id": "e3442d6b-aecc-436a-a6b3-ff8086236b9a",
+        "name": "API: List Ads",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          144,
+          400
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group_ad.ad.id, ad_group_ad.status, ad_group_ad.ad.final_urls, ad_group_ad.ad.type, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions, ad_group.id, campaign.id FROM ad_group_ad WHERE ad_group_ad.ad.id = {{ $json.adId }}\"\n}",
+          "options": {}
+        },
+        "id": "f9cf586b-32e0-446e-9b70-4c839a405806",
+        "name": "API: Get Ad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          144,
+          592
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"adGroup\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"ad\": {\n          \"finalUrls\": [\"{{ $json.finalUrl }}\"],\n          \"responsiveSearchAd\": {\n            \"headlines\": [\n              {\"text\": \"{{ $json.headline_1 }}\"},\n              {\"text\": \"{{ $json.headline_2 }}\"},\n              {\"text\": \"{{ $json.headline_3 }}\"}\n            ],\n            \"descriptions\": [\n              {\"text\": \"{{ $json.description_1 }}\"},\n              {\"text\": \"{{ $json.description_2 }}\"}\n            ]\n          }\n        }\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "72ba4a50-c292-46b1-b982-4347b2c12425",
+        "name": "API: Create RSA Ad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          144,
+          784
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\",\n        \"status\": \"{{ $json.status }}\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "b84e0250-0d53-4ea8-9432-84b37a0abd3a",
+        "name": "API: Update Ad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          144,
+          976
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "82b7408c-f8cb-4cb4-9ccf-82ecbd5a9f32",
+        "name": "API: Pause Ad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          144,
+          1168
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "d78404c6-e3cb-44d4-af43-d567a8ff71e2",
+        "name": "API: Enable Ad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          144,
+          1360
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupAds:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/adGroupAds/{{ $json.adGroupId }}~{{ $json.adId }}\"\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "d92d41d2-b361-491c-be14-88838d23864e",
+        "name": "API: Remove Ad",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          144,
+          1552
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.adGroupAd || {} }));"
+        },
+        "id": "c06c75ba-67b2-4480-a6e3-d43294256285",
+        "name": "Format Search Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          368,
+          496
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+        },
+        "id": "b431d7e3-64a3-4887-aae0-4de63bbfb3e9",
+        "name": "Format Mutate Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          368,
+          1168
+        ]
+      }
+    ],
+    "connections": {
+      "list_ads": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ads",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_ad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ads",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create_responsive_search_ad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ads",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "update_ad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ads",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "pause_ad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ads",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "enable_ad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ads",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "remove_ad": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ads",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: List Ads",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Get Ad",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Create RSA Ad",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Update Ad",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Pause Ad",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Enable Ad",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Remove Ad",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: List Ads": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Get Ad": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Create RSA Ad": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Update Ad": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Pause Ad": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Enable Ad": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Remove Ad": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:05.272Z",
+        "id": 502,
+        "workflowId": "_Dnf-_VzFksABXNp6paro",
+        "versionId": "d20f6323-650d-48a9-a5ea-743202969bf0",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:05.257Z",
+        "id": 501,
+        "workflowId": "_Dnf-_VzFksABXNp6paro",
+        "versionId": "d20f6323-650d-48a9-a5ea-743202969bf0",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

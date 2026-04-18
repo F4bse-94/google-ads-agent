@@ -1,0 +1,2421 @@
+{
+  "updatedAt": "2026-04-17T20:10:05.410Z",
+  "createdAt": "2026-02-20T18:32:41.701Z",
+  "id": "ewcJmnwFAJgJPjTV7d587",
+  "name": "Google Ads MCP - Keyword Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "google-ads-keyword-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        -96
+      ],
+      "id": "1b4bb556-cc3a-4e1b-9dc1-c715bbff4c75",
+      "name": "Google Ads MCP Server - Keywords",
+      "webhookId": "909f4ac9-ba48-4277-a820-669873463013",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "cc7d492d-6b90-45d2-a84c-a86061f85b4d",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "adGroupId",
+              "value": "={{ $json.adGroupId }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "keywordId",
+              "value": "={{ $json.keywordId }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "matchType",
+              "value": "={{ $json.matchType }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "7",
+              "name": "cpcBidMicros",
+              "value": "={{ $json.cpcBidMicros }}",
+              "type": "string"
+            },
+            {
+              "id": "cred1",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "cred2",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            },
+            {
+              "id": "cred3",
+              "name": "customerId",
+              "value": "2011391652",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "51be42e2-7f7a-4206-9ef7-9d22540dd851",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "list_keywords",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "list_keywords"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "get_keyword",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_keyword"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "add_keyword",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "add_keyword"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "update_keyword_bid",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "update_keyword_bid"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "pause_keyword",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pause_keyword"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "enable_keyword",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "enable_keyword"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "remove_keyword",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "remove_keyword"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "39930a94-b6fb-40ed-a7f1-80b55c3159e8",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        48,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "name": "list_keywords",
+        "description": "Lists all keywords within a specific ad group. Returns keyword criterion IDs, text, match type, and bid.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "list_keywords",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to list keywords from.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "81be5482-e71c-44c3-a4ca-52a63541b234",
+      "name": "list_keywords",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_keyword",
+        "description": "Retrieves detailed information about a specific keyword by its ad group ID and keyword criterion ID.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_keyword",
+            "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion to retrieve.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "keywordId",
+              "displayName": "keywordId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "bda773af-a53b-4896-b1aa-d4237d052cfc",
+      "name": "get_keyword",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "name": "add_keyword",
+        "description": "Adds a new keyword to an ad group. Requires the adGroupId, keyword text, matchType (EXACT, PHRASE, BROAD), and status (ENABLED, PAUSED). Optional: cpcBidMicros.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "add_keyword",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to add the keyword to.', 'string') }}",
+            "text": "={{ $fromAI('text', 'The text of the keyword.', 'string') }}",
+            "matchType": "={{ $fromAI('matchType', 'Match type (EXACT, PHRASE, BROAD).', 'string') }}",
+            "status": "={{ $fromAI('status', 'Status of the keyword (ENABLED, PAUSED).', 'string') }}",
+            "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'Max CPC bid for this keyword in micros. Optional.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "matchType",
+              "displayName": "matchType",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "cpcBidMicros",
+              "displayName": "cpcBidMicros",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f973460f-ec93-4e32-9d43-5963261c635f",
+      "name": "add_keyword",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "name": "update_keyword_bid",
+        "description": "Updates the CPC bid of an existing keyword. Requires adGroupId, keywordId (criterion ID), and new cpcBidMicros.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "update_keyword_bid",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+            "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}",
+            "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'New CPC bid in micros.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "keywordId",
+              "displayName": "keywordId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "cpcBidMicros",
+              "displayName": "cpcBidMicros",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a5c91363-d87b-43d6-9ebf-bb384812162d",
+      "name": "update_keyword_bid",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "name": "pause_keyword",
+        "description": "Sets a keyword's status to PAUSED. Requires adGroupId and keywordId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "pause_keyword",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+            "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "keywordId",
+              "displayName": "keywordId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "14bdab0d-5994-4e1f-848b-aa68fc9a8264",
+      "name": "pause_keyword",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "name": "enable_keyword",
+        "description": "Sets a keyword's status to ENABLED. Requires adGroupId and keywordId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "enable_keyword",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+            "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "keywordId",
+              "displayName": "keywordId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "98da3f04-970b-4562-96c8-836e5f5b6ea5",
+      "name": "enable_keyword",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "name": "remove_keyword",
+        "description": "Sets a keyword's status to REMOVED (deleted). Requires adGroupId and keywordId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "remove_keyword",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+            "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "keywordId",
+              "displayName": "keywordId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "27b7d1c9-3463-49c8-aaf4-421c11784f84",
+      "name": "remove_keyword",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.criterion_id, ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, ad_group_criterion.status, ad_group_criterion.cpc_bid_micros, ad_group.id, campaign.id FROM ad_group_criterion WHERE ad_group_criterion.type = 'KEYWORD' AND ad_group.id = {{ $json.adGroupId }} AND ad_group_criterion.status != 'REMOVED' ORDER BY ad_group_criterion.keyword.text\"\n}",
+        "options": {}
+      },
+      "id": "9fc8473f-12b3-43f9-902a-544b827ca92e",
+      "name": "API: List Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        336
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.criterion_id, ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, ad_group_criterion.status, ad_group_criterion.cpc_bid_micros, ad_group.id, campaign.id FROM ad_group_criterion WHERE ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.criterion_id = {{ $json.keywordId }}\"\n}",
+        "options": {}
+      },
+      "id": "cc09d2b5-87db-4096-a396-f33be78dba07",
+      "name": "API: Get Keyword",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        528
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"adGroup\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"keyword\": {\n          \"text\": \"{{ $json.text }}\",\n          \"matchType\": \"{{ $json.matchType }}\"\n        }\n        {{ $json.cpcBidMicros ? ',\"cpcBidMicros\": \"' + $json.cpcBidMicros + '\"' : '' }}\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "cc1b3497-6ae2-4332-93bc-8af353add115",
+      "name": "API: Add Keyword",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        720
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"cpcBidMicros\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\",\n        \"cpcBidMicros\": \"{{ $json.cpcBidMicros }}\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "0cc92b07-81f8-40c4-93bf-f75d4c6f4dd2",
+      "name": "API: Update Keyword Bid",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        912
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "bb142d06-b96f-4969-8c3a-1eff89ff70d6",
+      "name": "API: Pause Keyword",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        1104
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "51522da8-fc6e-4695-9c59-3851a8648f34",
+      "name": "API: Enable Keyword",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        1296
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "8f544d5c-a28a-4b39-bf48-a0b9a7c6d9c2",
+      "name": "API: Remove Keyword",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        1488
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.adGroupCriterion || {} }));"
+      },
+      "id": "925e5be2-c0df-4751-bdb5-7770f9f9fcbc",
+      "name": "Format Search Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+      },
+      "id": "52844ea0-92c1-48c8-9867-23e90c30345a",
+      "name": "Format Mutate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        1104
+      ]
+    }
+  ],
+  "connections": {
+    "list_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Keywords",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_keyword": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Keywords",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_keyword": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Keywords",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_keyword_bid": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Keywords",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pause_keyword": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Keywords",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enable_keyword": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Keywords",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove_keyword": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Keywords",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: List Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Get Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Add Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Update Keyword Bid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Pause Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Enable Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Remove Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: List Keywords": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Get Keyword": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Add Keyword": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Update Keyword Bid": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Pause Keyword": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Enable Keyword": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Remove Keyword": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "8f031729-a356-4913-99b1-e3d47aa190f0",
+  "activeVersionId": "8f031729-a356-4913-99b1-e3d47aa190f0",
+  "versionCounter": 13,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:05.411Z",
+    "createdAt": "2026-04-17T20:10:05.411Z",
+    "versionId": "8f031729-a356-4913-99b1-e3d47aa190f0",
+    "workflowId": "ewcJmnwFAJgJPjTV7d587",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "google-ads-keyword-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          -96,
+          -96
+        ],
+        "id": "1b4bb556-cc3a-4e1b-9dc1-c715bbff4c75",
+        "name": "Google Ads MCP Server - Keywords",
+        "webhookId": "909f4ac9-ba48-4277-a820-669873463013",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "cc7d492d-6b90-45d2-a84c-a86061f85b4d",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -400,
+          912
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "adGroupId",
+                "value": "={{ $json.adGroupId }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "keywordId",
+                "value": "={{ $json.keywordId }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "text",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              },
+              {
+                "id": "5",
+                "name": "matchType",
+                "value": "={{ $json.matchType }}",
+                "type": "string"
+              },
+              {
+                "id": "6",
+                "name": "status",
+                "value": "={{ $json.status }}",
+                "type": "string"
+              },
+              {
+                "id": "7",
+                "name": "cpcBidMicros",
+                "value": "={{ $json.cpcBidMicros }}",
+                "type": "string"
+              },
+              {
+                "id": "cred1",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "cred2",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              },
+              {
+                "id": "cred3",
+                "name": "customerId",
+                "value": "2011391652",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "51be42e2-7f7a-4206-9ef7-9d22540dd851",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -176,
+          912
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "list_keywords",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "list_keywords"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "get_keyword",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "get_keyword"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "add_keyword",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "add_keyword"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "update_keyword_bid",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "update_keyword_bid"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "pause_keyword",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "pause_keyword"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "enable_keyword",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "enable_keyword"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "remove_keyword",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "remove_keyword"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "39930a94-b6fb-40ed-a7f1-80b55c3159e8",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          48,
+          832
+        ]
+      },
+      {
+        "parameters": {
+          "name": "list_keywords",
+          "description": "Lists all keywords within a specific ad group. Returns keyword criterion IDs, text, match type, and bid.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "list_keywords",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to list keywords from.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "81be5482-e71c-44c3-a4ca-52a63541b234",
+        "name": "list_keywords",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -400,
+          128
+        ]
+      },
+      {
+        "parameters": {
+          "name": "get_keyword",
+          "description": "Retrieves detailed information about a specific keyword by its ad group ID and keyword criterion ID.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "get_keyword",
+              "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion to retrieve.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "keywordId",
+                "displayName": "keywordId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "bda773af-a53b-4896-b1aa-d4237d052cfc",
+        "name": "get_keyword",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -272,
+          128
+        ]
+      },
+      {
+        "parameters": {
+          "name": "add_keyword",
+          "description": "Adds a new keyword to an ad group. Requires the adGroupId, keyword text, matchType (EXACT, PHRASE, BROAD), and status (ENABLED, PAUSED). Optional: cpcBidMicros.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "add_keyword",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to add the keyword to.', 'string') }}",
+              "text": "={{ $fromAI('text', 'The text of the keyword.', 'string') }}",
+              "matchType": "={{ $fromAI('matchType', 'Match type (EXACT, PHRASE, BROAD).', 'string') }}",
+              "status": "={{ $fromAI('status', 'Status of the keyword (ENABLED, PAUSED).', 'string') }}",
+              "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'Max CPC bid for this keyword in micros. Optional.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "text",
+                "displayName": "text",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "matchType",
+                "displayName": "matchType",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "cpcBidMicros",
+                "displayName": "cpcBidMicros",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "f973460f-ec93-4e32-9d43-5963261c635f",
+        "name": "add_keyword",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -144,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "name": "update_keyword_bid",
+          "description": "Updates the CPC bid of an existing keyword. Requires adGroupId, keywordId (criterion ID), and new cpcBidMicros.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "update_keyword_bid",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+              "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}",
+              "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'New CPC bid in micros.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "keywordId",
+                "displayName": "keywordId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "cpcBidMicros",
+                "displayName": "cpcBidMicros",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "a5c91363-d87b-43d6-9ebf-bb384812162d",
+        "name": "update_keyword_bid",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -16,
+          128
+        ]
+      },
+      {
+        "parameters": {
+          "name": "pause_keyword",
+          "description": "Sets a keyword's status to PAUSED. Requires adGroupId and keywordId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "pause_keyword",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+              "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "keywordId",
+                "displayName": "keywordId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "14bdab0d-5994-4e1f-848b-aa68fc9a8264",
+        "name": "pause_keyword",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          112,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "name": "enable_keyword",
+          "description": "Sets a keyword's status to ENABLED. Requires adGroupId and keywordId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "enable_keyword",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+              "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "keywordId",
+                "displayName": "keywordId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "98da3f04-970b-4562-96c8-836e5f5b6ea5",
+        "name": "enable_keyword",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          240,
+          128
+        ]
+      },
+      {
+        "parameters": {
+          "name": "remove_keyword",
+          "description": "Sets a keyword's status to REMOVED (deleted). Requires adGroupId and keywordId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "remove_keyword",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group containing the keyword.', 'string') }}",
+              "keywordId": "={{ $fromAI('keywordId', 'The ID of the keyword criterion.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "keywordId",
+                "displayName": "keywordId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "27b7d1c9-3463-49c8-aaf4-421c11784f84",
+        "name": "remove_keyword",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          368,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.criterion_id, ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, ad_group_criterion.status, ad_group_criterion.cpc_bid_micros, ad_group.id, campaign.id FROM ad_group_criterion WHERE ad_group_criterion.type = 'KEYWORD' AND ad_group.id = {{ $json.adGroupId }} AND ad_group_criterion.status != 'REMOVED' ORDER BY ad_group_criterion.keyword.text\"\n}",
+          "options": {}
+        },
+        "id": "9fc8473f-12b3-43f9-902a-544b827ca92e",
+        "name": "API: List Keywords",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          336
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.criterion_id, ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, ad_group_criterion.status, ad_group_criterion.cpc_bid_micros, ad_group.id, campaign.id FROM ad_group_criterion WHERE ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.criterion_id = {{ $json.keywordId }}\"\n}",
+          "options": {}
+        },
+        "id": "cc09d2b5-87db-4096-a396-f33be78dba07",
+        "name": "API: Get Keyword",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          528
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"adGroup\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"keyword\": {\n          \"text\": \"{{ $json.text }}\",\n          \"matchType\": \"{{ $json.matchType }}\"\n        }\n        {{ $json.cpcBidMicros ? ',\"cpcBidMicros\": \"' + $json.cpcBidMicros + '\"' : '' }}\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "cc1b3497-6ae2-4332-93bc-8af353add115",
+        "name": "API: Add Keyword",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          720
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"cpcBidMicros\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\",\n        \"cpcBidMicros\": \"{{ $json.cpcBidMicros }}\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "0cc92b07-81f8-40c4-93bf-f75d4c6f4dd2",
+        "name": "API: Update Keyword Bid",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          912
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "bb142d06-b96f-4969-8c3a-1eff89ff70d6",
+        "name": "API: Pause Keyword",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          1104
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "51522da8-fc6e-4695-9c59-3851a8648f34",
+        "name": "API: Enable Keyword",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          1296
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroupCriteria:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/adGroupCriteria/{{ $json.adGroupId }}~{{ $json.keywordId }}\"\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "8f544d5c-a28a-4b39-bf48-a0b9a7c6d9c2",
+        "name": "API: Remove Keyword",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          272,
+          1488
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.adGroupCriterion || {} }));"
+        },
+        "id": "925e5be2-c0df-4751-bdb5-7770f9f9fcbc",
+        "name": "Format Search Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          496,
+          432
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+        },
+        "id": "52844ea0-92c1-48c8-9867-23e90c30345a",
+        "name": "Format Mutate Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          496,
+          1104
+        ]
+      }
+    ],
+    "connections": {
+      "list_keywords": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Keywords",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_keyword": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Keywords",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "add_keyword": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Keywords",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "update_keyword_bid": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Keywords",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "pause_keyword": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Keywords",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "enable_keyword": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Keywords",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "remove_keyword": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Keywords",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: List Keywords",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Get Keyword",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Add Keyword",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Update Keyword Bid",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Pause Keyword",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Enable Keyword",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Remove Keyword",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: List Keywords": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Get Keyword": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Add Keyword": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Update Keyword Bid": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Pause Keyword": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Enable Keyword": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Remove Keyword": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:05.508Z",
+        "id": 504,
+        "workflowId": "ewcJmnwFAJgJPjTV7d587",
+        "versionId": "8f031729-a356-4913-99b1-e3d47aa190f0",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:05.464Z",
+        "id": 503,
+        "workflowId": "ewcJmnwFAJgJPjTV7d587",
+        "versionId": "8f031729-a356-4913-99b1-e3d47aa190f0",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

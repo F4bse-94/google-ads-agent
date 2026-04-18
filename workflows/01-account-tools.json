@@ -1,0 +1,1180 @@
+{
+  "updatedAt": "2026-04-17T20:10:04.366Z",
+  "createdAt": "2026-02-20T17:52:38.082Z",
+  "id": "LfP_dBhBCFuNOZmmiKAqH",
+  "name": "Google Ads MCP - Account Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "5fda6b9c-6b16-4674-8cbd-99c56fc1ac7c",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        384,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "713f0907-f38b-4a55-8ee3-cd25dd2807e3",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "8de5f979-4a4a-4e2b-bbd7-1339ef6b3f91",
+              "name": "customerId",
+              "value": "=2011391652",
+              "type": "string"
+            },
+            {
+              "id": "4b54e3d3-9bc6-4aa8-b118-2e0fdd22e9af",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "58e1c312-d8ce-41b4-acfc-3fbc0ce86b83",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1a8ef6c2-841e-48a3-b9cd-fdf852c49042",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "list_accessible_customers",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "list_accessible_customers"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "get_account_hierarchy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_account_hierarchy"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "get_account_info",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_account_info"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b66dfdd2-5198-4878-af52-dc8dfbce9b05",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        832,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "name": "list_accessible_customers",
+        "description": "Lists all Google Ads accounts accessible by the authenticated user. Does not require a customerId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "list_accessible_customers"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "0697d722-3830-4bed-9d85-dde602ff7dde",
+      "name": "list_accessible_customers",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_account_hierarchy",
+        "description": "Retrieves the MCC account hierarchy starting from the given loginCustomerId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_account_hierarchy"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "customerId",
+              "displayName": "customerId",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "id": "96f01c2a-87c9-4e51-89b0-2618bb5c8825",
+      "name": "get_account_hierarchy",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        512,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_account_info",
+        "description": "Retrieves detailed information about the Google Ads account (name, timezone, currency).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_account_info"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "customerId",
+              "displayName": "customerId",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "id": "a70e1860-3f65-4c0e-917e-d03a35227b90",
+      "name": "get_account_info",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://googleads.googleapis.com/v20/customers:listAccessibleCustomers",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ee412e82-60df-42bb-bd08-a19f7ab3eb50",
+      "name": "API: List Accessible",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        176
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://googleads.googleapis.com/v20/customers/' + ($json.customerId || $json.loginCustomerId) + '/googleAds:searchStream' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"SELECT customer_client.client_customer, customer_client.level, customer_client.manager, customer_client.descriptive_name, customer_client.currency_code, customer_client.time_zone, customer_client.id FROM customer_client WHERE customer_client.level <= 1\"\n}",
+        "options": {}
+      },
+      "id": "946f8ca1-c774-4085-9153-124db01130c9",
+      "name": "API: Get Hierarchy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        368
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://googleads.googleapis.com/v20/customers/' + ($json.customerId || $json.loginCustomerId) + '/googleAds:searchStream' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone, customer.status FROM customer LIMIT 1\"\n}",
+        "options": {}
+      },
+      "id": "197ad1b8-ba2e-43e6-bfdf-1dbb67827fb3",
+      "name": "API: Get Account Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        560
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.resourceNames) return [];\n\nreturn items[0].json.resourceNames.map(name => ({\n  json: { resourceName: name }\n}));"
+      },
+      "id": "a9f4f623-a721-4df3-aa30-1f35c5441504",
+      "name": "Format Accessible",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\nreturn items[0].json.results.map(row => ({\n  json: row.customerClient || {}\n}));"
+      },
+      "id": "b9938385-50be-44e9-8cad-bb18ea1a96b3",
+      "name": "Format Hierarchy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\nreturn items[0].json.results.map(row => ({\n  json: row.customer || {}\n}));"
+      },
+      "id": "8f2ade38-388d-4e69-bfa3-4469c60ed43a",
+      "name": "Format Account Info",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "path": "google-ads-account-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -160
+      ],
+      "id": "762fcded-7282-4028-b8d9-d9bbd0be9444",
+      "name": "Google Ads MCP Server - Account Tools",
+      "webhookId": "9d400b23-88c1-4588-ae82-9d25c1bc8671",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "list_accessible_customers": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Account Tools",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_account_hierarchy": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Account Tools",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_account_info": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Account Tools",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: List Accessible",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Get Hierarchy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Get Account Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: List Accessible": {
+      "main": [
+        [
+          {
+            "node": "Format Accessible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Get Hierarchy": {
+      "main": [
+        [
+          {
+            "node": "Format Hierarchy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Get Account Info": {
+      "main": [
+        [
+          {
+            "node": "Format Account Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Tool Trigger": [
+      {
+        "json": {
+          "tool_name": "get_account_info"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "55c870bb-359b-49d7-b4a9-d1c54ef95ea2",
+  "activeVersionId": "55c870bb-359b-49d7-b4a9-d1c54ef95ea2",
+  "versionCounter": 28,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:04.382Z",
+    "createdAt": "2026-04-17T20:10:04.382Z",
+    "versionId": "55c870bb-359b-49d7-b4a9-d1c54ef95ea2",
+    "workflowId": "LfP_dBhBCFuNOZmmiKAqH",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "5fda6b9c-6b16-4674-8cbd-99c56fc1ac7c",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          384,
+          368
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "713f0907-f38b-4a55-8ee3-cd25dd2807e3",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "8de5f979-4a4a-4e2b-bbd7-1339ef6b3f91",
+                "name": "customerId",
+                "value": "=2011391652",
+                "type": "string"
+              },
+              {
+                "id": "4b54e3d3-9bc6-4aa8-b118-2e0fdd22e9af",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "58e1c312-d8ce-41b4-acfc-3fbc0ce86b83",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "1a8ef6c2-841e-48a3-b9cd-fdf852c49042",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          608,
+          368
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "list_accessible_customers",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "list_accessible_customers"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "get_account_hierarchy",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "get_account_hierarchy"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "get_account_info",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "get_account_info"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "b66dfdd2-5198-4878-af52-dc8dfbce9b05",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          832,
+          352
+        ]
+      },
+      {
+        "parameters": {
+          "name": "list_accessible_customers",
+          "description": "Lists all Google Ads accounts accessible by the authenticated user. Does not require a customerId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "list_accessible_customers"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "0697d722-3830-4bed-9d85-dde602ff7dde",
+        "name": "list_accessible_customers",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          272,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "name": "get_account_hierarchy",
+          "description": "Retrieves the MCC account hierarchy starting from the given loginCustomerId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "get_account_hierarchy"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "customerId",
+                "displayName": "customerId",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "id": "96f01c2a-87c9-4e51-89b0-2618bb5c8825",
+        "name": "get_account_hierarchy",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          512,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "name": "get_account_info",
+          "description": "Retrieves detailed information about the Google Ads account (name, timezone, currency).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "get_account_info"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "customerId",
+                "displayName": "customerId",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string",
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "id": "a70e1860-3f65-4c0e-917e-d03a35227b90",
+        "name": "get_account_info",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          720,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://googleads.googleapis.com/v20/customers:listAccessibleCustomers",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "ee412e82-60df-42bb-bd08-a19f7ab3eb50",
+        "name": "API: List Accessible",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1056,
+          176
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ 'https://googleads.googleapis.com/v20/customers/' + ($json.customerId || $json.loginCustomerId) + '/googleAds:searchStream' }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"query\": \"SELECT customer_client.client_customer, customer_client.level, customer_client.manager, customer_client.descriptive_name, customer_client.currency_code, customer_client.time_zone, customer_client.id FROM customer_client WHERE customer_client.level <= 1\"\n}",
+          "options": {}
+        },
+        "id": "946f8ca1-c774-4085-9153-124db01130c9",
+        "name": "API: Get Hierarchy",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1056,
+          368
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ 'https://googleads.googleapis.com/v20/customers/' + ($json.customerId || $json.loginCustomerId) + '/googleAds:searchStream' }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"query\": \"SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone, customer.status FROM customer LIMIT 1\"\n}",
+          "options": {}
+        },
+        "id": "197ad1b8-ba2e-43e6-bfdf-1dbb67827fb3",
+        "name": "API: Get Account Info",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1056,
+          560
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.resourceNames) return [];\n\nreturn items[0].json.resourceNames.map(name => ({\n  json: { resourceName: name }\n}));"
+        },
+        "id": "a9f4f623-a721-4df3-aa30-1f35c5441504",
+        "name": "Format Accessible",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1280,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\nreturn items[0].json.results.map(row => ({\n  json: row.customerClient || {}\n}));"
+        },
+        "id": "b9938385-50be-44e9-8cad-bb18ea1a96b3",
+        "name": "Format Hierarchy",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1280,
+          368
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\nreturn items[0].json.results.map(row => ({\n  json: row.customer || {}\n}));"
+        },
+        "id": "8f2ade38-388d-4e69-bfa3-4469c60ed43a",
+        "name": "Format Account Info",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1280,
+          560
+        ]
+      },
+      {
+        "parameters": {
+          "path": "google-ads-account-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          448,
+          -160
+        ],
+        "id": "762fcded-7282-4028-b8d9-d9bbd0be9444",
+        "name": "Google Ads MCP Server - Account Tools",
+        "webhookId": "9d400b23-88c1-4588-ae82-9d25c1bc8671",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "list_accessible_customers": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Account Tools",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_account_hierarchy": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Account Tools",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_account_info": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Account Tools",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: List Accessible",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Get Hierarchy",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Get Account Info",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: List Accessible": {
+        "main": [
+          [
+            {
+              "node": "Format Accessible",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Get Hierarchy": {
+        "main": [
+          [
+            {
+              "node": "Format Hierarchy",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Get Account Info": {
+        "main": [
+          [
+            {
+              "node": "Format Account Info",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:04.645Z",
+        "id": 496,
+        "workflowId": "LfP_dBhBCFuNOZmmiKAqH",
+        "versionId": "55c870bb-359b-49d7-b4a9-d1c54ef95ea2",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:04.629Z",
+        "id": 495,
+        "workflowId": "LfP_dBhBCFuNOZmmiKAqH",
+        "versionId": "55c870bb-359b-49d7-b4a9-d1c54ef95ea2",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

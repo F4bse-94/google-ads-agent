@@ -1,0 +1,2341 @@
+{
+  "updatedAt": "2026-04-17T20:10:04.796Z",
+  "createdAt": "2026-02-20T18:17:11.888Z",
+  "id": "bJoXdsVd4k0wLX_3w8llU",
+  "name": "Google Ads MCP - Campaign Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "google-ads-campaign-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        128,
+        64
+      ],
+      "id": "c256805d-8abd-4893-885f-61ee8ad863d7",
+      "name": "Google Ads MCP Server - Campaigns",
+      "webhookId": "a5204fbe-775e-41d7-ba0a-13300e893ec6",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "3b143f87-0161-43f1-8d46-33ce62c2476b",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "campaignId",
+              "value": "={{ $json.campaignId }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "advertisingChannelType",
+              "value": "={{ $json.advertisingChannelType }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "campaignBudgetId",
+              "value": "={{ $json.campaignBudgetId }}",
+              "type": "string"
+            },
+            {
+              "id": "cred1",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "cred2",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            },
+            {
+              "id": "cred3",
+              "name": "customerId",
+              "value": "2011391652",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d838b5be-d968-4e30-8079-f1cc8e9441a4",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "list_campaigns",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "list_campaigns"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "get_campaign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_campaign"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "create_campaign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "create_campaign"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "update_campaign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "update_campaign"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "pause_campaign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pause_campaign"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "enable_campaign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "enable_campaign"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "remove_campaign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "remove_campaign"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fc902dca-7cb8-4635-89ae-bd8cefb8c6d0",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        256,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "name": "list_campaigns",
+        "description": "Lists all active campaigns in the Google Ads account. Returns campaign ID, name, status, type, and budget.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "list_campaigns"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f2b0a4ab-305b-41f0-84cf-c591ae6bf856",
+      "name": "list_campaigns",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -192,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_campaign",
+        "description": "Retrieves detailed information about a specific campaign by its ID.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_campaign",
+            "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to retrieve.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": true,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "eded80a9-eccf-41ef-9c95-82eae7bf0355",
+      "name": "get_campaign",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "name": "create_campaign",
+        "description": "Creates a new campaign. Requires name, status (e.g., PAUSED, ENABLED), advertisingChannelType (e.g., SEARCH), and an existing campaignBudgetId.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "create_campaign",
+            "name": "={{ $fromAI('name', 'Name of the new campaign.', 'string') }}",
+            "status": "={{ $fromAI('status', 'Status of the campaign (e.g., PAUSED, ENABLED).', 'string') }}",
+            "advertisingChannelType": "={{ $fromAI('advertisingChannelType', 'Channel type (e.g., SEARCH, DISPLAY).', 'string') }}",
+            "campaignBudgetId": "={{ $fromAI('campaignBudgetId', 'The resource ID of the budget to attach.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "advertisingChannelType",
+              "displayName": "advertisingChannelType",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignBudgetId",
+              "displayName": "campaignBudgetId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "2b4c8180-eb8b-4600-9896-5d1ba8978c53",
+      "name": "create_campaign",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        64,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "name": "update_campaign",
+        "description": "Updates an existing campaign's name or status.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "update_campaign",
+            "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to update.', 'string') }}",
+            "name": "={{ $fromAI('name', 'New name of the campaign. Leave empty if unchanged.', 'string') }}",
+            "status": "={{ $fromAI('status', 'New status (PAUSED, ENABLED). Leave empty if unchanged.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "3abe03cc-cdad-4405-acc6-40c6d4e90dd4",
+      "name": "update_campaign",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "name": "pause_campaign",
+        "description": "Sets a campaign's status to PAUSED.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "pause_campaign",
+            "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to pause.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "efc890b5-e6de-4868-bc81-90f88c048a9f",
+      "name": "pause_campaign",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        320,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "name": "enable_campaign",
+        "description": "Sets a campaign's status to ENABLED.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "enable_campaign",
+            "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to enable.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "30677a4a-7240-41b6-8d0e-2b971e5f386f",
+      "name": "enable_campaign",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "name": "remove_campaign",
+        "description": "Sets a campaign's status to REMOVED (deleted).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "remove_campaign",
+            "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to remove.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "6d32c996-ca06-493c-9609-df5f2e775f90",
+      "name": "remove_campaign",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, campaign_budget.amount_micros FROM campaign WHERE campaign.status != 'REMOVED' ORDER BY campaign.name\"\n}",
+        "options": {}
+      },
+      "id": "4ff3e9a3-29f0-4186-aab7-16f38e53f254",
+      "name": "API: List Campaigns",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        496
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, campaign_budget.amount_micros FROM campaign WHERE campaign.id = {{ $json.campaignId }}\"\n}",
+        "options": {}
+      },
+      "id": "7547d856-973e-47e6-b76e-8a0c28324e3b",
+      "name": "API: Get Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        688
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"name\": \"{{ $json.name }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"advertisingChannelType\": \"{{ $json.advertisingChannelType }}\",\n        \"campaignBudget\": \"customers/{{ $json.customerId }}/campaignBudgets/{{ $json.campaignBudgetId }}\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "58d1ffc9-0078-4039-a52b-323b1d77106c",
+      "name": "API: Create Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        880
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"{{ ($json.name ? 'name,' : '') + ($json.status ? 'status' : '') }}\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\",\n        {{ $json.name ? '\\\"name\\\": \\\"' + $json.name + '\\\",' : '' }}\n        {{ $json.status ? '\\\"status\\\": \\\"' + $json.status + '\\\"' : '' }}\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "2961604b-a218-474b-8c71-ccbe4783443c",
+      "name": "API: Update Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        1072
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "716ecbe5-915f-43e0-8c2e-cc3abef80af6",
+      "name": "API: Pause Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        1264
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "7fd66f70-d494-4b97-99b1-7269791db702",
+      "name": "API: Enable Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        1456
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "ad6413c9-5d32-48fa-952f-ef389d013547",
+      "name": "API: Remove Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        1648
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.campaign || {} }));"
+      },
+      "id": "6b7d3599-5946-47e0-8750-adff3af6c5e0",
+      "name": "Format Search Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+      },
+      "id": "0b53288b-e4c1-4e6e-afbd-a9c164ee5bd3",
+      "name": "Format Mutate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        1264
+      ]
+    }
+  ],
+  "connections": {
+    "list_campaigns": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Campaigns",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_campaign": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Campaigns",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_campaign": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Campaigns",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_campaign": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Campaigns",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pause_campaign": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Campaigns",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enable_campaign": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Campaigns",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove_campaign": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Campaigns",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: List Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Get Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Create Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Update Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Pause Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Enable Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Remove Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: List Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Get Campaign": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Create Campaign": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Update Campaign": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Pause Campaign": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Enable Campaign": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Remove Campaign": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "2db67c90-8df0-4acb-b87a-e1ab2c7025a5",
+  "activeVersionId": "2db67c90-8df0-4acb-b87a-e1ab2c7025a5",
+  "versionCounter": 15,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:04.797Z",
+    "createdAt": "2026-04-17T20:10:04.797Z",
+    "versionId": "2db67c90-8df0-4acb-b87a-e1ab2c7025a5",
+    "workflowId": "bJoXdsVd4k0wLX_3w8llU",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "google-ads-campaign-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          128,
+          64
+        ],
+        "id": "c256805d-8abd-4893-885f-61ee8ad863d7",
+        "name": "Google Ads MCP Server - Campaigns",
+        "webhookId": "a5204fbe-775e-41d7-ba0a-13300e893ec6",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "3b143f87-0161-43f1-8d46-33ce62c2476b",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -192,
+          1072
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "campaignId",
+                "value": "={{ $json.campaignId }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "name",
+                "value": "={{ $json.name }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "status",
+                "value": "={{ $json.status }}",
+                "type": "string"
+              },
+              {
+                "id": "5",
+                "name": "advertisingChannelType",
+                "value": "={{ $json.advertisingChannelType }}",
+                "type": "string"
+              },
+              {
+                "id": "6",
+                "name": "campaignBudgetId",
+                "value": "={{ $json.campaignBudgetId }}",
+                "type": "string"
+              },
+              {
+                "id": "cred1",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "cred2",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              },
+              {
+                "id": "cred3",
+                "name": "customerId",
+                "value": "2011391652",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d838b5be-d968-4e30-8079-f1cc8e9441a4",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          32,
+          1072
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "list_campaigns",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "list_campaigns"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "get_campaign",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "get_campaign"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "create_campaign",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "create_campaign"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "update_campaign",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "update_campaign"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "pause_campaign",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "pause_campaign"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "enable_campaign",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "enable_campaign"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "remove_campaign",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "remove_campaign"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "fc902dca-7cb8-4635-89ae-bd8cefb8c6d0",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          256,
+          992
+        ]
+      },
+      {
+        "parameters": {
+          "name": "list_campaigns",
+          "description": "Lists all active campaigns in the Google Ads account. Returns campaign ID, name, status, type, and budget.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "list_campaigns"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "f2b0a4ab-305b-41f0-84cf-c591ae6bf856",
+        "name": "list_campaigns",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -192,
+          288
+        ]
+      },
+      {
+        "parameters": {
+          "name": "get_campaign",
+          "description": "Retrieves detailed information about a specific campaign by its ID.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "get_campaign",
+              "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to retrieve.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": true,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "eded80a9-eccf-41ef-9c95-82eae7bf0355",
+        "name": "get_campaign",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -64,
+          288
+        ]
+      },
+      {
+        "parameters": {
+          "name": "create_campaign",
+          "description": "Creates a new campaign. Requires name, status (e.g., PAUSED, ENABLED), advertisingChannelType (e.g., SEARCH), and an existing campaignBudgetId.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "create_campaign",
+              "name": "={{ $fromAI('name', 'Name of the new campaign.', 'string') }}",
+              "status": "={{ $fromAI('status', 'Status of the campaign (e.g., PAUSED, ENABLED).', 'string') }}",
+              "advertisingChannelType": "={{ $fromAI('advertisingChannelType', 'Channel type (e.g., SEARCH, DISPLAY).', 'string') }}",
+              "campaignBudgetId": "={{ $fromAI('campaignBudgetId', 'The resource ID of the budget to attach.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "advertisingChannelType",
+                "displayName": "advertisingChannelType",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignBudgetId",
+                "displayName": "campaignBudgetId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "2b4c8180-eb8b-4600-9896-5d1ba8978c53",
+        "name": "create_campaign",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          64,
+          336
+        ]
+      },
+      {
+        "parameters": {
+          "name": "update_campaign",
+          "description": "Updates an existing campaign's name or status.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "update_campaign",
+              "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to update.', 'string') }}",
+              "name": "={{ $fromAI('name', 'New name of the campaign. Leave empty if unchanged.', 'string') }}",
+              "status": "={{ $fromAI('status', 'New status (PAUSED, ENABLED). Leave empty if unchanged.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "3abe03cc-cdad-4405-acc6-40c6d4e90dd4",
+        "name": "update_campaign",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          192,
+          288
+        ]
+      },
+      {
+        "parameters": {
+          "name": "pause_campaign",
+          "description": "Sets a campaign's status to PAUSED.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "pause_campaign",
+              "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to pause.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "efc890b5-e6de-4868-bc81-90f88c048a9f",
+        "name": "pause_campaign",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          320,
+          336
+        ]
+      },
+      {
+        "parameters": {
+          "name": "enable_campaign",
+          "description": "Sets a campaign's status to ENABLED.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "enable_campaign",
+              "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to enable.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "30677a4a-7240-41b6-8d0e-2b971e5f386f",
+        "name": "enable_campaign",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          448,
+          288
+        ]
+      },
+      {
+        "parameters": {
+          "name": "remove_campaign",
+          "description": "Sets a campaign's status to REMOVED (deleted).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "remove_campaign",
+              "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to remove.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "6d32c996-ca06-493c-9609-df5f2e775f90",
+        "name": "remove_campaign",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          576,
+          336
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"query\": \"SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, campaign_budget.amount_micros FROM campaign WHERE campaign.status != 'REMOVED' ORDER BY campaign.name\"\n}",
+          "options": {}
+        },
+        "id": "4ff3e9a3-29f0-4186-aab7-16f38e53f254",
+        "name": "API: List Campaigns",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          496
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, campaign_budget.amount_micros FROM campaign WHERE campaign.id = {{ $json.campaignId }}\"\n}",
+          "options": {}
+        },
+        "id": "7547d856-973e-47e6-b76e-8a0c28324e3b",
+        "name": "API: Get Campaign",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          688
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"name\": \"{{ $json.name }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"advertisingChannelType\": \"{{ $json.advertisingChannelType }}\",\n        \"campaignBudget\": \"customers/{{ $json.customerId }}/campaignBudgets/{{ $json.campaignBudgetId }}\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "58d1ffc9-0078-4039-a52b-323b1d77106c",
+        "name": "API: Create Campaign",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          880
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"{{ ($json.name ? 'name,' : '') + ($json.status ? 'status' : '') }}\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\",\n        {{ $json.name ? '\\\"name\\\": \\\"' + $json.name + '\\\",' : '' }}\n        {{ $json.status ? '\\\"status\\\": \\\"' + $json.status + '\\\"' : '' }}\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "2961604b-a218-474b-8c71-ccbe4783443c",
+        "name": "API: Update Campaign",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          1072
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "716ecbe5-915f-43e0-8c2e-cc3abef80af6",
+        "name": "API: Pause Campaign",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          1264
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "7fd66f70-d494-4b97-99b1-7269791db702",
+        "name": "API: Enable Campaign",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          1456
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/campaigns:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\"\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "ad6413c9-5d32-48fa-952f-ef389d013547",
+        "name": "API: Remove Campaign",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          480,
+          1648
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.campaign || {} }));"
+        },
+        "id": "6b7d3599-5946-47e0-8750-adff3af6c5e0",
+        "name": "Format Search Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          704,
+          592
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+        },
+        "id": "0b53288b-e4c1-4e6e-afbd-a9c164ee5bd3",
+        "name": "Format Mutate Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          704,
+          1264
+        ]
+      }
+    ],
+    "connections": {
+      "list_campaigns": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Campaigns",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_campaign": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Campaigns",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create_campaign": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Campaigns",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "update_campaign": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Campaigns",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "pause_campaign": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Campaigns",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "enable_campaign": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Campaigns",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "remove_campaign": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Campaigns",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: List Campaigns",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Get Campaign",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Create Campaign",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Update Campaign",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Pause Campaign",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Enable Campaign",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Remove Campaign",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: List Campaigns": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Get Campaign": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Create Campaign": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Update Campaign": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Pause Campaign": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Enable Campaign": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Remove Campaign": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:04.883Z",
+        "id": 498,
+        "workflowId": "bJoXdsVd4k0wLX_3w8llU",
+        "versionId": "2db67c90-8df0-4acb-b87a-e1ab2c7025a5",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:04.867Z",
+        "id": 497,
+        "workflowId": "bJoXdsVd4k0wLX_3w8llU",
+        "versionId": "2db67c90-8df0-4acb-b87a-e1ab2c7025a5",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

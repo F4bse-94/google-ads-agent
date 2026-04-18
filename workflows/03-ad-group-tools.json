@@ -1,0 +1,2361 @@
+{
+  "updatedAt": "2026-04-17T20:10:05.012Z",
+  "createdAt": "2026-02-20T18:24:21.554Z",
+  "id": "aR0whx3Ak9pTKIYFgSab2",
+  "name": "Google Ads MCP - Ad Group Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "google-ads-ad-group-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -48
+      ],
+      "id": "3192c429-7f71-4715-80bc-a063535891fb",
+      "name": "Google Ads MCP Server - Ad Groups",
+      "webhookId": "4c902e01-2dee-4b70-8a53-300de83f054f",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "2280da63-055a-48b3-8fa8-24b406fc9cf9",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "campaignId",
+              "value": "={{ $json.campaignId }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "adGroupId",
+              "value": "={{ $json.adGroupId }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "cpcBidMicros",
+              "value": "={{ $json.cpcBidMicros }}",
+              "type": "string"
+            },
+            {
+              "id": "cred1",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "cred2",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            },
+            {
+              "id": "cred3",
+              "name": "customerId",
+              "value": "2011391652",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "409afe49-0777-4b20-955f-ae41c3758d9a",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -208,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "list_ad_groups",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "list_ad_groups"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "get_ad_group",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_ad_group"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "create_ad_group",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "create_ad_group"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "update_ad_group",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "update_ad_group"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "pause_ad_group",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pause_ad_group"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "enable_ad_group",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "enable_ad_group"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "remove_ad_group",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "remove_ad_group"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "81d5afa5-5304-4368-a013-e26b0ef383ec",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        16,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "name": "list_ad_groups",
+        "description": "Lists all ad groups within a specific campaign.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "list_ad_groups",
+            "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to list ad groups from.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a209ac72-11df-40dc-b6fa-38fe0b7d6bf8",
+      "name": "list_ad_groups",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -432,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_ad_group",
+        "description": "Retrieves detailed information about a specific ad group by its ID.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_ad_group",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to retrieve.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "99dad72a-cae0-4869-9514-2c0c44133036",
+      "name": "get_ad_group",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "name": "create_ad_group",
+        "description": "Creates a new ad group within a campaign.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "create_ad_group",
+            "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to create the ad group in.', 'string') }}",
+            "name": "={{ $fromAI('name', 'Name of the new ad group.', 'string') }}",
+            "status": "={{ $fromAI('status', 'Status of the ad group (e.g., PAUSED, ENABLED).', 'string') }}",
+            "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'Default CPC bid in micros (e.g., 10000000 for $10). Optional.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "cpcBidMicros",
+              "displayName": "cpcBidMicros",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f00816d5-07e9-42e1-a129-0b18f77414ad",
+      "name": "create_ad_group",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "name": "update_ad_group",
+        "description": "Updates an existing ad group's name, status, or bid.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "update_ad_group",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to update.', 'string') }}",
+            "name": "={{ $fromAI('name', 'New name of the ad group. Leave empty if unchanged.', 'string') }}",
+            "status": "={{ $fromAI('status', 'New status (PAUSED, ENABLED). Leave empty if unchanged.', 'string') }}",
+            "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'New CPC bid in micros. Leave empty if unchanged.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "cpcBidMicros",
+              "displayName": "cpcBidMicros",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "7a575e01-0761-4e84-8eae-aa5663d83acf",
+      "name": "update_ad_group",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "name": "pause_ad_group",
+        "description": "Sets an ad group's status to PAUSED.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "pause_ad_group",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to pause.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "3e0df5a4-96fc-40cd-a3eb-24093dedcaa9",
+      "name": "pause_ad_group",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "name": "enable_ad_group",
+        "description": "Sets an ad group's status to ENABLED.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "enable_ad_group",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to enable.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "b569b32e-f6a8-4a1f-8d5d-56b70efb174a",
+      "name": "enable_ad_group",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "name": "remove_ad_group",
+        "description": "Sets an ad group's status to REMOVED (deleted).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "remove_ad_group",
+            "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to remove.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "264ed693-fa12-4096-ac6e-2ef61301aa39",
+      "name": "remove_ad_group",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group.id, ad_group.name, ad_group.status, ad_group.cpc_bid_micros, campaign.id, campaign.name FROM ad_group WHERE campaign.id = {{ $json.campaignId }} ORDER BY ad_group.name\"\n}",
+        "options": {}
+      },
+      "id": "5c61bb21-43f7-4e57-8569-dc61ed8dbbd4",
+      "name": "API: List Ad Groups",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        384
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group.id, ad_group.name, ad_group.status, ad_group.type, ad_group.cpc_bid_micros, campaign.id FROM ad_group WHERE ad_group.id = {{ $json.adGroupId }}\"\n}",
+        "options": {}
+      },
+      "id": "adf80b9c-8d74-4bc0-af7b-17ce1d6201f9",
+      "name": "API: Get Ad Group",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        576
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"name\": \"{{ $json.name }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"campaign\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\"\n        {{ $json.cpcBidMicros ? ',\"cpcBidMicros\": \"' + $json.cpcBidMicros + '\"' : '' }}\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "dfd7fe79-1a1b-4f9a-85bb-469f27cb441d",
+      "name": "API: Create Ad Group",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        768
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"{{ ($json.name ? 'name,' : '') + ($json.status ? 'status,' : '') + ($json.cpcBidMicros ? 'cpcBidMicros' : '') }}\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        {{ $json.name ? '\\\"name\\\": \\\"' + $json.name + '\\\",' : '' }}\n        {{ $json.status ? '\\\"status\\\": \\\"' + $json.status + '\\\",' : '' }}\n        {{ $json.cpcBidMicros ? '\\\"cpcBidMicros\\\": \\\"' + $json.cpcBidMicros + '\\\"' : '' }}\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "e4749652-cdaa-45ec-a6a8-85d4e3f7d99b",
+      "name": "API: Update Ad Group",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        960
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "f8b0d77f-7985-41ff-aa2c-899d787c84f4",
+      "name": "API: Pause Ad Group",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        1152
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "95d57a49-5b17-4216-b813-500e1873f372",
+      "name": "API: Enable Ad Group",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        1344
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "14833f9c-c943-4fc0-99a8-9c67e0ccd6a1",
+      "name": "API: Remove Ad Group",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        1536
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.adGroup || {} }));"
+      },
+      "id": "9e125554-e988-4986-9c5e-765a8d67dd83",
+      "name": "Format Search Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+      },
+      "id": "dd884513-b6d9-4169-ba19-e7158dfbd6d0",
+      "name": "Format Mutate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        1152
+      ]
+    }
+  ],
+  "connections": {
+    "list_ad_groups": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ad Groups",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_ad_group": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ad Groups",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_ad_group": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ad Groups",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_ad_group": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ad Groups",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pause_ad_group": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ad Groups",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enable_ad_group": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ad Groups",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove_ad_group": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Ad Groups",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: List Ad Groups",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Get Ad Group",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Create Ad Group",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Update Ad Group",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Pause Ad Group",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Enable Ad Group",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Remove Ad Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: List Ad Groups": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Get Ad Group": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Create Ad Group": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Update Ad Group": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Pause Ad Group": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Enable Ad Group": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Remove Ad Group": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "89b1aa42-46d8-4e94-9be4-f4ce7ce6504e",
+  "activeVersionId": "89b1aa42-46d8-4e94-9be4-f4ce7ce6504e",
+  "versionCounter": 15,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:05.012Z",
+    "createdAt": "2026-04-17T20:10:05.012Z",
+    "versionId": "89b1aa42-46d8-4e94-9be4-f4ce7ce6504e",
+    "workflowId": "aR0whx3Ak9pTKIYFgSab2",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "google-ads-ad-group-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          -128,
+          -48
+        ],
+        "id": "3192c429-7f71-4715-80bc-a063535891fb",
+        "name": "Google Ads MCP Server - Ad Groups",
+        "webhookId": "4c902e01-2dee-4b70-8a53-300de83f054f",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "2280da63-055a-48b3-8fa8-24b406fc9cf9",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -432,
+          960
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "campaignId",
+                "value": "={{ $json.campaignId }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "adGroupId",
+                "value": "={{ $json.adGroupId }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "name",
+                "value": "={{ $json.name }}",
+                "type": "string"
+              },
+              {
+                "id": "5",
+                "name": "status",
+                "value": "={{ $json.status }}",
+                "type": "string"
+              },
+              {
+                "id": "6",
+                "name": "cpcBidMicros",
+                "value": "={{ $json.cpcBidMicros }}",
+                "type": "string"
+              },
+              {
+                "id": "cred1",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "cred2",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              },
+              {
+                "id": "cred3",
+                "name": "customerId",
+                "value": "2011391652",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "409afe49-0777-4b20-955f-ae41c3758d9a",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -208,
+          960
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "list_ad_groups",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "list_ad_groups"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "get_ad_group",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "get_ad_group"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "create_ad_group",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "create_ad_group"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "update_ad_group",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "update_ad_group"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "pause_ad_group",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "pause_ad_group"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "enable_ad_group",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "enable_ad_group"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "remove_ad_group",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "remove_ad_group"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "81d5afa5-5304-4368-a013-e26b0ef383ec",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          16,
+          880
+        ]
+      },
+      {
+        "parameters": {
+          "name": "list_ad_groups",
+          "description": "Lists all ad groups within a specific campaign.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "list_ad_groups",
+              "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to list ad groups from.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "a209ac72-11df-40dc-b6fa-38fe0b7d6bf8",
+        "name": "list_ad_groups",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -432,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "name": "get_ad_group",
+          "description": "Retrieves detailed information about a specific ad group by its ID.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "get_ad_group",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to retrieve.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "99dad72a-cae0-4869-9514-2c0c44133036",
+        "name": "get_ad_group",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -304,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "name": "create_ad_group",
+          "description": "Creates a new ad group within a campaign.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "create_ad_group",
+              "campaignId": "={{ $fromAI('campaignId', 'The ID of the campaign to create the ad group in.', 'string') }}",
+              "name": "={{ $fromAI('name', 'Name of the new ad group.', 'string') }}",
+              "status": "={{ $fromAI('status', 'Status of the ad group (e.g., PAUSED, ENABLED).', 'string') }}",
+              "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'Default CPC bid in micros (e.g., 10000000 for $10). Optional.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "cpcBidMicros",
+                "displayName": "cpcBidMicros",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "f00816d5-07e9-42e1-a129-0b18f77414ad",
+        "name": "create_ad_group",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -176,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "name": "update_ad_group",
+          "description": "Updates an existing ad group's name, status, or bid.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "update_ad_group",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to update.', 'string') }}",
+              "name": "={{ $fromAI('name', 'New name of the ad group. Leave empty if unchanged.', 'string') }}",
+              "status": "={{ $fromAI('status', 'New status (PAUSED, ENABLED). Leave empty if unchanged.', 'string') }}",
+              "cpcBidMicros": "={{ $fromAI('cpcBidMicros', 'New CPC bid in micros. Leave empty if unchanged.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "cpcBidMicros",
+                "displayName": "cpcBidMicros",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "7a575e01-0761-4e84-8eae-aa5663d83acf",
+        "name": "update_ad_group",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -48,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "name": "pause_ad_group",
+          "description": "Sets an ad group's status to PAUSED.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "pause_ad_group",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to pause.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "3e0df5a4-96fc-40cd-a3eb-24093dedcaa9",
+        "name": "pause_ad_group",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          80,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "name": "enable_ad_group",
+          "description": "Sets an ad group's status to ENABLED.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "enable_ad_group",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to enable.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "b569b32e-f6a8-4a1f-8d5d-56b70efb174a",
+        "name": "enable_ad_group",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          208,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "name": "remove_ad_group",
+          "description": "Sets an ad group's status to REMOVED (deleted).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "remove_ad_group",
+              "adGroupId": "={{ $fromAI('adGroupId', 'The ID of the ad group to remove.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "264ed693-fa12-4096-ac6e-2ef61301aa39",
+        "name": "remove_ad_group",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          336,
+          176
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group.id, ad_group.name, ad_group.status, ad_group.cpc_bid_micros, campaign.id, campaign.name FROM ad_group WHERE campaign.id = {{ $json.campaignId }} ORDER BY ad_group.name\"\n}",
+          "options": {}
+        },
+        "id": "5c61bb21-43f7-4e57-8569-dc61ed8dbbd4",
+        "name": "API: List Ad Groups",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          384
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group.id, ad_group.name, ad_group.status, ad_group.type, ad_group.cpc_bid_micros, campaign.id FROM ad_group WHERE ad_group.id = {{ $json.adGroupId }}\"\n}",
+          "options": {}
+        },
+        "id": "adf80b9c-8d74-4bc0-af7b-17ce1d6201f9",
+        "name": "API: Get Ad Group",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          576
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"create\": {\n        \"name\": \"{{ $json.name }}\",\n        \"status\": \"{{ $json.status }}\",\n        \"campaign\": \"customers/{{ $json.customerId }}/campaigns/{{ $json.campaignId }}\"\n        {{ $json.cpcBidMicros ? ',\"cpcBidMicros\": \"' + $json.cpcBidMicros + '\"' : '' }}\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "dfd7fe79-1a1b-4f9a-85bb-469f27cb441d",
+        "name": "API: Create Ad Group",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          768
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"{{ ($json.name ? 'name,' : '') + ($json.status ? 'status,' : '') + ($json.cpcBidMicros ? 'cpcBidMicros' : '') }}\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        {{ $json.name ? '\\\"name\\\": \\\"' + $json.name + '\\\",' : '' }}\n        {{ $json.status ? '\\\"status\\\": \\\"' + $json.status + '\\\",' : '' }}\n        {{ $json.cpcBidMicros ? '\\\"cpcBidMicros\\\": \\\"' + $json.cpcBidMicros + '\\\"' : '' }}\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "e4749652-cdaa-45ec-a6a8-85d4e3f7d99b",
+        "name": "API: Update Ad Group",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          960
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"PAUSED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "f8b0d77f-7985-41ff-aa2c-899d787c84f4",
+        "name": "API: Pause Ad Group",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          1152
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"updateMask\": \"status\",\n      \"update\": {\n        \"resourceName\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\",\n        \"status\": \"ENABLED\"\n      }\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "95d57a49-5b17-4216-b813-500e1873f372",
+        "name": "API: Enable Ad Group",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          1344
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/adGroups:mutate",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"remove\": \"customers/{{ $json.customerId }}/adGroups/{{ $json.adGroupId }}\"\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "14833f9c-c943-4fc0-99a8-9c67e0ccd6a1",
+        "name": "API: Remove Ad Group",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          1536
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row.adGroup || {} }));"
+        },
+        "id": "9e125554-e988-4986-9c5e-765a8d67dd83",
+        "name": "Format Search Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          464,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+        },
+        "id": "dd884513-b6d9-4169-ba19-e7158dfbd6d0",
+        "name": "Format Mutate Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          464,
+          1152
+        ]
+      }
+    ],
+    "connections": {
+      "list_ad_groups": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ad Groups",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_ad_group": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ad Groups",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create_ad_group": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ad Groups",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "update_ad_group": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ad Groups",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "pause_ad_group": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ad Groups",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "enable_ad_group": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ad Groups",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "remove_ad_group": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Ad Groups",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: List Ad Groups",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Get Ad Group",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Create Ad Group",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Update Ad Group",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Pause Ad Group",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Enable Ad Group",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Remove Ad Group",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: List Ad Groups": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Get Ad Group": {
+        "main": [
+          [
+            {
+              "node": "Format Search Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Create Ad Group": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Update Ad Group": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Pause Ad Group": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Enable Ad Group": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Remove Ad Group": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:05.078Z",
+        "id": 500,
+        "workflowId": "aR0whx3Ak9pTKIYFgSab2",
+        "versionId": "89b1aa42-46d8-4e94-9be4-f4ce7ce6504e",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:05.055Z",
+        "id": 499,
+        "workflowId": "aR0whx3Ak9pTKIYFgSab2",
+        "versionId": "89b1aa42-46d8-4e94-9be4-f4ce7ce6504e",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

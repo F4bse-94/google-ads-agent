@@ -1,0 +1,2540 @@
+{
+  "updatedAt": "2026-04-17T20:10:05.843Z",
+  "createdAt": "2026-02-20T18:57:21.510Z",
+  "id": "iXM_bBcOy3-72NRCuheg0",
+  "name": "Google Ads MCP - Insights Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "google-ads-insights-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        384
+      ],
+      "id": "e8778f76-106e-4f70-905f-78a586c6caee",
+      "name": "Google Ads MCP Server - Insights",
+      "webhookId": "4a45ce37-af52-412e-91f9-25a032698696",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "314cfeb0-09c3-462c-aae3-d3b62a23c171",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        1488
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "dateRange",
+              "value": "={{ $json.dateRange || 'LAST_30_DAYS' }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "recommendationId",
+              "value": "={{ $json.recommendationId }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "limit",
+              "value": "={{ $json.limit || '10' }}",
+              "type": "string"
+            },
+            {
+              "id": "cred1",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "cred2",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            },
+            {
+              "id": "cred3",
+              "name": "customerId",
+              "value": "2011391652",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3c7af6bb-72ef-4ef1-ac7d-027b50e955d4",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        1488
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "top_campaigns_by_cost",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "top_campaigns_by_cost"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "top_campaigns_by_conversions",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "top_campaigns_by_conversions"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "underperforming_keywords",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "underperforming_keywords"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "conversion_trends",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "conversion_trends"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "anomaly_detection",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "anomaly_detection"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "get_recommendations",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_recommendations"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "apply_recommendation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "apply_recommendation"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "dismiss_recommendation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "dismiss_recommendation"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a276c6c7-5b32-441f-be9b-2abb89614675",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -608,
+        1392
+      ]
+    },
+    {
+      "parameters": {
+        "name": "top_campaigns_by_cost",
+        "description": "Lists the campaigns with the highest spend during a specified date range. Useful to analyze where the budget is going.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "top_campaigns_by_cost",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g. LAST_30_DAYS).', 'string') }}",
+            "limit": "={{ $fromAI('limit', 'Max number of results to return (default 10).', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "e37d5714-70cf-4696-ac80-9a877fda2010",
+      "name": "top_campaigns_by_cost",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -1248,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "name": "top_campaigns_by_conversions",
+        "description": "Lists the campaigns with the highest conversions and best CPA.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "top_campaigns_by_conversions",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+            "limit": "={{ $fromAI('limit', 'Max number of results to return (default 10).', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "83438a9c-ec19-4102-b192-91bbfadff03e",
+      "name": "top_campaigns_by_conversions",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -1056,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "name": "underperforming_keywords",
+        "description": "Identifies keywords with high CTR but zero conversions (money burners).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "underperforming_keywords",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+            "limit": "={{ $fromAI('limit', 'Max number of results to return (default 10).', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "813136b1-2e8a-453f-843a-6cf53e7d4ba5",
+      "name": "underperforming_keywords",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -880,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "name": "conversion_trends",
+        "description": "Returns a day-by-day or week-by-week trend of conversions and spend to identify sudden drops.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "conversion_trends",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f0e63ac9-ec9e-4af0-bb1c-1c745be9da63",
+      "name": "conversion_trends",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        656
+      ]
+    },
+    {
+      "parameters": {
+        "name": "anomaly_detection",
+        "description": "Returns daily campaign stats for the last 30 days including weekday info (segments.day_of_week). Use this data to detect anomalies by comparing each day against the average of the same weekday. Includes: impressions, clicks, cost, conversions, CTR, cost_per_conversion.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "anomaly_detection"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a5b64f28-626c-4ce5-9be7-2438f1d29a6b",
+      "name": "anomaly_detection",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -544,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_recommendations",
+        "description": "Retrieves auto-generated optimization recommendations from Google Ads (e.g. KEYWORD, BUDGET).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_recommendations"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "6af633c5-b836-49c5-8b6d-521f10ac4aad",
+      "name": "get_recommendations",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "name": "apply_recommendation",
+        "description": "Applies a specific Google Ads recommendation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "apply_recommendation",
+            "recommendationId": "={{ $fromAI('recommendationId', 'The resourceName or ID of the recommendation.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "recommendationId",
+              "displayName": "recommendationId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "fb1b68db-7707-44fe-adda-65b9096c104d",
+      "name": "apply_recommendation",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -192,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "name": "dismiss_recommendation",
+        "description": "Dismisses a specific Google Ads recommendation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "dismiss_recommendation",
+            "recommendationId": "={{ $fromAI('recommendationId', 'The resourceName or ID of the recommendation.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "recommendationId",
+              "displayName": "recommendationId",
+              "required": true,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "5f7fc083-55d7-4309-89cd-5473e437e88f",
+      "name": "dismiss_recommendation",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, metrics.cost_micros, metrics.impressions, metrics.clicks, metrics.conversions FROM campaign WHERE segments.date DURING {{ $json.dateRange }} AND campaign.status = 'ENABLED' AND metrics.cost_micros > 0 ORDER BY metrics.cost_micros DESC LIMIT {{ $json.limit }}\"\n}",
+        "options": {}
+      },
+      "id": "d66a59cd-8057-4416-a0da-dcce59c6021a",
+      "name": "API: Top Cost",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        816
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, metrics.conversions, metrics.cost_per_conversion, metrics.cost_micros FROM campaign WHERE segments.date DURING {{ $json.dateRange }} AND campaign.status = 'ENABLED' AND metrics.conversions > 0 ORDER BY metrics.conversions DESC LIMIT {{ $json.limit }}\"\n}",
+        "options": {}
+      },
+      "id": "95e7afc8-22f9-4708-ab2c-5e6c33f28b95",
+      "name": "API: Top Conv",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1008
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.keyword.text, campaign.name, metrics.clicks, metrics.ctr, metrics.cost_micros, metrics.conversions FROM keyword_view WHERE segments.date DURING {{ $json.dateRange }} AND ad_group_criterion.status = 'ENABLED' AND metrics.conversions = 0 AND metrics.clicks > 10 ORDER BY metrics.cost_micros DESC LIMIT {{ $json.limit }}\"\n}",
+        "options": {}
+      },
+      "id": "640da0ca-c906-4bb1-b92c-50f2d076cb3d",
+      "name": "API: Burners",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1200
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT segments.date, metrics.conversions, metrics.cost_micros, metrics.clicks FROM customer WHERE segments.date DURING {{ $json.dateRange }} ORDER BY segments.date ASC\"\n}",
+        "options": {}
+      },
+      "id": "e03c8c27-9c4e-4a1f-913f-18c17c5e0e61",
+      "name": "API: Trends",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1392
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT segments.date, segments.day_of_week, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.ctr, metrics.cost_per_conversion FROM campaign WHERE segments.date DURING LAST_30_DAYS AND campaign.status = 'ENABLED' ORDER BY segments.date DESC\"\n}",
+        "options": {}
+      },
+      "id": "98c65709-6d4a-499d-a9cc-91df14775d4b",
+      "name": "API: Anomaly Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1584
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT recommendation.resource_name, recommendation.type, recommendation.impact, recommendation.campaign_budget_recommendation, recommendation.keyword_recommendation FROM recommendation LIMIT 20\"\n}",
+        "options": {}
+      },
+      "id": "a80c3b3d-791d-46f4-940d-c49b74023031",
+      "name": "API: Get Recs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1776
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/recommendations:apply",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"resourceName\": \"{{ $json.recommendationId }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "7aa41aff-0767-4388-98c4-ff4f665237ad",
+      "name": "API: Apply Rec",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1968
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/recommendations:dismiss",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operations\": [\n    {\n      \"resourceName\": \"{{ $json.recommendationId }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "a577afe1-b905-4358-bd1e-f0396ffd8302",
+      "name": "API: Dismiss Rec",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        2160
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\nreturn items[0].json.results.map(row => {\n  let flattened = {};\n  for (const [key, value] of Object.entries(row)) {\n    if (typeof value === 'object' && value !== null) {\n      for (const [subKey, subValue] of Object.entries(value)) {\n        flattened[`${key}_${subKey}`] = subValue;\n      }\n    } else {\n      flattened[key] = value;\n    }\n  }\n  return { json: flattened };\n});"
+      },
+      "id": "a96fe310-9581-4210-b613-b03bbba18f9b",
+      "name": "Format Insights",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        1296
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+      },
+      "id": "e4a717a5-887e-4ec3-9ce2-3eb7cc6c8bb4",
+      "name": "Format Mutate Insights",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        2064
+      ]
+    }
+  ],
+  "connections": {
+    "top_campaigns_by_cost": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "top_campaigns_by_conversions": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "underperforming_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversion_trends": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "anomaly_detection": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_recommendations": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "apply_recommendation": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dismiss_recommendation": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Insights",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: Top Cost",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Top Conv",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Burners",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Trends",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Anomaly Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Get Recs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Apply Rec",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Dismiss Rec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Top Cost": {
+      "main": [
+        [
+          {
+            "node": "Format Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Top Conv": {
+      "main": [
+        [
+          {
+            "node": "Format Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Burners": {
+      "main": [
+        [
+          {
+            "node": "Format Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Trends": {
+      "main": [
+        [
+          {
+            "node": "Format Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Anomaly Data": {
+      "main": [
+        [
+          {
+            "node": "Format Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Get Recs": {
+      "main": [
+        [
+          {
+            "node": "Format Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Apply Rec": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Dismiss Rec": {
+      "main": [
+        [
+          {
+            "node": "Format Mutate Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Tool Trigger": [
+      {
+        "json": {
+          "query": {
+            "dateRange": "LAST_7_DAYS",
+            "limit": "100"
+          },
+          "tool_name": "underperforming_keywords",
+          "dateRange": "LAST_7_DAYS",
+          "limit": "100"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "1eef8c1c-9c14-4824-b0f5-0c5095527f9c",
+  "activeVersionId": "1eef8c1c-9c14-4824-b0f5-0c5095527f9c",
+  "versionCounter": 31,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T20:10:05.844Z",
+    "createdAt": "2026-04-17T20:10:05.844Z",
+    "versionId": "1eef8c1c-9c14-4824-b0f5-0c5095527f9c",
+    "workflowId": "iXM_bBcOy3-72NRCuheg0",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "google-ads-insights-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          -688,
+          384
+        ],
+        "id": "e8778f76-106e-4f70-905f-78a586c6caee",
+        "name": "Google Ads MCP Server - Insights",
+        "webhookId": "4a45ce37-af52-412e-91f9-25a032698696",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "314cfeb0-09c3-462c-aae3-d3b62a23c171",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1056,
+          1488
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "dateRange",
+                "value": "={{ $json.dateRange || 'LAST_30_DAYS' }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "recommendationId",
+                "value": "={{ $json.recommendationId }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "limit",
+                "value": "={{ $json.limit || '10' }}",
+                "type": "string"
+              },
+              {
+                "id": "cred1",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "cred2",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              },
+              {
+                "id": "cred3",
+                "name": "customerId",
+                "value": "2011391652",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3c7af6bb-72ef-4ef1-ac7d-027b50e955d4",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -832,
+          1488
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "top_campaigns_by_cost",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "top_campaigns_by_cost"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "top_campaigns_by_conversions",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "top_campaigns_by_conversions"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "underperforming_keywords",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "underperforming_keywords"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "conversion_trends",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "conversion_trends"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "anomaly_detection",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "anomaly_detection"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "get_recommendations",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "get_recommendations"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "apply_recommendation",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "apply_recommendation"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "dismiss_recommendation",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "dismiss_recommendation"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a276c6c7-5b32-441f-be9b-2abb89614675",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          -608,
+          1392
+        ]
+      },
+      {
+        "parameters": {
+          "name": "top_campaigns_by_cost",
+          "description": "Lists the campaigns with the highest spend during a specified date range. Useful to analyze where the budget is going.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "top_campaigns_by_cost",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g. LAST_30_DAYS).', 'string') }}",
+              "limit": "={{ $fromAI('limit', 'Max number of results to return (default 10).', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "limit",
+                "displayName": "limit",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "e37d5714-70cf-4696-ac80-9a877fda2010",
+        "name": "top_campaigns_by_cost",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -1248,
+          608
+        ]
+      },
+      {
+        "parameters": {
+          "name": "top_campaigns_by_conversions",
+          "description": "Lists the campaigns with the highest conversions and best CPA.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "top_campaigns_by_conversions",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+              "limit": "={{ $fromAI('limit', 'Max number of results to return (default 10).', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "limit",
+                "displayName": "limit",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "83438a9c-ec19-4102-b192-91bbfadff03e",
+        "name": "top_campaigns_by_conversions",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -1056,
+          608
+        ]
+      },
+      {
+        "parameters": {
+          "name": "underperforming_keywords",
+          "description": "Identifies keywords with high CTR but zero conversions (money burners).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "underperforming_keywords",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+              "limit": "={{ $fromAI('limit', 'Max number of results to return (default 10).', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "limit",
+                "displayName": "limit",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "813136b1-2e8a-453f-843a-6cf53e7d4ba5",
+        "name": "underperforming_keywords",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -880,
+          608
+        ]
+      },
+      {
+        "parameters": {
+          "name": "conversion_trends",
+          "description": "Returns a day-by-day or week-by-week trend of conversions and spend to identify sudden drops.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "conversion_trends",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "f0e63ac9-ec9e-4af0-bb1c-1c745be9da63",
+        "name": "conversion_trends",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -704,
+          656
+        ]
+      },
+      {
+        "parameters": {
+          "name": "anomaly_detection",
+          "description": "Returns daily campaign stats for the last 30 days including weekday info (segments.day_of_week). Use this data to detect anomalies by comparing each day against the average of the same weekday. Includes: impressions, clicks, cost, conversions, CTR, cost_per_conversion.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "anomaly_detection"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "a5b64f28-626c-4ce5-9be7-2438f1d29a6b",
+        "name": "anomaly_detection",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -544,
+          608
+        ]
+      },
+      {
+        "parameters": {
+          "name": "get_recommendations",
+          "description": "Retrieves auto-generated optimization recommendations from Google Ads (e.g. KEYWORD, BUDGET).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "get_recommendations"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "6af633c5-b836-49c5-8b6d-521f10ac4aad",
+        "name": "get_recommendations",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -384,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "name": "apply_recommendation",
+          "description": "Applies a specific Google Ads recommendation.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "apply_recommendation",
+              "recommendationId": "={{ $fromAI('recommendationId', 'The resourceName or ID of the recommendation.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "recommendationId",
+                "displayName": "recommendationId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "fb1b68db-7707-44fe-adda-65b9096c104d",
+        "name": "apply_recommendation",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -192,
+          608
+        ]
+      },
+      {
+        "parameters": {
+          "name": "dismiss_recommendation",
+          "description": "Dismisses a specific Google Ads recommendation.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "dismiss_recommendation",
+              "recommendationId": "={{ $fromAI('recommendationId', 'The resourceName or ID of the recommendation.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "recommendationId",
+                "displayName": "recommendationId",
+                "required": true,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "5f7fc083-55d7-4309-89cd-5473e437e88f",
+        "name": "dismiss_recommendation",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          16,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, metrics.cost_micros, metrics.impressions, metrics.clicks, metrics.conversions FROM campaign WHERE segments.date DURING {{ $json.dateRange }} AND campaign.status = 'ENABLED' AND metrics.cost_micros > 0 ORDER BY metrics.cost_micros DESC LIMIT {{ $json.limit }}\"\n}",
+          "options": {}
+        },
+        "id": "d66a59cd-8057-4416-a0da-dcce59c6021a",
+        "name": "API: Top Cost",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          816
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, metrics.conversions, metrics.cost_per_conversion, metrics.cost_micros FROM campaign WHERE segments.date DURING {{ $json.dateRange }} AND campaign.status = 'ENABLED' AND metrics.conversions > 0 ORDER BY metrics.conversions DESC LIMIT {{ $json.limit }}\"\n}",
+          "options": {}
+        },
+        "id": "95e7afc8-22f9-4708-ab2c-5e6c33f28b95",
+        "name": "API: Top Conv",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          1008
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.keyword.text, campaign.name, metrics.clicks, metrics.ctr, metrics.cost_micros, metrics.conversions FROM keyword_view WHERE segments.date DURING {{ $json.dateRange }} AND ad_group_criterion.status = 'ENABLED' AND metrics.conversions = 0 AND metrics.clicks > 10 ORDER BY metrics.cost_micros DESC LIMIT {{ $json.limit }}\"\n}",
+          "options": {}
+        },
+        "id": "640da0ca-c906-4bb1-b92c-50f2d076cb3d",
+        "name": "API: Burners",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          1200
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT segments.date, metrics.conversions, metrics.cost_micros, metrics.clicks FROM customer WHERE segments.date DURING {{ $json.dateRange }} ORDER BY segments.date ASC\"\n}",
+          "options": {}
+        },
+        "id": "e03c8c27-9c4e-4a1f-913f-18c17c5e0e61",
+        "name": "API: Trends",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          1392
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT segments.date, segments.day_of_week, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.ctr, metrics.cost_per_conversion FROM campaign WHERE segments.date DURING LAST_30_DAYS AND campaign.status = 'ENABLED' ORDER BY segments.date DESC\"\n}",
+          "options": {}
+        },
+        "id": "98c65709-6d4a-499d-a9cc-91df14775d4b",
+        "name": "API: Anomaly Data",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          1584
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT recommendation.resource_name, recommendation.type, recommendation.impact, recommendation.campaign_budget_recommendation, recommendation.keyword_recommendation FROM recommendation LIMIT 20\"\n}",
+          "options": {}
+        },
+        "id": "a80c3b3d-791d-46f4-940d-c49b74023031",
+        "name": "API: Get Recs",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          1776
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/recommendations:apply",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"resourceName\": \"{{ $json.recommendationId }}\"\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "7aa41aff-0767-4388-98c4-ff4f665237ad",
+        "name": "API: Apply Rec",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          1968
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/recommendations:dismiss",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"operations\": [\n    {\n      \"resourceName\": \"{{ $json.recommendationId }}\"\n    }\n  ]\n}",
+          "options": {}
+        },
+        "id": "a577afe1-b905-4358-bd1e-f0396ffd8302",
+        "name": "API: Dismiss Rec",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          2160
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\nreturn items[0].json.results.map(row => {\n  let flattened = {};\n  for (const [key, value] of Object.entries(row)) {\n    if (typeof value === 'object' && value !== null) {\n      for (const [subKey, subValue] of Object.entries(value)) {\n        flattened[`${key}_${subKey}`] = subValue;\n      }\n    } else {\n      flattened[key] = value;\n    }\n  }\n  return { json: flattened };\n});"
+        },
+        "id": "a96fe310-9581-4210-b613-b03bbba18f9b",
+        "name": "Format Insights",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -160,
+          1296
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\nreturn items[0].json.results.map(row => ({ json: row }));"
+        },
+        "id": "e4a717a5-887e-4ec3-9ce2-3eb7cc6c8bb4",
+        "name": "Format Mutate Insights",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -160,
+          2064
+        ]
+      }
+    ],
+    "connections": {
+      "top_campaigns_by_cost": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "top_campaigns_by_conversions": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "underperforming_keywords": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "conversion_trends": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "anomaly_detection": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "get_recommendations": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "apply_recommendation": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "dismiss_recommendation": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Insights",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: Top Cost",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Top Conv",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Burners",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Trends",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Anomaly Data",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Get Recs",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Apply Rec",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Dismiss Rec",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Top Cost": {
+        "main": [
+          [
+            {
+              "node": "Format Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Top Conv": {
+        "main": [
+          [
+            {
+              "node": "Format Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Burners": {
+        "main": [
+          [
+            {
+              "node": "Format Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Trends": {
+        "main": [
+          [
+            {
+              "node": "Format Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Anomaly Data": {
+        "main": [
+          [
+            {
+              "node": "Format Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Get Recs": {
+        "main": [
+          [
+            {
+              "node": "Format Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Apply Rec": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Dismiss Rec": {
+        "main": [
+          [
+            {
+              "node": "Format Mutate Insights",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T20:10:05.894Z",
+        "id": 508,
+        "workflowId": "iXM_bBcOy3-72NRCuheg0",
+        "versionId": "1eef8c1c-9c14-4824-b0f5-0c5095527f9c",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T20:10:05.880Z",
+        "id": 507,
+        "workflowId": "iXM_bBcOy3-72NRCuheg0",
+        "versionId": "1eef8c1c-9c14-4824-b0f5-0c5095527f9c",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

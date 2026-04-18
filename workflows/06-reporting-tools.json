@@ -1,0 +1,2609 @@
+{
+  "updatedAt": "2026-04-17T21:21:25.291Z",
+  "createdAt": "2026-02-20T18:45:47.794Z",
+  "id": "_MscqooFbXWKSMGS_3Oul",
+  "name": "Google Ads MCP - Reporting Tools",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "google-ads-reporting-tools",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -32
+      ],
+      "id": "cd5c8205-cb8f-4761-afcc-815b5afed968",
+      "name": "Google Ads MCP Server - Reporting",
+      "webhookId": "b2060a5e-bba5-4222-99dc-5d4dbede024e",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "idC1kOT9LEzjFFJe",
+          "name": "Google Ads Agent MCP Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "5cd65638-dc2f-49e7-9c94-bfd588ab6ab2",
+      "name": "Tool Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "tool_name",
+              "value": "={{ $json.tool_name }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "dateRange",
+              "value": "={{ $json.dateRange || 'LAST_30_DAYS' }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "campaignId",
+              "value": "={{ $json.campaignId }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "adGroupId",
+              "value": "={{ $json.adGroupId }}",
+              "type": "string"
+            },
+            {
+              "id": "cred1",
+              "name": "developerToken",
+              "value": "EuFQVzE-Hx5LMBNupVgu7w",
+              "type": "string"
+            },
+            {
+              "id": "cred2",
+              "name": "loginCustomerId",
+              "value": "5662771991",
+              "type": "string"
+            },
+            {
+              "id": "cred3",
+              "name": "customerId",
+              "value": "2011391652",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "347b27ce-264f-4790-a390-bad8b78f1aab",
+      "name": "Set Credentials",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "campaign_performance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "campaign_performance"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "keyword_performance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "keyword_performance"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "ad_performance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ad_performance"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "search_terms_report",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search_terms_report"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "budget_pacing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "budget_pacing"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "geographic_performance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "geographic_performance"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "device_performance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "device_performance"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tool_name }}",
+                    "rightValue": "hourly_performance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "hourly_performance"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1719df70-80dc-4043-907f-5c8bd9f04145",
+      "name": "Switch on Tool",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        272,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "name": "campaign_performance",
+        "description": "Retrieves performance metrics (impressions, clicks, cost, conversions) for all campaigns over a specified date range.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "campaign_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_7_DAYS, LAST_30_DAYS, THIS_MONTH). Defaults to LAST_30_DAYS.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "794f464b-c60b-4b0d-b8f7-a4db413d9355",
+      "name": "campaign_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "keyword_performance",
+        "description": "Retrieves performance metrics for keywords, optionally filtered by campaign or ad group.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_7_DAYS, LAST_30_DAYS).', 'string') }}",
+            "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}",
+            "adGroupId": "={{ $fromAI('adGroupId', 'Optional: Filter by Ad Group ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "ecd470cc-e872-4979-b614-d0e2331bd9c6",
+      "name": "keyword_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "ad_performance",
+        "description": "Retrieves performance metrics for individual ads.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "ad_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_30_DAYS).', 'string') }}",
+            "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}",
+            "adGroupId": "={{ $fromAI('adGroupId', 'Optional: Filter by Ad Group ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "adGroupId",
+              "displayName": "adGroupId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "462b436d-18b0-4ebf-9f5f-26cfba7cfb7f",
+      "name": "ad_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "search_terms_report",
+        "description": "Retrieves actual search terms users typed to see your ads.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "search_terms_report",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_30_DAYS).', 'string') }}",
+            "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "7c38307c-3506-4945-8d71-e7dcc9774f87",
+      "name": "search_terms_report",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "budget_pacing",
+        "description": "Retrieves budget performance and usage for campaigns.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "budget_pacing",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range. Usually THIS_MONTH for pacing.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "64e9c749-543e-40b7-b105-e0b7351b35d2",
+      "name": "budget_pacing",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "geographic_performance",
+        "description": "Retrieves performance metrics broken down by geographic locations.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "geographic_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+            "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "8e1c5b8f-bc4b-4a7b-8c04-d618b5268b81",
+      "name": "geographic_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "device_performance",
+        "description": "Retrieves performance metrics broken down by device type (mobile, desktop, tablet).",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "device_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+            "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "4d108500-1367-4580-a38d-04e85b95c54f",
+      "name": "device_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        736,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "hourly_performance",
+        "description": "Retrieves performance metrics broken down by hour of day to identify best performing times.",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "hourly_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+            "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "campaignId",
+              "displayName": "campaignId",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "90108c87-0c2e-4c41-9908-64b0d6eea97c",
+      "name": "hourly_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        928,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.all_conversions, metrics.cost_per_conversion, metrics.ctr, metrics.average_cpc, metrics.conversions_value, metrics.search_impression_share, metrics.search_budget_lost_impression_share, metrics.search_rank_lost_impression_share, metrics.search_top_impression_share FROM campaign WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND campaign.status != 'REMOVED' ORDER BY metrics.cost_micros DESC\"\n}",
+        "options": {}
+      },
+      "id": "69d662b0-fbf4-4e7e-bfff-6381b6305990",
+      "name": "API: Campaign Performance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        400
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, ad_group_criterion.quality_info.quality_score, ad_group_criterion.quality_info.creative_quality_score, ad_group_criterion.quality_info.post_click_quality_score, ad_group_criterion.quality_info.search_predicted_ctr, ad_group.name, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.ctr FROM keyword_view WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} {{ $json.adGroupId ? 'AND ad_group.id = ' + $json.adGroupId : '' }} AND ad_group_criterion.status = 'ENABLED' AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 200\"\n}",
+        "options": {}
+      },
+      "id": "adac3fdf-abd2-49f6-91a5-87eb31001a4a",
+      "name": "API: Keyword Performance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        592
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT ad_group_ad.ad.id, ad_group.name, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM ad_group_ad WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} {{ $json.adGroupId ? 'AND ad_group.id = ' + $json.adGroupId : '' }} AND ad_group_ad.status = 'ENABLED' AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 100\"\n}",
+        "options": {}
+      },
+      "id": "95654445-cb56-4a98-ac65-f34427ffaad2",
+      "name": "API: Ad Performance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        784
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT search_term_view.search_term, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM search_term_view WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 100\"\n}",
+        "options": {}
+      },
+      "id": "008c84e0-77fc-4569-9a42-682b574b5bc1",
+      "name": "API: Search Terms",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        976
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT campaign_budget.id, campaign_budget.amount_micros, campaign.name, metrics.cost_micros FROM campaign WHERE segments.date DURING {{ $json.dateRange }} AND campaign.status IN ('ENABLED', 'PAUSED') ORDER BY metrics.cost_micros DESC\"\n}",
+        "options": {}
+      },
+      "id": "8728ef24-8eba-4bee-b92f-c6e5da38c1c9",
+      "name": "API: Budget Pacing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        1168
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT geographic_view.country_criterion_id, geographic_view.location_type, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM geographic_view WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 100\"\n}",
+        "options": {}
+      },
+      "id": "89a40e3b-216e-4f04-8362-fa3ef52421ee",
+      "name": "API: Geo Performance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        1360
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT segments.device, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM campaign WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC\"\n}",
+        "options": {}
+      },
+      "id": "ae4ad331-6711-4759-9c7e-b2df0bbf2ed6",
+      "name": "API: Device Performance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        1552
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAdsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "developer-token",
+              "value": "={{ $json.developerToken }}"
+            },
+            {
+              "name": "login-customer-id",
+              "value": "={{ $json.loginCustomerId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"SELECT segments.hour, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM campaign WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY segments.hour ASC\"\n}",
+        "options": {}
+      },
+      "id": "7bfe5347-4c7e-481d-bdb0-a7edab24906d",
+      "name": "API: Hourly Performance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        1744
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "LJry2sfRllBhCIan",
+          "name": "Google Ads | MVV Fabian"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\n// Format and clean up the nested results from GAQL stream\nreturn items[0].json.results.map(row => {\n  let flattened = {};\n  for (const [key, value] of Object.entries(row)) {\n    if (typeof value === 'object' && value !== null) {\n      for (const [subKey, subValue] of Object.entries(value)) {\n        flattened[`${key}_${subKey}`] = subValue;\n      }\n    } else {\n      flattened[key] = value;\n    }\n  }\n  return { json: flattened };\n});"
+      },
+      "id": "e494ac26-f304-4605-84a1-45ab60c0412d",
+      "name": "Format Reporting Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        1072
+      ]
+    }
+  ],
+  "connections": {
+    "campaign_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ad_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_terms_report": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "budget_pacing": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "geographic_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "device_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "hourly_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Ads MCP Server - Reporting",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Credentials": {
+      "main": [
+        [
+          {
+            "node": "Switch on Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Tool": {
+      "main": [
+        [
+          {
+            "node": "API: Campaign Performance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Keyword Performance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Ad Performance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Search Terms",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Budget Pacing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Geo Performance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Device Performance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "API: Hourly Performance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Campaign Performance": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Keyword Performance": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Ad Performance": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Search Terms": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Budget Pacing": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Geo Performance": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Device Performance": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API: Hourly Performance": {
+      "main": [
+        [
+          {
+            "node": "Format Reporting Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "16ae2021-21a0-4157-ab15-16aa7b3c6b81",
+  "activeVersionId": "16ae2021-21a0-4157-ab15-16aa7b3c6b81",
+  "versionCounter": 27,
+  "triggerCount": 1,
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-17T21:21:25.293Z",
+    "createdAt": "2026-04-17T21:21:25.293Z",
+    "versionId": "16ae2021-21a0-4157-ab15-16aa7b3c6b81",
+    "workflowId": "_MscqooFbXWKSMGS_3Oul",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "google-ads-reporting-tools",
+          "authentication": "bearerAuth"
+        },
+        "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+        "typeVersion": 2,
+        "position": [
+          208,
+          -32
+        ],
+        "id": "cd5c8205-cb8f-4761-afcc-815b5afed968",
+        "name": "Google Ads MCP Server - Reporting",
+        "webhookId": "b2060a5e-bba5-4222-99dc-5d4dbede024e",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "idC1kOT9LEzjFFJe",
+            "name": "Google Ads Agent MCP Bearer"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "5cd65638-dc2f-49e7-9c94-bfd588ab6ab2",
+        "name": "Tool Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          -176,
+          1072
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "tool_name",
+                "value": "={{ $json.tool_name }}",
+                "type": "string"
+              },
+              {
+                "id": "2",
+                "name": "dateRange",
+                "value": "={{ $json.dateRange || 'LAST_30_DAYS' }}",
+                "type": "string"
+              },
+              {
+                "id": "3",
+                "name": "campaignId",
+                "value": "={{ $json.campaignId }}",
+                "type": "string"
+              },
+              {
+                "id": "4",
+                "name": "adGroupId",
+                "value": "={{ $json.adGroupId }}",
+                "type": "string"
+              },
+              {
+                "id": "cred1",
+                "name": "developerToken",
+                "value": "EuFQVzE-Hx5LMBNupVgu7w",
+                "type": "string"
+              },
+              {
+                "id": "cred2",
+                "name": "loginCustomerId",
+                "value": "5662771991",
+                "type": "string"
+              },
+              {
+                "id": "cred3",
+                "name": "customerId",
+                "value": "2011391652",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "347b27ce-264f-4790-a390-bad8b78f1aab",
+        "name": "Set Credentials",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          48,
+          1072
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "campaign_performance",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "campaign_performance"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "keyword_performance",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "keyword_performance"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "ad_performance",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "ad_performance"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "search_terms_report",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "search_terms_report"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "budget_pacing",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "budget_pacing"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "geographic_performance",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "geographic_performance"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "device_performance",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "device_performance"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.tool_name }}",
+                      "rightValue": "hourly_performance",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "hourly_performance"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "1719df70-80dc-4043-907f-5c8bd9f04145",
+        "name": "Switch on Tool",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          272,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "name": "campaign_performance",
+          "description": "Retrieves performance metrics (impressions, clicks, cost, conversions) for all campaigns over a specified date range.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "campaign_performance",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_7_DAYS, LAST_30_DAYS, THIS_MONTH). Defaults to LAST_30_DAYS.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "794f464b-c60b-4b0d-b8f7-a4db413d9355",
+        "name": "campaign_performance",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -288,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "keyword_performance",
+          "description": "Retrieves performance metrics for keywords, optionally filtered by campaign or ad group.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "keyword_performance",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_7_DAYS, LAST_30_DAYS).', 'string') }}",
+              "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}",
+              "adGroupId": "={{ $fromAI('adGroupId', 'Optional: Filter by Ad Group ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "ecd470cc-e872-4979-b614-d0e2331bd9c6",
+        "name": "keyword_performance",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          -112,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "ad_performance",
+          "description": "Retrieves performance metrics for individual ads.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "ad_performance",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_30_DAYS).', 'string') }}",
+              "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}",
+              "adGroupId": "={{ $fromAI('adGroupId', 'Optional: Filter by Ad Group ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "adGroupId",
+                "displayName": "adGroupId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "462b436d-18b0-4ebf-9f5f-26cfba7cfb7f",
+        "name": "ad_performance",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          48,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "search_terms_report",
+          "description": "Retrieves actual search terms users typed to see your ads.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "search_terms_report",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range (e.g., LAST_30_DAYS).', 'string') }}",
+              "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "7c38307c-3506-4945-8d71-e7dcc9774f87",
+        "name": "search_terms_report",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          224,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "budget_pacing",
+          "description": "Retrieves budget performance and usage for campaigns.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "budget_pacing",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range. Usually THIS_MONTH for pacing.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "64e9c749-543e-40b7-b105-e0b7351b35d2",
+        "name": "budget_pacing",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          384,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "geographic_performance",
+          "description": "Retrieves performance metrics broken down by geographic locations.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "geographic_performance",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+              "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "8e1c5b8f-bc4b-4a7b-8c04-d618b5268b81",
+        "name": "geographic_performance",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          544,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "device_performance",
+          "description": "Retrieves performance metrics broken down by device type (mobile, desktop, tablet).",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "device_performance",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+              "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "4d108500-1367-4580-a38d-04e85b95c54f",
+        "name": "device_performance",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          736,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "name": "hourly_performance",
+          "description": "Retrieves performance metrics broken down by hour of day to identify best performing times.",
+          "workflowId": {
+            "__rl": true,
+            "value": "={{ $workflow.id }}",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "tool_name": "hourly_performance",
+              "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}",
+              "campaignId": "={{ $fromAI('campaignId', 'Optional: Filter by Campaign ID.', 'string') }}"
+            },
+            "schema": [
+              {
+                "id": "tool_name",
+                "displayName": "tool_name",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "dateRange",
+                "displayName": "dateRange",
+                "required": false,
+                "display": true,
+                "type": "string"
+              },
+              {
+                "id": "campaignId",
+                "displayName": "campaignId",
+                "required": false,
+                "display": true,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "90108c87-0c2e-4c41-9908-64b0d6eea97c",
+        "name": "hourly_performance",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1,
+        "position": [
+          928,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.all_conversions, metrics.cost_per_conversion, metrics.ctr, metrics.average_cpc, metrics.conversions_value, metrics.search_impression_share, metrics.search_budget_lost_impression_share, metrics.search_rank_lost_impression_share, metrics.search_top_impression_share FROM campaign WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND campaign.status != 'REMOVED' ORDER BY metrics.cost_micros DESC\"\n}",
+          "options": {}
+        },
+        "id": "69d662b0-fbf4-4e7e-bfff-6381b6305990",
+        "name": "API: Campaign Performance",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          400
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, ad_group_criterion.quality_info.quality_score, ad_group_criterion.quality_info.creative_quality_score, ad_group_criterion.quality_info.post_click_quality_score, ad_group_criterion.quality_info.search_predicted_ctr, ad_group.name, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.ctr FROM keyword_view WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} {{ $json.adGroupId ? 'AND ad_group.id = ' + $json.adGroupId : '' }} AND ad_group_criterion.status = 'ENABLED' AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 200\"\n}",
+          "options": {}
+        },
+        "id": "adac3fdf-abd2-49f6-91a5-87eb31001a4a",
+        "name": "API: Keyword Performance",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          592
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT ad_group_ad.ad.id, ad_group.name, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM ad_group_ad WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} {{ $json.adGroupId ? 'AND ad_group.id = ' + $json.adGroupId : '' }} AND ad_group_ad.status = 'ENABLED' AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 100\"\n}",
+          "options": {}
+        },
+        "id": "95654445-cb56-4a98-ac65-f34427ffaad2",
+        "name": "API: Ad Performance",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          784
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT search_term_view.search_term, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM search_term_view WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 100\"\n}",
+          "options": {}
+        },
+        "id": "008c84e0-77fc-4569-9a42-682b574b5bc1",
+        "name": "API: Search Terms",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          976
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT campaign_budget.id, campaign_budget.amount_micros, campaign.name, metrics.cost_micros FROM campaign WHERE segments.date DURING {{ $json.dateRange }} AND campaign.status IN ('ENABLED', 'PAUSED') ORDER BY metrics.cost_micros DESC\"\n}",
+          "options": {}
+        },
+        "id": "8728ef24-8eba-4bee-b92f-c6e5da38c1c9",
+        "name": "API: Budget Pacing",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          1168
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT geographic_view.country_criterion_id, geographic_view.location_type, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM geographic_view WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC LIMIT 100\"\n}",
+          "options": {}
+        },
+        "id": "89a40e3b-216e-4f04-8362-fa3ef52421ee",
+        "name": "API: Geo Performance",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          1360
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT segments.device, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM campaign WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY metrics.cost_micros DESC\"\n}",
+          "options": {}
+        },
+        "id": "ae4ad331-6711-4759-9c7e-b2df0bbf2ed6",
+        "name": "API: Device Performance",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          1552
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://googleads.googleapis.com/v20/customers/{{ $json.customerId }}/googleAds:searchStream",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "googleAdsOAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "developer-token",
+                "value": "={{ $json.developerToken }}"
+              },
+              {
+                "name": "login-customer-id",
+                "value": "={{ $json.loginCustomerId }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"query\": \"SELECT segments.hour, campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions FROM campaign WHERE segments.date DURING {{ $json.dateRange }} {{ $json.campaignId ? 'AND campaign.id = ' + $json.campaignId : '' }} AND metrics.impressions > 0 ORDER BY segments.hour ASC\"\n}",
+          "options": {}
+        },
+        "id": "7bfe5347-4c7e-481d-bdb0-a7edab24906d",
+        "name": "API: Hourly Performance",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          1744
+        ],
+        "credentials": {
+          "googleAdsOAuth2Api": {
+            "id": "LJry2sfRllBhCIan",
+            "name": "Google Ads | MVV Fabian"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "if (items.length === 0 || !items[0].json.results) return [];\n\n// Format and clean up the nested results from GAQL stream\nreturn items[0].json.results.map(row => {\n  let flattened = {};\n  for (const [key, value] of Object.entries(row)) {\n    if (typeof value === 'object' && value !== null) {\n      for (const [subKey, subValue] of Object.entries(value)) {\n        flattened[`${key}_${subKey}`] = subValue;\n      }\n    } else {\n      flattened[key] = value;\n    }\n  }\n  return { json: flattened };\n});"
+        },
+        "id": "e494ac26-f304-4605-84a1-45ab60c0412d",
+        "name": "Format Reporting Results",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          720,
+          1072
+        ]
+      }
+    ],
+    "connections": {
+      "campaign_performance": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "keyword_performance": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ad_performance": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "search_terms_report": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "budget_pacing": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "geographic_performance": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "device_performance": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "hourly_performance": {
+        "ai_tool": [
+          [
+            {
+              "node": "Google Ads MCP Server - Reporting",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tool Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Credentials",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Credentials": {
+        "main": [
+          [
+            {
+              "node": "Switch on Tool",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch on Tool": {
+        "main": [
+          [
+            {
+              "node": "API: Campaign Performance",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Keyword Performance",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Ad Performance",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Search Terms",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Budget Pacing",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Geo Performance",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Device Performance",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "API: Hourly Performance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Campaign Performance": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Keyword Performance": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Ad Performance": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Search Terms": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Budget Pacing": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Geo Performance": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Device Performance": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "API: Hourly Performance": {
+        "main": [
+          [
+            {
+              "node": "Format Reporting Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Fabian Smogulla",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-17T21:21:25.350Z",
+        "id": 514,
+        "workflowId": "_MscqooFbXWKSMGS_3Oul",
+        "versionId": "16ae2021-21a0-4157-ab15-16aa7b3c6b81",
+        "event": "activated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      },
+      {
+        "createdAt": "2026-04-17T21:21:25.333Z",
+        "id": 513,
+        "workflowId": "_MscqooFbXWKSMGS_3Oul",
+        "versionId": "16ae2021-21a0-4157-ab15-16aa7b3c6b81",
+        "event": "deactivated",
+        "userId": "d675a0b5-5eb5-4152-924e-0731fecd8d8c"
+      }
+    ]
+  }
+}

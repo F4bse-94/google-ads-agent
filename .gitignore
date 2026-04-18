@@ -1,0 +1,30 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# Secrets & credentials
+.env
+.env.local
+secret.json
+credentials.json
+
+# MCP config (enthält API Keys)
+.mcp.json
+
+# Claude Code (Workspace-Assets sind committed, nur persönliche Overrides ignoriert)
+.claude/settings.local.json
+.backups/
+
+# Node
+node_modules/
+npm-debug.log
+
+# IDE
+.vscode/settings.local.json
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
