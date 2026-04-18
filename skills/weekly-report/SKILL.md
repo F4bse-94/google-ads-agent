@@ -64,23 +64,19 @@ Composer:
 
 **Wichtig — Source-of-Truth-Regel:** Composer schreibt **nur** den Report-Markdown. Die 4 Memory-Files werden **ausschliesslich** vom Python-Script aktualisiert. Kein Composer-Inline-Write auf `01_session_log.md` etc. Begruendung: Deterministik + Dedup-Logik (z.B. Negatives-Dedup) ist im Script, nicht im LLM.
 
-### Phase F — Email via n8n Mail-Bridge
+### Phase F — Email via Mail-Bridge MCP
 
-Composer macht HTTP POST an den n8n Mail-Bridge Workflow (ID `sio56m2zxbOtSStz`):
+Composer ruft den MCP `mail-bridge` auf, Tool `send_email` (n8n-Workflow-ID `MWsWFnQubZ1Z21QL`):
 
-```
-POST https://n8n.srv867988.hstgr.cloud/webhook/send-weekly-report
-Content-Type: application/json
+Parameters:
+- `to` — default `f.smogulla@gmail.com`
+- `subject` — `Weekly Google Ads Report — KW {{iso_week}} | Status: {{status_emoji}}`
+- `body_html` — vollstaendiges HTML-Dokument, Executive Summary (Sektion 0) + Link zu GitHub-Report
 
-{ "to": "f.smogulla@gmail.com", "subject": "...", "body_html": "..." }
-```
-
-- Executive Summary (Sektion 0) als HTML
-- GitHub-Report-Link im Body
 - `MEMORY_UPDATE_PAYLOAD`-Block NICHT mit in die Email
-- Fallback bei 404: Gmail-MCP `create_draft`, plus Warning im Session-Summary
+- Bei MCP-Tool-Fehler: im Session-Log flaggen, kein Fallback (lieber klar als Draft-Confusion)
 
-Begruendung: claude.ai Gmail-Connector bietet nur `create_draft`, nicht `send_email`. Die n8n Mail-Bridge nutzt den nativen Gmail-Node mit eigener OAuth-Credential und ist als dedizierter Webhook-Workflow ausgelagert.
+Begruendung: claude.ai Gmail-Connector bietet nur `create_draft`, nicht `send_email`. Die Mail-Bridge nutzt den n8n gmailTool-Node mit eigener OAuth-Credential. Architektur analog zu den 9 Google-Ads-MCPs.
 
 ### Phase G — Session-Summary
 
