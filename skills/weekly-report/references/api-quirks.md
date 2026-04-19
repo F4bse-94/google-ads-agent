@@ -154,24 +154,37 @@ Bei Previous-Call-Fehler → `wow_delta_* = null` plus `data_quality.missing_dat
 
 ---
 
-## QUIRK-7 — Stream-Idle-Timeouts bei langen MCP-Calls (>600s)
+## QUIRK-7 — Stream-Idle-Timeouts (zwei Layer: ~180s Stream-Idle, ~600s Watchdog)
 
-**Symptom:** "Stream idle timeout - partial response received" oder "Agent stalled: no progress for 600s" waehrend Sub-Agent laeuft.
+**Symptome:**
+- "Stream idle timeout - partial response received" (Layer 1, ~180s)
+- "Agent stalled: no progress for 600s (stream watchdog did not recover)" (Layer 2, ~600s)
 
-**Ursache:** Anthropic-Seite: bei Agent-Execution ohne Token-Output fuer >600s wird der Stream-Context getrennt. Tritt auf bei:
-- DataForSEO SERP-Aufrufen (langsame externe API)
-- Large-Search-Terms-Responses (tausende Rows)
-- Composer-Rendering von 15-25 KB Markdown
+**Ursache:** Anthropic-Runtime kappt SSE-Stream wenn zwischen zwei Output-Tokens zu lange Pause liegt. Tritt auf bei:
+- **Monolithisches End-Pattern:** 15-20 MCP-Calls abfeuern, dann am Ende einmal grosses JSON komponieren und schreiben. Zwischen letztem MCP-Call und Write entsteht stille Denk-Phase → Timeout. **Das ist der haeufigste Failure-Modus** (KW16-Post-Mortem: 5 von 8 FAILs).
+- DataForSEO SERP-Aufrufen (langsame externe API + grosse Payloads)
+- Large-Search-Terms-Responses (kumulative Context-Verlangsamung)
+- Composer "erst alles verstehen" (4 JSONs lesen bevor erster Write)
 
-**Workaround:**
+### Pflicht-Workaround: Early-Write + Iterative-Update (alle Sub-Agents)
 
-1. **Scope-Reduktion vorab:** Top-20 statt Top-100 Search-Terms, maximal 5 Keywords fuer DataForSEO SERP pro Batch.
-2. **DataForSEO in kleinen Chunks:** pro Keyword ein Call, nicht Bulk.
-3. **Bei Stream-Timeout:** Retry mit engerem Scope (automatisch vom Orchestrator handled).
-4. **Fuer Composer-Rendering:** Nicht-kritische Sektionen (z.B. 9 Market, 10 Anomalien) bei grossem Output kuerzer rendern.
+1. **ERSTER Tool-Call der Session**: `Write` mit Skeleton-JSON an `output_path`. Alle Pflicht-Keys mit `null`/`[]` initialisiert. **Vor** dem ersten MCP-Call.
+2. **Nach jedem Block von 2-3 MCP-Calls**: `Edit`-Tool — neuen Key-Wert einsetzen. Nicht sammeln.
+3. **Zwischen Bloecken kurze Status-Line** ("Block 3 committed"). Bewusster Token-Output haelt Stream aktiv.
+4. **Hard Caps pro Run**:
+   - `max_tool_calls: 15`
+   - `max_duration_seconds: 240`
+5. **Composer-spezifisch**: 13 Per-Sektion-Writes, pro Sektion ein `jq` auf genau einen JSON-Key. Niemals alle 4 JSONs upfront lesen.
 
-**Betroffen:** Market-Competitive, Search-Keyword-Hunter, Composer.
-**Langfristfix:** Agent-Prompts haerten mit strikteren Max-Output-Grenzen. Siehe `docs/next-session-todos.md` Post-Smoke-Test-Issues P1.
+### Scope-Reduktion (zusaetzlich)
+
+1. **Search-Terms**: LIMIT 100 in GAQL + Top-20 filtern fuer Output.
+2. **DataForSEO SERP**: max 5 Money-Keywords, 1 Page pro Call, location_code=2276 fix.
+3. **DataForSEO keyword_suggestions**: max 3 Seeds pro Call (siehe QUIRK-4).
+4. **Wenn Timeout trotzdem auftritt**: Orchestrator-Retry mit engerem Scope. Bereits persistierte Skeleton-JSON wird als "partial output" akzeptiert.
+
+**Betroffen:** Alle Sub-Agents + Composer.
+**Status:** Pflicht-Pattern in `.claude/agents/{performance-analyst,search-keyword-hunter,statistician,market-competitive,report-composer}.md` dokumentiert (commit nach KW16-Post-Mortem).
 
 ---
 

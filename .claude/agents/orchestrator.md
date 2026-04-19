@@ -96,6 +96,12 @@ Bei Ad-hoc-Anfragen dispatch nur die relevanten.
   "output_schema": { "ref": "docs/handoff-contracts.md#contract-<n>" },
   "output_path": "/tmp/w<NN>-staging/<agent-name>.json",
   "tools_available": ["<mcp-tool-name-1>", "..."],
+  "execution_budget": {
+    "max_tool_calls": 15,
+    "max_duration_seconds": 240,
+    "early_write_required": true,
+    "iterative_update_after_every_n_calls": 3
+  },
   "boundaries": {
     "time_window": "LAST_7_DAYS | LAST_14_DAYS | LAST_30_DAYS",
     "customer_id": "2011391652",
@@ -112,7 +118,14 @@ Bei Ad-hoc-Anfragen dispatch nur die relevanten.
 }
 ```
 
-**`output_path` ist Pflicht** in jedem Briefing. Der Sub-Agent schreibt sein JSON-Output dorthin und returnt nur Pfad + Kurz-Summary (siehe `docs/handoff-contracts.md` "File-basierter Handoff").
+**Pflicht-Felder (nie weglassen):**
+
+- **`output_path`** — Sub-Agent schreibt JSON dorthin, returnt nur Pfad + Kurz-Summary (siehe `docs/handoff-contracts.md` "File-basierter Handoff").
+- **`execution_budget`** — Hard Cap gegen kumulative Stream-Stalls. Basierend auf KW16-Post-Mortem:
+  - `max_tool_calls: 15` — empirisch schlagen Runs mit > 15 Tool-Calls zunehmend ins Timeout
+  - `max_duration_seconds: 240` (4 Min) — wenn ueberschritten: committe was du hast, beende
+  - `early_write_required: true` — ERSTER Tool-Call MUSS `Write` des Skeleton-JSON sein
+  - `iterative_update_after_every_n_calls: 3` — nach je 3 MCP-Calls einen `Edit`, damit Stream aktiv bleibt
 
 ## Output-Collection & Validation (nach Dispatch)
 

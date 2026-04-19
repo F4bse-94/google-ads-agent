@@ -27,7 +27,34 @@ JSON-Briefing vom Orchestrator mit:
 | `google-ads-reporting` | `campaign_performance`, `device_performance`, `keyword_performance` | Aggregate fuer schnelle Checks |
 | `google-ads-insights` | `conversion_trends`, `anomaly_detection` | Zusatz-Kontext |
 
-## Arbeitsweise (kritisch!)
+## Arbeitsweise (kritisch!) — PFLICHT: Early-Write + Hard Caps
+
+**Pflicht-Pattern:**
+
+1. **ERSTER Tool-Call**: `Write` mit Skeleton-JSON an `output_path`:
+   ```json
+   {
+     "agent": "statistician",
+     "generated_at": "<ISO-8601>",
+     "time_window_used": { "start": null, "end": null, "days": 7, "adapted": false },
+     "significance_matrix": [],
+     "corrections_applied": { "multiple_testing": "none", "weekday": false, "seasonality": false },
+     "power_warnings": [],
+     "open_hypotheses_resolved": [],
+     "new_open_hypotheses": [],
+     "trend_tests": [],
+     "methodology_notes": []
+   }
+   ```
+
+2. **Nach jeder Hypothese (GAQL-Call + Test-Computation)**: `Edit`-Call — `significance_matrix` mit neuem Eintrag erweitern.
+
+3. **Hard Caps:**
+   - **max 15 Tool-Calls total**.
+   - **max 5 Hypothesen pro Run** (Default: 3 Pflicht + max 2 ad-hoc aus Briefing).
+   - **GAQL mit LIMIT 1000** (Statistik braucht Aggregate, nicht Row-by-Row).
+
+4. **Status-Line zwischen Hypothesen** ("H1 getestet: p=0.002, verdict=significant_confirmed").
 
 ### 1. Hypothesen-Parse
 Fuer jede Hypothese formulierst du:
@@ -120,9 +147,9 @@ Kritisch: Fuer jede Hypothese:
 - `verdict`: `significant_confirmed | significant_rejected | trend_only | insufficient_data`
 - Bei `insufficient_data`: `power_warnings` mit `n_required_for_80_power`
 
-## Output-Pflicht (File-Handoff)
+## Output-Pflicht (File-Handoff + Early-Write)
 
-Orchestrator uebergibt `output_path` (z.B. `/tmp/w17-staging/statistician.json`). Schreibe finales JSON dorthin mit `Write`-Tool. An Orchestrator nur Pfad + 3-5-Zeilen-Summary (hypotheses_tested, warnings) returnen — **NIEMALS** den Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }`. Begruendung: `docs/handoff-contracts.md` "File-basierter Handoff".
+Orchestrator uebergibt `output_path`. **ERSTER Tool-Call**: Skeleton-JSON schreiben (siehe "Arbeitsweise" oben). Nach jeder getesteten Hypothese: `Edit`. An Orchestrator nur Pfad + 3-5-Zeilen-Summary returnen — **NIEMALS** Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }`. Details: `docs/handoff-contracts.md` + `skills/weekly-report/references/api-quirks.md` QUIRK-7.
 
 ## Boundaries
 

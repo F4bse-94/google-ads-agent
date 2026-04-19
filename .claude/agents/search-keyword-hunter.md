@@ -28,7 +28,48 @@ Vor jedem Run:
 | `google-ads-insights` | `underperforming_keywords` |
 | `dataforseo` | `keyword_suggestions`, `related_keywords`, `keyword_overview` (Volumes) |
 
-## Arbeitsweise
+## Arbeitsweise — PFLICHT: Early-Write + Iterative Updates + Hard Caps
+
+**Anti-Pattern (NICHT tun):** Erst 300+ Search-Term-Kandidaten inline listen, dann am Ende filtern und schreiben. Stream-Watchdog killt bei 600s ohne Output. Das ist der exakte Fehler-Modus aus dem KW16-Post-Mortem.
+
+**Pflicht-Pattern:**
+
+1. **ERSTER Tool-Call**: `Write` mit Skeleton-JSON an `output_path`:
+   ```json
+   {
+     "agent": "search-keyword-hunter",
+     "generated_at": "<ISO-8601>",
+     "time_window": { "start": null, "end": null, "days": 14 },
+     "negatives_candidates": [],
+     "keyword_opportunities": [],
+     "money_burners": [],
+     "high_performers_skalierbar": [],
+     "ad_copy_audit": { "underperforming_rsas_count": 0, "findings": [], "headline_patterns_high_performers": [] },
+     "data_quality": { "missing_data_warnings": [], "timestamp_of_latest_data": null }
+   }
+   ```
+
+2. **Nach jedem logischen Block** (siehe unten): `Edit`-Call auf output_path. Kein Sammeln.
+
+3. **Hard Caps (Pflicht, aus Briefing):**
+   - **max 15 Tool-Calls total**. Beende bei Erreichen, committe was du hast.
+   - **max 10 negatives_candidates** im Output (Top-by-Spend).
+   - **max 5 keyword_opportunities** im Output.
+   - **max 3 DataForSEO-Seeds** pro `keyword_suggestions`-Call (QUIRK-4).
+   - **Search-Terms-Report: LIMIT 100** in GAQL-Query (nicht alle ziehen).
+
+4. **Block-Reihenfolge + Edit-Punkte:**
+   - **Block 1** — search_terms_report (LIMIT 100, sortiert nach cost DESC) → Edit: `time_window`, `data_quality.timestamp_of_latest_data`
+   - **Block 2** — Klassifizierung + Dedup gegen `memory/03_negatives.md` → Edit: `negatives_candidates` (Top-10)
+   - **Block 3** — Money-Burners aus keyword_performance → Edit: `money_burners`
+   - **Block 4** — High-Performers + IS-Lost-Budget → Edit: `high_performers_skalierbar`
+   - **Block 5** — DataForSEO keyword_suggestions (max 3 Seeds, 1 Call) → Edit: `keyword_opportunities`
+   - **Block 6** — Ad-Copy-Audit aus list_ads → Edit: `ad_copy_audit`
+   - **Final** — `data_quality.missing_data_warnings`
+
+5. **Zwischen Bloecken kurze Status-Line** ("Block 2 committed, 7 negatives klassifiziert").
+
+**Begruendung:** Iterative Edits halten Stream aktiv. Hard Caps verhindern kumulative Context-Verlangsamung. Details: `skills/weekly-report/references/api-quirks.md` QUIRK-4 + QUIRK-7.
 
 ### 1. Search-Terms-Mining (Primaerziel)
 1. Pull Search-Terms-Report fuer `time_window`
@@ -72,9 +113,9 @@ Fuer alle aktiven RSAs:
 
 Gemaess `docs/handoff-contracts.md` Contract 2. Immer JSON, nie Freitext.
 
-## Output-Pflicht (File-Handoff)
+## Output-Pflicht (File-Handoff + Early-Write)
 
-Orchestrator uebergibt `output_path` (z.B. `/tmp/w17-staging/search-keyword-hunter.json`). Schreibe finales JSON dorthin mit `Write`-Tool. An Orchestrator nur Pfad + 3-5-Zeilen-Summary (Status, Row-Counts, Warnings) returnen — **NIEMALS** den Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }` zurueckgeben. Begruendung: `docs/handoff-contracts.md` "File-basierter Handoff".
+Orchestrator uebergibt `output_path`. **ERSTER Tool-Call**: Skeleton-JSON schreiben (siehe "Arbeitsweise" oben). Danach nach jedem Block `Edit`. An Orchestrator nur Pfad + 3-5-Zeilen-Summary returnen — **NIEMALS** Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }`. Details: `docs/handoff-contracts.md` + `skills/weekly-report/references/api-quirks.md` QUIRK-7.
 
 ## Boundaries
 

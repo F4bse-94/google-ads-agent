@@ -24,7 +24,47 @@ JSON-Briefing vom Orchestrator mit `time_window` (default LAST_30_DAYS — laeng
 | `google-ads-gaql` | `execute_gaql` | Fuer Auction-Insights (internes Google-Ads-Tool) |
 | `google-ads-insights` | `get_recommendations` | Google's eigene Empfehlungen als Kontext |
 
-## Arbeitsweise
+## Arbeitsweise — PFLICHT: Early-Write + Iterative Updates + Hard Caps
+
+**Anti-Pattern (NICHT tun):** DataForSEO-SERP + competitors_domain + ranked_keywords in 20 Calls abfeuern, dann am Ende ein grosses JSON komponieren. KW16-Post-Mortem: market-competitive #1 FAIL nach 183s mit 22 Tool-Uses genau wegen dieses Patterns.
+
+**Pflicht-Pattern:**
+
+1. **ERSTER Tool-Call**: `Write` mit Skeleton-JSON an `output_path`:
+   ```json
+   {
+     "agent": "market-competitive",
+     "generated_at": "<ISO-8601>",
+     "time_window": { "start": null, "end": null, "days": 30 },
+     "auction_insights": [],
+     "keyword_volume_trends": [],
+     "new_competitors": [],
+     "new_keyword_opportunities": [],
+     "data_quality": { "missing_data_warnings": [], "timestamp_of_latest_data": null }
+   }
+   ```
+
+2. **Nach jedem Block**: `Edit`-Call auf output_path.
+
+3. **Hard Caps (Pflicht):**
+   - **max 15 Tool-Calls total**. Bei Erreichen: committen, fertig.
+   - **max 5 Money-Keywords** fuer SERP-Analyse (nicht 10).
+   - **max 10 keyword_volume_trends** Entries.
+   - **max 5 new_competitors** Entries.
+   - **max 10 new_keyword_opportunities** Entries.
+   - **DataForSEO: 1 Page pro SERP-Call**, location_code=2276 fix.
+
+4. **Block-Reihenfolge + Edit-Punkte:**
+   - **Block 1** — `campaign_performance` fuer unsere IS-Lage → Edit: `auction_insights` (1 Eintrag "MVV self")
+   - **Block 2** — `serp_search` fuer Top-5-Money-Keywords (5 Calls, dedupe Domains) → Edit: `new_competitors` (Kandidaten-Liste)
+   - **Block 3** — `competitors_domain` fuer Top-3-Competitor-Domains → Edit: `new_competitors` final
+   - **Block 4** — `search_volume` fuer Top-10-MVV-Keywords (1 Batch-Call) → Edit: `keyword_volume_trends`
+   - **Block 5** — `keyword_suggestions` fuer Produkt-Strategy-Keywords (max 3 Seeds) → Edit: `new_keyword_opportunities`
+   - **Final** — `data_quality.missing_data_warnings`
+
+5. **Zwischen Bloecken kurze Status-Line** ("Block 2 committed, 7 Competitor-Kandidaten gefunden").
+
+**Begruendung:** Iterative Edits halten Stream aktiv. Hard Caps verhindern Payload-Explosion. Details: `skills/weekly-report/references/api-quirks.md` QUIRK-4 + QUIRK-7.
 
 ### 1. Auction Insights (Wettbewerber-Positionierung)
 
@@ -86,9 +126,9 @@ Fuer Top-3-Wettbewerber (aus Auction Insights):
 
 Gemaess `docs/handoff-contracts.md` Contract 4.
 
-## Output-Pflicht (File-Handoff)
+## Output-Pflicht (File-Handoff + Early-Write)
 
-Orchestrator uebergibt `output_path` (z.B. `/tmp/w17-staging/market-competitive.json`). Schreibe finales JSON dorthin mit `Write`-Tool. An Orchestrator nur Pfad + 3-5-Zeilen-Summary (competitors_found, warnings) returnen — **NIEMALS** den Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }`. Begruendung: `docs/handoff-contracts.md` "File-basierter Handoff".
+Orchestrator uebergibt `output_path`. **ERSTER Tool-Call**: Skeleton-JSON schreiben (siehe "Arbeitsweise" oben). Danach nach jedem Block `Edit`. An Orchestrator nur Pfad + 3-5-Zeilen-Summary returnen — **NIEMALS** Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }`. Details: `docs/handoff-contracts.md` + `skills/weekly-report/references/api-quirks.md` QUIRK-7.
 
 ## Boundaries
 

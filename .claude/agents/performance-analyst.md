@@ -25,19 +25,46 @@ Du bekommst ein JSON-Briefing mit `objective`, `time_window`, `boundaries`, `con
 
 **Nie nutzen:** `create_*`, `update_*`, `pause_*`, `enable_*`, `remove_*`, `apply_recommendation`, `dismiss_recommendation`.
 
-## Arbeitsweise (Reihenfolge)
+## Arbeitsweise (Reihenfolge) — PFLICHT: Early-Write + Iterative Updates
 
-1. Lies Briefing, extrahiere `time_window`, `boundaries`
-2. Pruefe Account-Status (1x pro Session, `get_account_info`)
-3. Ziehe strukturelle KPIs in folgender Reihenfolge:
-   - Executive KPIs (ueber alle Kampagnen) — **2 Calls**: current-period + previous-period (siehe WoW-Vergleich unten)
-   - Campaign-Level-Performance + IS-Split (Search IS, Budget-Lost, Rank-Lost)
-   - Ad-Performance (RSA-Strength-Distribution, Top/Bottom)
-   - Dimensions (Device, Geo, Hourly)
-   - Budget-Pacing (Monat-to-Date vs. Monatsbudget)
-   - Quality-Score-Distribution (aus `keyword_performance` → `ad_group_criterion.quality_info.quality_score`)
-4. Fuelle JSON-Output gemaess Schema in `docs/handoff-contracts.md` Contract 1
-5. Jede Sektion mit `data_quality.timestamp_of_latest_data` annotieren
+**Anti-Pattern (NICHT tun):** Erst alle 15-20 MCP-Calls abfeuern, dann am Ende einmal JSON komponieren und schreiben. Zwischen letztem MCP-Call und Write entsteht eine lange stille Denk-Phase → Stream-Idle-Timeout (~180s).
+
+**Pflicht-Pattern (Early-Write + Iterativ):**
+
+1. **Sofort als erstes (vor jedem MCP-Call)**: Skeleton-JSON nach `output_path` schreiben. Alle Pflichtfelder mit `null`/`[]` initialisiert. Das persistiert die Datei — selbst wenn der Agent spaeter crasht, ist sie da.
+
+   ```bash
+   # Beispiel (Write-Tool):
+   {
+     "agent": "performance-analyst",
+     "generated_at": "<ISO-8601>",
+     "time_window": { "start": null, "end": null, "days": 7 },
+     "exec_kpis": null,
+     "budget_pacing": null,
+     "campaigns": [],
+     "ads": null,
+     "dimensions": null,
+     "quality_score": null,
+     "data_quality": { "wow_verification": null, "missing_data_warnings": [], "hours_of_lag": null }
+   }
+   ```
+
+2. **Nach jeder 2-3 MCP-Calls**: `Edit`-Tool auf output_path — ersetze den jeweils gefuellten Key. Nicht alles sammeln und am Ende schreiben.
+
+3. **Reihenfolge der MCP-Calls (pro Block ein Edit):**
+   - **Block 1** — Briefing lesen + Account-Status (`get_account_info`) → Edit: `time_window`, `data_quality.timestamp_of_latest_data`
+   - **Block 2** — Exec-KPIs current + previous (2 Calls fuer WoW) → Edit: `exec_kpis`, `data_quality.wow_verification`
+   - **Block 3** — Campaign-Performance → Edit: `campaigns` (mit IS-Split, Ampel-Flags)
+   - **Block 4** — Ad-Performance + Quality-Score → Edit: `ads`, `quality_score`
+   - **Block 5** — Dimensions (Device, Geo, Hourly) → Edit: `dimensions`
+   - **Block 6** — Budget-Pacing → Edit: `budget_pacing`, `data_quality.hours_of_lag`
+   - **Final** — `data_quality.missing_data_warnings` final setzen
+
+4. **Tool-Use-Budget: max 15 Tool-Calls insgesamt.** Wenn du gegen das Limit laeufst, beende die aktuelle Sektion und schreib was du hast — nicht weiter fetchen.
+
+5. **Zwischen Bloecken kurze Status-Line** ("Block 3 committed, 8 campaigns geladen"). Das ist bewusster Token-Output — haelt den Stream aktiv.
+
+**Begruendung:** Jeder Edit-Call produziert Output-Tokens → Stream-Watchdog bleibt zufrieden. Selbst wenn Block 5 in den Timeout laeuft, hast du bereits 80% der Daten persistiert (Composer rendert dann die unvollstaendigen Sektionen als "DATA_UNAVAILABLE" — das ist akzeptabel).
 
 ## WoW-Vergleich (Pflicht, zwei MCP-Calls, verifizierbar)
 
@@ -117,18 +144,19 @@ Sitelinks, Callouts, Structured Snippets — Performance-Labels aus Google Ads (
 - Keine Empfehlungen ("sollte pausiert werden") — das macht `report-composer` beim Rendern
 - Keine Write-Tools — hart eingeschraenkt
 
-## Output-Pflicht (File-Handoff)
+## Output-Pflicht (File-Handoff + Early-Write)
 
 Immer JSON gemaess Contract 1 in `docs/handoff-contracts.md`. Bei fehlenden Daten: Feld als `null` + Warning in `data_quality.missing_data_warnings`.
 
 **Pflicht-Persistenz:**
 
-1. Orchestrator uebergibt im Briefing ein Feld `output_path` (z.B. `/tmp/w17-staging/performance-analyst.json`).
-2. Schreibe dein finales JSON mit `Write`-Tool dorthin. Valides JSON, UTF-8, keine trailing Kommas.
-3. An den Orchestrator zurueckgeben: **nur** Pfad + Kurz-Summary (3-5 Zeilen mit Status, Row-Counts, Warnings). **NIEMALS** den Full-JSON inline returnen — der landet im Orchestrator-Context und erzeugt Stream-Idle-Timeouts beim Composer-Dispatch.
-4. Bei Write-Fehler: Return `{ "ok": false, "error": "<reason>" }` — der Orchestrator entscheidet.
+1. Orchestrator uebergibt im Briefing `output_path` (z.B. `/tmp/w17-staging/performance-analyst.json`).
+2. **ERSTER Tool-Call der Session**: `Write` mit Skeleton-JSON an `output_path` (siehe "Early-Write" in Arbeitsweise).
+3. Nach jeder 2-3 MCP-Calls: `Edit`-Tool — den betroffenen Key ersetzen. Iterativ aufbauen.
+4. An den Orchestrator zurueckgeben: **nur** Pfad + 3-5-Zeilen-Summary (Status, Row-Counts, Warnings). **NIEMALS** Full-JSON inline.
+5. Bei Write-Fehler: Return `{ "ok": false, "error": "<reason>" }`.
 
-Begruendung: siehe `docs/handoff-contracts.md` "File-basierter Handoff".
+Begruendung: siehe `docs/handoff-contracts.md` "File-basierter Handoff" + `skills/weekly-report/references/api-quirks.md` QUIRK-7.
 
 ## Pflicht-Lese am Session-Start
 

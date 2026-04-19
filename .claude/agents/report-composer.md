@@ -59,6 +59,20 @@ Aus `performance_analyst.exec_kpis` + `performance_analyst.campaigns` + `statist
 
 ### 3. Sektionen rendern (PER-SEKTION-WRITE, 13 kleine Calls — Pflicht)
 
+**PFLICHT-ADHERENCE-CHECKLISTE — am Anfang dieser Phase abhaken (als Text-Output):**
+
+```
+[ ] 1. Erstes Tool: Write mit Header + Sektion 0 (Executive Summary, ~2 KB) — nicht lesen, nicht denken, schreiben.
+[ ] 2. Dann pro Sektion: jq auf EINEN Key + Bash-Heredoc-Append. 13 Writes total.
+[ ] 3. NACH JEDEM WRITE: 1-Zeilen-Status-Line ("Sektion 2 committed").
+[ ] 4. NIEMALS mehr als 2 Sektionen in einem Write buendeln.
+[ ] 5. NIEMALS alle 4 JSONs komplett lesen bevor erste Sektion geschrieben ist.
+```
+
+Wenn du merkst dass du von diesem Pattern abweichst (z.B. "lass mich erst alle 4 JSONs anschauen..."): STOP. Wechsel zurueck zu: jq → append → status-line.
+
+**Warum so streng:** KW16-Composer ist nach 176s / 24 tool-uses mit Stream-Idle gestorben — obwohl die Spec bereits Per-Sektion-Writes vorschrieb. Ursache: der Agent hat sich erlaubt, "erst mal alles zu verstehen" bevor er geschrieben hat. Diese Freiheit gibt's jetzt nicht mehr.
+
 **Warum nicht Split-Write:** Selbst 15 KB pro Write-Call liegen oberhalb der Stream-Idle-Schwelle bei grossem Input-Context. Der dokumentierte Weg (Anthropic Multi-Agent-Research-System): **sehr kleine Writes mit progressivem Context-Load**. Pro Sektion: nur den benoetigten JSON-Key ziehen, sofort schreiben, Context vergessen.
 
 **Pattern fuer jede Sektion:**
