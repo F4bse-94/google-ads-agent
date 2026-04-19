@@ -8,34 +8,43 @@ model: sonnet
 
 Dein Job: **Rendering**. Kein Erfinden, keine Interpretation. Du nimmst die 4 JSON-Outputs von `performance-analyst`, `search-keyword-hunter`, `statistician`, `market-competitive` und renderst daraus den Weekly Report gemaess `skills/weekly-report/template.md`.
 
-## Input
+## Input (File-Referenzen, NICHT inline JSON)
 
-Vom Orchestrator:
+Vom Orchestrator bekommst du **Pfade** zu den 4 Sub-Agent-Outputs — nicht deren Inhalt. Du liest selbst on-demand pro Sektion (Progressive Disclosure). Schema:
+
 ```json
 {
   "period": { "iso_week", "year", "start", "end" },
-  "sub_agent_outputs": {
-    "performance_analyst": { ... },
-    "search_keyword_hunter": { ... },
-    "statistician": { ... },
-    "market_competitive": { ... }
+  "staging_dir": "/tmp/w<NN>-staging",
+  "sub_agent_output_paths": {
+    "performance_analyst": "/tmp/w<NN>-staging/performance-analyst.json",
+    "search_keyword_hunter": "/tmp/w<NN>-staging/search-keyword-hunter.json",
+    "statistician": "/tmp/w<NN>-staging/statistician.json",
+    "market_competitive": "/tmp/w<NN>-staging/market-competitive.json"
   },
+  "sub_agent_status": { "<agent>": { "ok": true, "row_counts": {...}, "warnings": [...] } },
   "memory_references": {
-    "strategy_summary": "...",
-    "previous_week_open_items": [...],
-    "previous_report_path": "reports/2026-WNN-report.md"
+    "strategy_manifest_path": "memory/00_strategy_manifest.md",
+    "findings_log_path": "memory/02_findings_log.md",
+    "previous_report_path": "memory/reports/2026-WNN-report.md"
   },
+  "template_path": "skills/weekly-report/template.md",
   "output_targets": {
-    "github_path": "reports/2026-WNN-report.md",
+    "github_path": "memory/reports/2026-WNN-report.md",
     "email": { "to", "subject_template", "body_style" }
   }
 }
 ```
 
-## Memory-Reads
+**Pflicht-Regel (Stream-Timeout-Schutz):**
+- **NIEMALS** mit `Read` eine komplette Sub-Agent-JSON in den Context laden. Stattdessen `jq` via `Bash` fuer den spezifischen Key, den die aktuelle Sektion braucht.
+- **Beispiel:** Sektion 2 (Campaign Performance) — `jq '.campaigns' /tmp/w17-staging/performance-analyst.json` — nur das Campaigns-Array, nicht das ganze File.
+- Grund: 4 JSONs × 10-25 KB upfront geladen = 60 KB Context-Bloat → Composer denkt 5+ Min ohne Token-Output → Stream-Idle-Timeout.
 
-- `memory/reports/<previous_week>-report.md` — nur Abschnitt 12 (Open Items) fuer Sektion 1 (Follow-Ups)
-- `memory/00_strategy_manifest.md` — nur Ampel-Schwellen (Abschnitt 6)
+## Memory-Reads (minimal, on-demand)
+
+- `memory/reports/<previous_week>-report.md` — nur Abschnitt 12 (Open Items) fuer Sektion 1 (Follow-Ups). **Nicht** das ganze File — verwende `Read` mit gezieltem Offset oder `grep`/`awk` nach Section-Marker.
+- `memory/00_strategy_manifest.md` — nur Ampel-Schwellen (Abschnitt 6). `grep -A 20 "Ampel-Schwellen"` reicht.
 
 ## Arbeitsweise (streng sequenziell)
 
@@ -48,64 +57,60 @@ Aus `performance_analyst.exec_kpis` + `performance_analyst.campaigns` + `statist
 - CPA 500-600 EUR OR 1-2 yellow campaigns OR leicht neg. Trend → 🟡 YELLOW
 - CPA > 600 EUR OR mehrere red campaigns OR sig. neg. Trends → 🔴 RED
 
-### 3. Sektionen rendern (SPLIT-WRITE in zwei Teilen, Pflicht)
+### 3. Sektionen rendern (PER-SEKTION-WRITE, 13 kleine Calls — Pflicht)
 
-**Warum Split:** Ein 20-40 KB Markdown in einem einzigen Write-Call produziert auf LLM-Seite einen grossen JSON-String-Parameter ohne Zwischen-Streaming. Stream-Idle-Timeout (>600s ohne Output-Token) kann die Ausfuehrung killen, bevor der Write abgeschlossen ist. Deshalb: Report in zwei Haelften schreiben.
+**Warum nicht Split-Write:** Selbst 15 KB pro Write-Call liegen oberhalb der Stream-Idle-Schwelle bei grossem Input-Context. Der dokumentierte Weg (Anthropic Multi-Agent-Research-System): **sehr kleine Writes mit progressivem Context-Load**. Pro Sektion: nur den benoetigten JSON-Key ziehen, sofort schreiben, Context vergessen.
 
-**Teil A — Sektionen 0-6 (initial Write):** `memory/reports/YYYY-WNN-report.md`
-**Teil B — Sektionen 7-12 + MEMORY_UPDATE_PAYLOAD (Append Write):** selbe Datei, angehaengt
-
-Mapping JSON → Template-Sektionen:
-
-**Teil A (initial Write, ~15 KB):**
-
-| Sektion | Source |
-|---|---|
-| 0 Executive Summary | `performance_analyst.exec_kpis` + Top-3-Findings-Extraktion aus allen Sub-Agent-Outputs |
-| 1 Follow-Ups aus Vorwoche | `statistician.open_hypotheses_resolved` + `previous_report.open_items` |
-| 2 Campaign Performance | `performance_analyst.campaigns` (mit IS-Split 2c) |
-| 3 Keyword Insights | `search_keyword_hunter.money_burners` + `.high_performers_skalierbar` + `performance_analyst.quality_score` |
-| 4 Search Terms Mining | `search_keyword_hunter.negatives_candidates` + `.keyword_opportunities` |
-| 5 Ad Performance | `performance_analyst.ads` + `search_keyword_hunter.ad_copy_audit` |
-| 6 Dimensionen | `performance_analyst.dimensions` |
-
-**Teil B (Append Write, ~15 KB + JSON-Payload):**
-
-| Sektion | Source |
-|---|---|
-| 7 Budget Pacing & Forecast | `performance_analyst.budget_pacing` |
-| 8 Statistical Validation | `statistician.*` (komplett) |
-| 9 Market & Competitive | `market_competitive.*` (komplett) |
-| 10 Anomalien & Trend-Breaks | `statistician.trend_tests` + aus Performance-Deltas extrahiert |
-| 11 Recommendations | synthetisiert — Details: `skills/weekly-report/references/recommendations-priorisierung.md` |
-| 12 Open Items | `statistician.new_open_hypotheses` + `search_keyword_hunter`/`market_competitive` Flags |
-| MEMORY_UPDATE_PAYLOAD | strukturierter JSON-Block (siehe Phase 7) |
-
-**Write-Pattern (Bash-Tool oder gleichwertig):**
+**Pattern fuer jede Sektion:**
 
 ```bash
-# Teil A — Sektionen 0-6
-cat > memory/reports/2026-WNN-report.md <<'EOF'
-# Weekly Google Ads Report — KW NN | MVV Enamic Ads
-...Sektionen 0-6...
-EOF
+# 1. Nur benoetigten Key laden (Context bleibt klein)
+jq '.<key>' /tmp/w<NN>-staging/<agent>.json
 
-# Teil B — Sektionen 7-12 + MEMORY_UPDATE_PAYLOAD
-cat >> memory/reports/2026-WNN-report.md <<'EOF'
-...Sektionen 7-12...
-<!-- MEMORY_UPDATE_PAYLOAD -->
-```json
-{...}
-```
+# 2. Sektion rendern und anhaengen (Bash-Heredoc bevorzugt ueber Write-Tool — weniger JSON-Escape-Overhead)
+cat >> memory/reports/YYYY-WNN-report.md <<'EOF'
+## <Sektion-Heading>
+...Markdown...
 EOF
 ```
 
-Alternativ mit dem Write/Edit-Tool: einmal `Write` fuer Teil A, dann `Edit` mit `old_string = "<end of part A marker>"` und `new_string = "<marker>\n\n<Teil B content>"`.
+**Reihenfolge + Mapping (13 Writes insgesamt, Ziel pro Write: 1-3 KB):**
 
-**Wichtig:**
-- Nach Teil A: kurze Confirmation-Message ("Teil A committed, 15 KB geschrieben")
-- Nach Teil B: komplettes Render-Ergebnis-Log
-- Bei Stream-Timeout zwischen Teil A und B: Teil A ist bereits persistiert → kein Totalverlust
+| # | Sektion | Quelle (jq-Expression) | Write-Modus |
+|---|---|---|---|
+| 1 | Header + 0 Executive Summary | `jq '.exec_kpis'` aus performance-analyst + kuratierte Top-3-Findings | **Write** (erstellt Datei) |
+| 2 | 1 Follow-Ups Vorwoche | `jq '.open_hypotheses_resolved'` aus statistician + `grep`-Extract Sektion 12 aus previous_report | append |
+| 3 | 2 Campaign Performance | `jq '.campaigns'` aus performance-analyst | append |
+| 4 | 3 Keyword Insights | `jq '.money_burners, .high_performers_skalierbar'` + `jq '.quality_score'` | append |
+| 5 | 4 Search Terms Mining | `jq '.negatives_candidates, .keyword_opportunities'` | append |
+| 6 | 5 Ad Performance | `jq '.ads'` aus perf + `jq '.ad_copy_audit'` aus skh | append |
+| 7 | 6 Dimensionen | `jq '.dimensions'` aus performance-analyst | append |
+| 8 | 7 Budget Pacing | `jq '.budget_pacing'` aus performance-analyst | append |
+| 9 | 8 Statistical Validation | `jq '.significance_matrix, .corrections_applied, .power_warnings, .trend_tests'` | append |
+| 10 | 9 Market & Competitive | `jq '.auction_insights, .keyword_volume_trends, .new_competitors, .new_keyword_opportunities'` | append |
+| 11 | 10 Anomalien & Trend-Breaks | `jq '.trend_tests'` aus statistician + auffaellige WoW-Deltas aus perf | append |
+| 12 | 11 Recommendations + 12 Open Items | synthetisiert (siehe Phase 4) + `jq '.new_open_hypotheses'` aus statistician | append |
+| 13 | MEMORY_UPDATE_PAYLOAD + Appendix | aus allen vorherigen Daten zusammengefuehrt | append |
+
+**Write-Pattern pro Sektion (konkret):**
+
+```bash
+# Beispiel: Sektion 2 — Campaign Performance
+CAMPAIGNS=$(jq -c '.campaigns' /tmp/w17-staging/performance-analyst.json)
+cat >> memory/reports/2026-W17-report.md <<EOF
+## 2. Campaign Performance
+
+<hier Markdown-Tabelle aus \$CAMPAIGNS rendern>
+EOF
+```
+
+**Pflicht-Regeln:**
+
+- **Ein Write-Tool-Call = eine Sektion.** Nicht 2 Sektionen in einem Heredoc bundeln.
+- **Zwischen Sektionen kurze Confirmation-Line** ("Sektion 2 committed, ~2.1 KB"). Das ist bewusster Token-Output zwischen Writes — haelt den Stream aktiv.
+- **Bei Sektion-Fehler (jq liefert `null` oder File fehlt):** Sektion als `❗ DATA UNAVAILABLE — <reason>` rendern, weitermachen. Kein Abbruch.
+- **`Write`-Tool fuer Sektion 1 (Datei-Erstellung), danach `Bash`-Heredoc-Append** bevorzugen — kein JSON-String-Escape-Overhead, 1:1 Markdown-Byte-Output.
+- **Alternative:** `Edit`-Tool mit `old_string = ""` (nicht erlaubt) — stattdessen `Edit` mit letztem Zeichen der Datei als Anker, und `new_string = <anker> + <neue Sektion>`. Nur nutzen wenn Bash nicht verfuegbar.
 
 ### 4. Recommendations-Synthese (einziger kreativer Schritt)
 

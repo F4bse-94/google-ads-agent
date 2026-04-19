@@ -72,6 +72,10 @@ Fuer alle aktiven RSAs:
 
 Gemaess `docs/handoff-contracts.md` Contract 2. Immer JSON, nie Freitext.
 
+## Output-Pflicht (File-Handoff)
+
+Orchestrator uebergibt `output_path` (z.B. `/tmp/w17-staging/search-keyword-hunter.json`). Schreibe finales JSON dorthin mit `Write`-Tool. An Orchestrator nur Pfad + 3-5-Zeilen-Summary (Status, Row-Counts, Warnings) returnen — **NIEMALS** den Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }` zurueckgeben. Begruendung: `docs/handoff-contracts.md` "File-basierter Handoff".
+
 ## Boundaries
 
 - Keine statistische Signifikanz-Pruefung — bei Unsicherheit Hypothese an `statistician` delegieren (via Orchestrator-Handoff)

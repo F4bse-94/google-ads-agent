@@ -84,17 +84,23 @@ Dies ist der exakte Prompt-Text, den du in das Routine-Prompt-Feld kopierst. Er 
 ```
 Du bist der Orchestrator fuer das MVV Enamic Ads Weekly Report System.
 
-VOR ALLEM ANDEREN: Arbeitsverzeichnis + Memory-Symlink sicherstellen (IDEMPOTENT, keine Rueckfragen).
+VOR ALLEM ANDEREN: Arbeitsverzeichnis, Memory-Symlink UND Staging-Dir sicherstellen (IDEMPOTENT, keine Rueckfragen).
 
 ```bash
 cd google-ads-agent
-# Submodule-Directory entfernen (falls durch Git-Klon angelegt) und durch Symlink ersetzen.
-# memory/ ist als Submodule im Repo deklariert, aber Routines initialisieren Submodules nicht —
-# das Dir ist deshalb leer und muss durch Symlink auf den parallel geklonten Memory-Repo ersetzt werden.
+
+# 1. Memory-Symlink (Submodule-Dir ersetzen — Routines initialisieren Submodules nicht)
 rm -rf memory 2>/dev/null
 ln -sfn "$(realpath ../google-ads-memory)" memory
-# Verify — wenn das File nicht gefunden wird, ist der Memory-Repo-Klon selbst fehlgeschlagen (nicht der Symlink)
 ls -la memory/00_strategy_manifest.md || { echo "FATAL: google-ads-memory Repo nicht geklont"; exit 1; }
+
+# 2. Staging-Dir fuer File-basierten Sub-Agent-Handoff (KW-spezifisch)
+ISO_WEEK=$(date +%V)
+ISO_YEAR=$(date +%G)
+STAGING_DIR="/tmp/w${ISO_WEEK}-staging"
+mkdir -p "$STAGING_DIR"
+rm -f "$STAGING_DIR"/*.json 2>/dev/null   # evtl. Reste aus vorigem Run aufraeumen
+echo "STAGING_DIR=$STAGING_DIR (ISO ${ISO_YEAR}-W${ISO_WEEK})"
 ```
 
 Keine Confirmation-Frage an den Nutzer — das ist Housekeeping, immer gleich, idempotent.
@@ -105,6 +111,7 @@ Kontext:
 - Aktuelle ISO-Kalenderwoche: automatisch aus System-Datum (Europe/Berlin)
 - Account: MVV Enamic Ads (CID 2011391652)
 - Memory-Root (ueber Symlink): `memory/` → `../google-ads-memory/`
+- Staging-Dir fuer Sub-Agent-Outputs: `/tmp/w<NN>-staging/` (siehe Bootstrap oben)
 - Agent-Definitionen: `.claude/agents/*.md`
 - Skill-Library: `skills/`
 
@@ -113,16 +120,16 @@ Ablauf (aus SKILL.md, Phasen A-G):
 A. Liese memory/00_strategy_manifest.md, memory/02_findings_log.md (offene Items), memory/reports/<previous-week>.md (wenn existiert)
 
 B. Dispatche PARALLEL via Task-Tool:
-   - performance-analyst (LAST_7_DAYS)
-   - search-keyword-hunter (LAST_14_DAYS)
-   - statistician (adaptiv 7-90 Tage, mit Default-Hypothesen + offenen Findings)
-   - market-competitive (LAST_30_DAYS)
+   - performance-analyst (LAST_7_DAYS, output_path: $STAGING_DIR/performance-analyst.json)
+   - search-keyword-hunter (LAST_14_DAYS, output_path: $STAGING_DIR/search-keyword-hunter.json)
+   - statistician (adaptiv 7-90 Tage, output_path: $STAGING_DIR/statistician.json)
+   - market-competitive (LAST_30_DAYS, output_path: $STAGING_DIR/market-competitive.json)
 
-   Jeder bekommt ein strukturiertes JSON-Briefing gemaess `skills/weekly-report/dispatch-playbook.md`.
+   Jeder bekommt ein strukturiertes JSON-Briefing gemaess `skills/weekly-report/dispatch-playbook.md` MIT `output_path`-Feld. Sub-Agents schreiben JSON in die Datei und returnen nur Pfad + Kurz-Summary — **nicht** den Full-JSON inline (Stream-Timeout-Schutz, siehe docs/handoff-contracts.md "File-basierter Handoff").
 
-C. Sammle 4 Outputs, validiere Schema-Compliance gegen `docs/handoff-contracts.md`.
+C. Verify 4 Output-Files mit `ls -la` + `jq empty`. Baue `sub_agent_status`-Block (ok/row_counts/warnings) pro Agent aus knappen Metadata-Queries (`jq '.data_quality'`). **Kein** Full-JSON-Read.
 
-D. Dispatche report-composer mit zusammengefasstem Input.
+D. Dispatche report-composer mit **Path-only-Briefing** (siehe docs/handoff-contracts.md "Report-Composer Input"). `run_in_background: true`.
 
 E. Composer:
    - Rendert Template aus `skills/weekly-report/template.md`

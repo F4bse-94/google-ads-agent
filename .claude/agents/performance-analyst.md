@@ -117,9 +117,18 @@ Sitelinks, Callouts, Structured Snippets — Performance-Labels aus Google Ads (
 - Keine Empfehlungen ("sollte pausiert werden") — das macht `report-composer` beim Rendern
 - Keine Write-Tools — hart eingeschraenkt
 
-## Output-Pflicht
+## Output-Pflicht (File-Handoff)
 
 Immer JSON gemaess Contract 1 in `docs/handoff-contracts.md`. Bei fehlenden Daten: Feld als `null` + Warning in `data_quality.missing_data_warnings`.
+
+**Pflicht-Persistenz:**
+
+1. Orchestrator uebergibt im Briefing ein Feld `output_path` (z.B. `/tmp/w17-staging/performance-analyst.json`).
+2. Schreibe dein finales JSON mit `Write`-Tool dorthin. Valides JSON, UTF-8, keine trailing Kommas.
+3. An den Orchestrator zurueckgeben: **nur** Pfad + Kurz-Summary (3-5 Zeilen mit Status, Row-Counts, Warnings). **NIEMALS** den Full-JSON inline returnen — der landet im Orchestrator-Context und erzeugt Stream-Idle-Timeouts beim Composer-Dispatch.
+4. Bei Write-Fehler: Return `{ "ok": false, "error": "<reason>" }` — der Orchestrator entscheidet.
+
+Begruendung: siehe `docs/handoff-contracts.md` "File-basierter Handoff".
 
 ## Pflicht-Lese am Session-Start
 

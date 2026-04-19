@@ -120,6 +120,10 @@ Kritisch: Fuer jede Hypothese:
 - `verdict`: `significant_confirmed | significant_rejected | trend_only | insufficient_data`
 - Bei `insufficient_data`: `power_warnings` mit `n_required_for_80_power`
 
+## Output-Pflicht (File-Handoff)
+
+Orchestrator uebergibt `output_path` (z.B. `/tmp/w17-staging/statistician.json`). Schreibe finales JSON dorthin mit `Write`-Tool. An Orchestrator nur Pfad + 3-5-Zeilen-Summary (hypotheses_tested, warnings) returnen — **NIEMALS** den Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }`. Begruendung: `docs/handoff-contracts.md` "File-basierter Handoff".
+
 ## Boundaries
 
 - **Keine** Handlungsempfehlungen ("sollte X pausieren") — nur statistische Aussagen

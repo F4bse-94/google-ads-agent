@@ -6,6 +6,32 @@ Struktur der Kommunikation zwischen Orchestrator und Sub-Agents. Ziel: keine uns
 
 ---
 
+## File-basierter Handoff (Pflicht ab KW17/2026)
+
+**Grund:** Claude Code Routines haben einen dokumentierten 5-Minuten-Stream-Idle-Timeout. Inline-Passing grosser JSONs (4× ~10-25 KB) zwischen Agents erzeugt im Empfaenger-Agent eine lange Parse-/Denk-Phase ohne Token-Output → Timeout. Loesung (Anthropic-Best-Practice, siehe "How we built our multi-agent research system"): **Agents schreiben Outputs in Dateien, reichen nur Pfade weiter.**
+
+### Staging-Directory-Konvention
+
+- Pfad: `/tmp/w<NN>-staging/` (z.B. `/tmp/w17-staging/`) — wird vom Orchestrator **einmal** im Bootstrap angelegt (`mkdir -p`)
+- Datei-Namen (fix): `performance-analyst.json`, `search-keyword-hunter.json`, `statistician.json`, `market-competitive.json`
+- Format: valides JSON gemaess Contract 1-4 unten, UTF-8, LF-Zeilenenden
+
+### Sub-Agent-Persistenz (Pflicht)
+
+Jeder Sub-Agent schliesst seine Arbeit so ab:
+
+1. Finales JSON-Output mit `Write`-Tool nach `/tmp/w<NN>-staging/<agent>.json` schreiben
+2. An Orchestrator zurueckgeben: **nur** Pfad + 3-5-Zeilen-Summary (Status, Row-Counts, Data-Quality-Flags) — **NICHT** den Full-JSON-Dump
+3. Bei Write-Fehler: Pfad leer + `error_flag` + Kurz-Ursache im Return — Orchestrator entscheidet ueber Retry
+
+**Warum der Agent nicht den Full-JSON returnt:** Return-Payload landet im Orchestrator-Context. Bei 4 Sub-Agents × 15 KB = 60 KB Orchestrator-Context — der wird beim Composer-Dispatch weitergereicht und erzeugt genau das Problem, das wir loesen wollen.
+
+### Orchestrator → Composer-Handoff
+
+Composer-Briefing enthaelt **ausschliesslich** Pfade, **keine** inline JSON-Inhalte. Composer liest selbst on-demand pro Sektion (Progressive Disclosure, Details siehe `.claude/agents/report-composer.md`).
+
+---
+
 ## Universal Briefing-Schema
 
 Jedes Sub-Agent-Briefing folgt diesem Schema:
@@ -346,23 +372,30 @@ Der Orchestrator folgt keinem externen Briefing, aber verwaltet seinen eigenen S
 
 ---
 
-## Report-Composer Input
+## Report-Composer Input (File-Referenzen, NICHT inline)
 
-Der Composer bekommt alle 4 Sub-Agent-Outputs + Memory-Referenzen:
+Der Composer bekommt **Pfade** zu Sub-Agent-Outputs, nicht die Outputs selbst. Er liest on-demand pro Sektion via `Read` + `jq`/Offset, um seinen Context klein zu halten.
 
 ```json
 {
   "agent": "report-composer",
   "period": { "iso_week": 17, "year": 2026, "start": "2026-04-20", "end": "2026-04-26" },
-  "sub_agent_outputs": {
-    "performance_analyst": { /* full output */ },
-    "search_keyword_hunter": { /* full output */ },
-    "statistician": { /* full output */ },
-    "market_competitive": { /* full output */ }
+  "staging_dir": "/tmp/w17-staging",
+  "sub_agent_output_paths": {
+    "performance_analyst": "/tmp/w17-staging/performance-analyst.json",
+    "search_keyword_hunter": "/tmp/w17-staging/search-keyword-hunter.json",
+    "statistician": "/tmp/w17-staging/statistician.json",
+    "market_competitive": "/tmp/w17-staging/market-competitive.json"
+  },
+  "sub_agent_status": {
+    "performance_analyst": { "ok": true, "row_counts": { "campaigns": 12, "ads": 34 }, "warnings": [] },
+    "search_keyword_hunter": { "ok": true, "row_counts": { "negatives_candidates": 18, "opportunities": 6 }, "warnings": [] },
+    "statistician": { "ok": true, "hypotheses_tested": 3, "warnings": ["H2 insufficient_data"] },
+    "market_competitive": { "ok": true, "competitors_found": 7, "warnings": [] }
   },
   "memory_references": {
-    "strategy_summary": "string (aus 00_strategy_manifest.md)",
-    "previous_week_open_items": [],
+    "strategy_manifest_path": "memory/00_strategy_manifest.md",
+    "findings_log_path": "memory/02_findings_log.md",
     "previous_report_path": "memory/reports/2026-W16-report.md"
   },
   "template_path": "skills/weekly-report/template.md",
@@ -376,6 +409,8 @@ Der Composer bekommt alle 4 Sub-Agent-Outputs + Memory-Referenzen:
   }
 }
 ```
+
+**Anti-Pattern (nicht mehr erlaubt):** `sub_agent_outputs: { full JSON inline }` — erzeugt Stream-Idle-Timeouts im Composer.
 
 ### Composer-Regeln
 - **Kein Erfinden:** wenn Sub-Agent kein Datum lieferte, Sektion als "❗ DATA UNAVAILABLE" markieren

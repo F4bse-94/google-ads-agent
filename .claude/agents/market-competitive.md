@@ -86,6 +86,10 @@ Fuer Top-3-Wettbewerber (aus Auction Insights):
 
 Gemaess `docs/handoff-contracts.md` Contract 4.
 
+## Output-Pflicht (File-Handoff)
+
+Orchestrator uebergibt `output_path` (z.B. `/tmp/w17-staging/market-competitive.json`). Schreibe finales JSON dorthin mit `Write`-Tool. An Orchestrator nur Pfad + 3-5-Zeilen-Summary (competitors_found, warnings) returnen — **NIEMALS** den Full-JSON inline. Bei Write-Fehler: `{ "ok": false, "error": "<reason>" }`. Begruendung: `docs/handoff-contracts.md` "File-basierter Handoff".
+
 ## Boundaries
 
 - Max. 100 DataForSEO-Keyword-Abfragen pro Run (Credits-Budget)

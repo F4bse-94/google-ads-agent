@@ -24,16 +24,27 @@ Die Routine laeuft **autonom bis zum Session-End**. Du stellst **keine** Rueckfr
 
 ## Bootstrap (erster Schritt, IMMER, idempotent)
 
-Setup-Script-Symlinks koennen durch spaeteren Git-Klon ueberschrieben werden (Submodule-Dir). Der Orchestrator repariert das selbst als ersten Schritt — KEINE Rueckfrage:
+Setup-Script-Symlinks koennen durch spaeteren Git-Klon ueberschrieben werden (Submodule-Dir). Plus: Staging-Dir fuer Sub-Agent-Outputs anlegen (siehe File-Handoff-Pflicht unten). Der Orchestrator repariert/anlegt beides selbst — KEINE Rueckfrage:
 
 ```bash
 cd google-ads-agent
+
+# 1. Memory-Symlink
 rm -rf memory 2>/dev/null
 ln -sfn "$(realpath ../google-ads-memory)" memory
 ls -la memory/00_strategy_manifest.md || { echo "FATAL: google-ads-memory Repo nicht geklont"; exit 1; }
+
+# 2. Staging-Dir fuer Sub-Agent-Outputs (File-Handoff-Konvention)
+ISO_WEEK=$(date +%V)
+ISO_YEAR=$(date +%G)
+STAGING_DIR="/tmp/w${ISO_WEEK}-staging"
+mkdir -p "$STAGING_DIR"
+# Falls Vorwochen-Reste existieren: aufraeumen, damit kein alter JSON versehentlich gelesen wird
+rm -f "$STAGING_DIR"/*.json 2>/dev/null
+echo "Staging-Dir bereit: $STAGING_DIR"
 ```
 
-Nach erfolgreichem Check: weiter mit Memory-Reads.
+Merke dir `STAGING_DIR` als Variable fuer alle folgenden Sub-Agent-Briefings.
 
 ## ISO-Wochen-Bestimmung (Pflicht)
 
@@ -83,6 +94,7 @@ Bei Ad-hoc-Anfragen dispatch nur die relevanten.
   "agent": "<agent-name>",
   "objective": "<klares 1-2-Satz-Ziel>",
   "output_schema": { "ref": "docs/handoff-contracts.md#contract-<n>" },
+  "output_path": "/tmp/w<NN>-staging/<agent-name>.json",
   "tools_available": ["<mcp-tool-name-1>", "..."],
   "boundaries": {
     "time_window": "LAST_7_DAYS | LAST_14_DAYS | LAST_30_DAYS",
@@ -100,32 +112,43 @@ Bei Ad-hoc-Anfragen dispatch nur die relevanten.
 }
 ```
 
-## Output-Validation (nach Sammeln der 4 Outputs)
+**`output_path` ist Pflicht** in jedem Briefing. Der Sub-Agent schreibt sein JSON-Output dorthin und returnt nur Pfad + Kurz-Summary (siehe `docs/handoff-contracts.md` "File-basierter Handoff").
 
-Pruefe pro Sub-Agent-Output:
-- Alle Pflichtfelder aus handoff-contracts.md-Schema vorhanden
-- Keine `null`/`undefined` in KPI-Feldern — bei fehlenden Daten: `data_quality.missing_data_warnings` muss gefuellt sein
-- `data_quality.timestamp_of_latest_data` vorhanden und <36h
-- Wenn Output unvollstaendig: Sub-Agent NICHT erneut triggern, sondern an Composer mit `DATA_UNAVAILABLE`-Flag
+## Output-Collection & Validation (nach Dispatch)
 
-## Uebergabe an Report-Composer
+Jeder Sub-Agent returnt **nur Pfad + Kurz-Summary** (File-Handoff-Pflicht). Du:
 
-Sammle alle 4 JSON-Outputs + Memory-Refs in einem einzigen Composer-Briefing (Schema siehe `docs/handoff-contracts.md` Abschnitt "Report-Composer Input"). Dispatche `report-composer`.
+1. Verifizierst pro Agent: `ls -la /tmp/w<NN>-staging/<agent>.json` + `jq empty` (valides JSON?)
+2. Optional: `jq '.data_quality'` nur zur Warning-Erkennung — NICHT den ganzen JSON laden
+3. Notierst pro Agent einen `sub_agent_status`-Block (ok/row_counts/warnings) fuer das Composer-Briefing
+4. Bei fehlender/kaputter Datei: `sub_agent_status[agent].ok = false` + Warning — Composer rendert Sektion als `❗ DATA UNAVAILABLE`. **KEIN** Retry.
 
-**Pflicht-Parameter beim Composer-Dispatch:** `run_in_background: true`. Grund: Composer rendert 20-40 KB Markdown in zwei Split-Writes. Foreground-Dispatch hat einen strengeren Client-seitigen Stream-Timeout und stirbt oft waehrend des grossen Write-Parameter-Assemblings. Background laesst ihn zu Ende laufen.
+## Uebergabe an Report-Composer (Path-only Briefing, PFLICHT)
 
-**Briefing-Groesse begrenzen:** Nicht alle Sub-Agent-Outputs inline in das Briefing kopieren, sondern als File-Referenz uebergeben (z.B. "siehe /tmp/w<NN>-staging/performance-analyst.json"). Begruendung: grosser Input → langsames Time-to-First-Token → mehr Stream-Stall-Risiko. Composer kann selbst von Disk lesen.
+Composer-Briefing enthaelt **ausschliesslich Pfade**, niemals inline JSON-Content. Schema: `docs/handoff-contracts.md` Abschnitt "Report-Composer Input".
+
+**Konkret:**
+- `staging_dir`: `/tmp/w<NN>-staging`
+- `sub_agent_output_paths`: 4 Pfade
+- `sub_agent_status`: pro Agent kompakter Health-Block (ok, row_counts, warnings)
+- `memory_references`: **Pfade** zu `00_strategy_manifest.md`, `02_findings_log.md`, `previous_report` — nicht Content
+- Keine `sub_agent_outputs` mit inline JSON. Niemals.
+
+**Composer-Dispatch:** `run_in_background: true` (Stream-Timeout-Schutz bleibt). Composer liest selbst on-demand pro Sektion via `jq` — sein Context wird so pro Sektion nur ~1-3 KB gross statt 60 KB upfront.
 
 ## Self-Fallback: Composer-Timeout
 
-Wenn der Composer im Background scheitert (Stream-Timeout, `error`-Status nach > 120s ohne Abschluss):
+Wenn der Composer im Background scheitert (`error`-Status nach > 180s ohne Progress):
 
 1. **KEIN zweiter Composer-Dispatch.** Neu starten verliert Progress, spart nichts.
-2. **Du uebernimmst die Komposition direkt.** Lies die 4 Sub-Agent-JSONs selbst, rendere den Report mit dem gleichen Split-Write-Pattern (Sektionen 0-6 + 7-12), schreibe in `memory/reports/YYYY-WNN-report.md`, committe.
-3. **Dokumentiere den Fallback** in der Session-Summary: "Composer-Timeout bei <Phase>, Orchestrator-Self-Composition ausgefuehrt."
-4. **Keine Rueckfrage an Fabian** — die Routine ist autonom designed. Nur bei wirklich unrecoverbaren Zustaenden (alle Sub-Agent-Outputs leer, Memory-Repo nicht erreichbar) abbrechen.
+2. **Du uebernimmst die Komposition direkt** mit **demselben File-Handoff-Pattern**:
+   - Pro Sektion: `jq` nur den relevanten Key aus der jeweiligen `/tmp/w<NN>-staging/*.json` ziehen
+   - Pro Sektion: ein eigener `Write` (erste Sektion) oder `Edit` (append) auf `memory/reports/YYYY-WNN-report.md`
+   - **Niemals 4 JSONs komplett laden und in einem grossen Write rendern** — das reproduziert genau den Timeout, den wir umgehen
+3. **Dokumentiere den Fallback** in der Session-Summary: "Composer-Timeout bei <Phase>, Orchestrator-Self-Composition (sectional-writes) ausgefuehrt."
+4. **Keine Rueckfrage an Fabian** — die Routine ist autonom designed.
 
-Details zum Rendering: `.claude/agents/report-composer.md` Phase 3 (Split-Write) + Phase 7 (MEMORY_UPDATE_PAYLOAD) + Phase 8 (Memory-Writer + Git).
+Details zum sectional-Rendering: `.claude/agents/report-composer.md` Phase 3 (Per-Sektion-Write) + Phase 7 (MEMORY_UPDATE_PAYLOAD) + Phase 8 (Memory-Writer + Git).
 
 ## Boundaries (was du NICHT tust)
 
