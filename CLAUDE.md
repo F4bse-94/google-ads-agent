@@ -14,6 +14,7 @@ Multi-Agent-System fuer MVV Enamic Ads (Google Ads Account `2011391652`). Nachfo
 | **Skills** | `skills/<name>/SKILL.md` | Filesystem-Skills, progressive disclosure, on-demand geladen |
 | **Memory** | `memory/` | Git-Submodule `google-ads-memory` — Strategy, Session-Log, Findings-Log, Negatives, Top-Performers, Report-Historie |
 | **Tools** | n8n-MCPs (8x Google Ads + 1x DataForSEO) | siehe `docs/workflow-atlas.md` |
+| **Workflow-Engineering** | `n8n-mcp` (czlonkowski) via `.mcp.json` + Agent `n8n-workflow-engineer` | Build/Update/Validate der 9 n8n-Workflows + Executions-Analyse |
 | **Routines** | `routines/*.md` | Claude Code Routine Configs (Prompt + Cron + Connectors) |
 
 ## Regeln
@@ -31,7 +32,7 @@ Orchestrator (Opus 4.7) -> 4 parallele Sub-Agents (Performance-Analyst, Search-K
 
 ## Anti-Patterns
 
-- Workflow-JSONs in `workflows/` NIE direkt editieren — immer via n8n-UI, dann `backup-n8n-workflow` Skill
+- Workflow-JSONs in `workflows/` NIE direkt editieren — entweder via n8n-UI ODER via `n8n-workflow-engineer` Agent (n8n-mcp `n8n_update_partial_workflow`); danach lokales JSON-Backup ziehen
 - `data.shared` beim Workflow-Backup entfernen
 - Sub-Agents direkt anrufen ohne Struct-Briefing (fuehrt zu unfokussierten Outputs)
 - Kein `CLAUDE.md`-Bloat — neue Inhalte in Skills/Docs, nicht hier
