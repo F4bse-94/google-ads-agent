@@ -55,10 +55,10 @@ JSON-Briefing vom Orchestrator mit `time_window` (default LAST_30_DAYS — laeng
    - **DataForSEO: 1 Page pro SERP-Call**, location_code=2276 fix.
 
 4. **Block-Reihenfolge + Edit-Punkte:**
-   - **Block 1** — `campaign_performance` fuer unsere IS-Lage → Edit: `auction_insights` (1 Eintrag "MVV self")
+   - **Block 1** — `campaign_performance` fuer unsere IS-Lage → Edit: `auction_insights` (1 Eintrag "account self")
    - **Block 2** — `serp_search` fuer Top-5-Money-Keywords (5 Calls, dedupe Domains) → Edit: `new_competitors` (Kandidaten-Liste)
    - **Block 3** — `competitors_domain` fuer Top-3-Competitor-Domains → Edit: `new_competitors` final
-   - **Block 4** — `search_volume` fuer Top-10-MVV-Keywords (1 Batch-Call) → Edit: `keyword_volume_trends`
+   - **Block 4** — `search_volume` fuer Top-10-Account-Keywords (1 Batch-Call) → Edit: `keyword_volume_trends`
    - **Block 5** — `keyword_suggestions` fuer Produkt-Strategy-Keywords (max 3 Seeds) → Edit: `new_keyword_opportunities`
    - **Final** — `data_quality.missing_data_warnings`
 
@@ -104,7 +104,7 @@ Fuer unsere Top-5-Money-Keywords (high spend):
 
 ### 4. Neue Keyword-Opportunities
 
-Fuer MVV-relevante Themen (aus Strategy-Manifest Produkte A-D):
+Fuer account-relevante Themen (aus Strategy-Manifest Produkte A-D):
 - `keyword_suggestions` + `related_keywords` mit Seed aus unserer Produkt-Landing-Page-Breite
 - Filter:
   - Volume > 100/Monat
@@ -150,6 +150,6 @@ Orchestrator uebergibt `output_path`. **ERSTER Tool-Call**: Skeleton-JSON schrei
 
 ## Progressive Disclosure
 
-- MVV-Zielgruppen-Definitionen (fuer Relevance-Scoring): `memory/00_strategy_manifest.md` Abschnitt 4
+- Account-Zielgruppen-Definitionen (fuer Relevance-Scoring): `memory/00_strategy_manifest.md` Abschnitt 4
 - Produkt-Landing-Pages (fuer Seed-Keywords): `memory/00_strategy_manifest.md` Abschnitt 3
 - DataForSEO-Tool-Referenz: `docs/workflow-atlas.md` Abschnitt 9

@@ -34,8 +34,8 @@ Wortwoertliche Briefing-Templates, die der Orchestrator pro Sub-Agent via Task-T
   "boundaries": {
     "time_window": "LAST_7_DAYS",
     "comparison_window": "PREVIOUS_7_DAYS",
-    "customer_id": "2011391652",
-    "login_customer_id": "5662771991",
+    "customer_id": "<YOUR_CUSTOMER_ID>",
+    "login_customer_id": "<YOUR_LOGIN_CUSTOMER_ID>",
     "read_only": true,
     "do_not": [
       "make_recommendations",
@@ -69,7 +69,7 @@ Wortwoertliche Briefing-Templates, die der Orchestrator pro Sub-Agent via Task-T
   "orchestrator_run_id": "{{SESSION_ID}}",
   "timestamp": "{{ISO_TIMESTAMP}}",
   "agent": "search-keyword-hunter",
-  "objective": "Finde (1) neue Negative-Keyword-Kandidaten aus Search-Terms der letzten 14 Tage, (2) Keyword-Opportunities via DataForSEO fuer unsere Top-5-Performer, (3) Ad-Copy-Audit-Findings gegen MVV-Top-Performer-Patterns. Dedupliziere gegen memory/03_negatives.md.",
+  "objective": "Finde (1) neue Negative-Keyword-Kandidaten aus Search-Terms der letzten 14 Tage, (2) Keyword-Opportunities via DataForSEO fuer unsere Top-5-Performer, (3) Ad-Copy-Audit-Findings gegen Top-Performer-Patterns aus Memory. Dedupliziere gegen memory/03_negatives.md.",
   "output_schema": { "ref": "docs/handoff-contracts.md#contract-2-search-keyword-hunter" },
   "tools_available": [
     "google-ads-reporting.search_terms_report",
@@ -85,8 +85,8 @@ Wortwoertliche Briefing-Templates, die der Orchestrator pro Sub-Agent via Task-T
   ],
   "boundaries": {
     "time_window": "LAST_14_DAYS",
-    "customer_id": "2011391652",
-    "login_customer_id": "5662771991",
+    "customer_id": "<YOUR_CUSTOMER_ID>",
+    "login_customer_id": "<YOUR_LOGIN_CUSTOMER_ID>",
     "read_only": true,
     "max_dataforseo_suggestions": 50,
     "dataforseo_location_code": 2276,
@@ -133,8 +133,8 @@ Wortwoertliche Briefing-Templates, die der Orchestrator pro Sub-Agent via Task-T
   "boundaries": {
     "time_window_start": "LAST_7_DAYS",
     "time_window_max_extension": "LAST_90_DAYS",
-    "customer_id": "2011391652",
-    "login_customer_id": "5662771991",
+    "customer_id": "<YOUR_CUSTOMER_ID>",
+    "login_customer_id": "<YOUR_LOGIN_CUSTOMER_ID>",
     "read_only": true,
     "multiple_testing_correction_threshold": 3,
     "power_target": 0.80,
@@ -197,8 +197,8 @@ Wortwoertliche Briefing-Templates, die der Orchestrator pro Sub-Agent via Task-T
   ],
   "boundaries": {
     "time_window": "LAST_30_DAYS",
-    "customer_id": "2011391652",
-    "login_customer_id": "5662771991",
+    "customer_id": "<YOUR_CUSTOMER_ID>",
+    "login_customer_id": "<YOUR_LOGIN_CUSTOMER_ID>",
     "read_only": true,
     "max_dataforseo_calls": 100,
     "dataforseo_location_code": 2276,
@@ -256,7 +256,7 @@ Wortwoertliche Briefing-Templates, die der Orchestrator pro Sub-Agent via Task-T
     "github_path": "memory/reports/{{YYYY-WNN}}-report.md",
     "commit_message": "report: Weekly Google Ads Report KW {{W}}/{{YYYY}} — Status {{STATUS_EMOJI}}",
     "email": {
-      "to": "f.smogulla@gmail.com",
+      "to": "<your-email@example.com>",
       "subject_template": "Weekly Google Ads Report — KW {{W}} | Status: {{STATUS_EMOJI}} {{STATUS_LABEL}}",
       "body_style": "executive_summary_html_with_github_link"
     }

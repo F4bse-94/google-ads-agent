@@ -3,8 +3,8 @@
 Dokumentation der 8 bestehenden n8n Google-Ads-MCP-Server + 1 geplanter DataForSEO-MCP. Quelle: live n8n-Instanz `srv867988.hstgr.cloud`. Alle folgen dem Hub-and-Spoke-Pattern (MCP Trigger → Tool-Workflows → Switch → HTTP Request → Format Code).
 
 **Basis-Config aller Google-Ads-MCPs:**
-- `loginCustomerId: 5662771991` (hardcoded in Set-Credentials-Nodes)
-- `customerId: 2011391652` (MVV Enamic Ads)
+- `loginCustomerId: <YOUR_LOGIN_CUSTOMER_ID>` (hardcoded in Set-Credentials-Nodes)
+- `customerId: <YOUR_CUSTOMER_ID>` (<ACCOUNT_NAME>)
 - OAuth: Google Ads API via n8n-Credentials
 
 ---
@@ -251,19 +251,19 @@ Statistiker (primaer), Performance-Analyst (Auction Insights)
 
 ## MCP-Endpoints (Streamable HTTP)
 
-Alle MCP-Trigger laufen unter `https://n8n.srv867988.hstgr.cloud/mcp/<path>`. Extrahiert aus den Workflow-Backups (2026-04-17):
+Alle MCP-Trigger laufen unter `https://<your-n8n-host>/mcp/<path>`. Extrahiert aus den Workflow-Backups (2026-04-17):
 
 | Workflow | MCP-Path | Vollstaendige URL |
 |---|---|---|
-| Account Tools | `google-ads-account-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-account-tools` |
-| Campaign Tools | `google-ads-campaign-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-campaign-tools` |
-| Ad Group Tools | `google-ads-ad-group-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-ad-group-tools` |
-| Ad Tools | `google-ads-ad-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-ad-tools` |
-| Keyword Tools | `google-ads-keyword-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-keyword-tools` |
-| Reporting Tools | `google-ads-reporting-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-reporting-tools` |
-| Insights Tools | `google-ads-insights-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-insights-tools` |
-| GAQL Tools | `google-ads-gaql-tools` | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-gaql-tools` |
-| DataForSEO MCP v2 | `dataforseo-mcp-v2` | `https://n8n.srv867988.hstgr.cloud/mcp/dataforseo-mcp-v2` |
+| Account Tools | `google-ads-account-tools` | `https://<your-n8n-host>/mcp/google-ads-account-tools` |
+| Campaign Tools | `google-ads-campaign-tools` | `https://<your-n8n-host>/mcp/google-ads-campaign-tools` |
+| Ad Group Tools | `google-ads-ad-group-tools` | `https://<your-n8n-host>/mcp/google-ads-ad-group-tools` |
+| Ad Tools | `google-ads-ad-tools` | `https://<your-n8n-host>/mcp/google-ads-ad-tools` |
+| Keyword Tools | `google-ads-keyword-tools` | `https://<your-n8n-host>/mcp/google-ads-keyword-tools` |
+| Reporting Tools | `google-ads-reporting-tools` | `https://<your-n8n-host>/mcp/google-ads-reporting-tools` |
+| Insights Tools | `google-ads-insights-tools` | `https://<your-n8n-host>/mcp/google-ads-insights-tools` |
+| GAQL Tools | `google-ads-gaql-tools` | `https://<your-n8n-host>/mcp/google-ads-gaql-tools` |
+| DataForSEO MCP v2 | `dataforseo-mcp-v2` | `https://<your-n8n-host>/mcp/dataforseo-mcp-v2` |
 
 **Transport-Probe (2026-04-17):** `/mcp/<path>` antwortet mit HTTP 400 auf leere POSTs — das ist der Streamable-HTTP-Endpoint (existiert, erwartet valide MCP-Initialisierungs-Message). `/mcp/<path>/sse` antwortet mit HTTP 404. Interpretation: **n8n-Instanz laeuft Streamable HTTP (≥ v1.104.0 wahrscheinlich)**, SSE ist nicht exponiert.
 

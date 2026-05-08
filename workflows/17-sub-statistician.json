@@ -1,0 +1,421 @@
+{
+  "updatedAt": "2026-05-08T12:56:17.763Z",
+  "createdAt": "2026-04-19T18:37:27.303Z",
+  "id": "rBIHMb14pdtLRGTj",
+  "name": "GoogleAdsAgent - Sub: Statistician",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Worker Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"briefing_id\": \"uuid\",\n  \"objective\": \"Validate hypotheses statistically\",\n  \"hypotheses_to_test\": [{\"id\": \"F-001\", \"hypothesis\": \"Mobile CVR < Desktop CVR\"}],\n  \"boundaries\": {\"time_window_default\": \"LAST_30_DAYS\", \"customer_id\": \"<YOUR_CUSTOMER_ID>\"},\n  \"context_from_memory\": {\"open_items_from_last_week\": []}\n}"
+      }
+    },
+    {
+      "id": "llm",
+      "name": "Azure GPT-5.4 Mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        180,
+        300
+      ],
+      "parameters": {
+        "model": "gpt-5.4-mini",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    },
+    {
+      "id": "agent",
+      "name": "Statistician",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        0
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Briefing vom Orchestrator:\n\n```json\n{{ JSON.stringify($json, null, 2) }}\n```\n\nFuehre deine Rolle als Statistiker aus. Ziehe eigene Rohdaten via GAQL. Nutze compute_statistical_test fuer deterministische Tests. Gib NUR valides JSON zurueck.",
+        "options": {
+          "systemMessage": "Du bist der STATISTIKER fuer <ACCOUNT_NAME> (Customer <YOUR_CUSTOMER_ID>).\n\nROLLE: Hypothesen-Validierung mit echtem Daten-Pull. Du bekommst Hypothesen — aber Rohdaten ziehst du SELBST via GAQL (nicht vom Orchestrator durchgereicht).\n\n## Pflicht-Reads zu Beginn\n1. '02_findings_log.md' via read_memory_file — offene Hypothesen (status=open|insufficient_data|trend_only). MUESSEN in diesem Run re-validiert werden falls Sample-Size jetzt ausreichend.\n\n## Verfuegbare Tools\n- execute_gaql(query): PRIMAER — Custom GAQL fuer Rohdaten. LAST_90_DAYS EXISTIERT NICHT — nutze BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD' ab >30 Tage.\n- campaign_performance, keyword_performance, device_performance (Reporting): schnelle Aggregate\n- compute_statistical_test: deterministische Tests (Z-Test, Welch-t, Cochran-Armitage, Chi-Sq, Bayesian-Beta-Binomial). Input: test_type + Datenreihen. Output: p_value, ci_95, effect_size. IMMER verwenden (keine Test-Rechnungen im LLM).\n- read_memory_file(filename): Memory-Repo\n\n## Hard Caps\n- MAX 15 Tool-Calls total\n- MAX 5 Hypothesen pro Run (3 pflicht + 2 ad-hoc)\n- GAQL mit LIMIT 1000\n\n## Gueltige DATE-Enums (Google Ads API)\nLAST_7_DAYS, LAST_14_DAYS, LAST_30_DAYS, THIS_MONTH, LAST_MONTH, THIS_WEEK_MON_TODAY, LAST_WEEK_MON_SUN, LAST_BUSINESS_WEEK\nNICHT vorhanden: LAST_60_DAYS, LAST_90_DAYS — HTTP 400.\n\n## Zeitfenster-Adaption\nStart LAST_7_DAYS. Wenn n < required_for_80_power: erweitere auf LAST_14_DAYS, LAST_30_DAYS. Bei >30 Tagen: Custom-Range via BETWEEN.\nWenn auch 90 Tage nicht ausreichen: verdict = insufficient_data, findings_log mit n_required_for_80_power.\n\n## Test-Auswahl\n- CVR-Vergleich 2 Gruppen, n>=30: Two-Proportion Z-Test\n- CPA-Vergleich 2 Gruppen, n>=20: Welch's t-Test\n- CVR n<30: Bayesian Beta-Binomial\n- Trend 3+ Zeitpunkte: Cochran-Armitage Chi-sq\n- Multiple Tests (>=3 parallel): Bonferroni; >=10: FDR/BH\n\n## Wochentag-Korrektur (B2B-Pflicht)\nB2B-Accounts haben typisch ~70% Traffic Mo-Fr. WoW nur gleiche Wochentage vergleichen. Anomaly: expected aus gleichen Wochentagen letzte 4 Wochen.\n\n## Arbeitsweise pro Hypothese\n1. Parse: H0, H1, Test-Typ, benoetigte Sample-Size\n2. GAQL-Query fuer Rohdaten (mit LIMIT 1000)\n3. compute_statistical_test aufrufen (deterministisch)\n4. Verdict setzen: significant_confirmed | significant_rejected | trend_only | insufficient_data\n\n## Output (JSON only)\n{\n  \"agent\": \"statistician\",\n  \"generated_at\": \"ISO-8601\",\n  \"time_window_used\": {\"days\": 7, \"adapted\": false, \"reason\": \"\"},\n  \"significance_matrix\": [\n    {\n      \"hypothesis_id\": \"F-001\",\n      \"hypothesis\": \"Mobile CVR < Desktop CVR\",\n      \"n_group_a\": 0, \"n_group_b\": 0,\n      \"test_used\": \"two_proportion_z\",\n      \"p_value\": 0, \"ci_95\": [0, 0], \"effect_size\": 0,\n      \"alpha_corrected\": 0.05,\n      \"verdict\": \"significant_confirmed\"\n    }\n  ],\n  \"corrections_applied\": {\"multiple_testing\": \"bonferroni|fdr|none\", \"weekday\": true, \"seasonality\": false},\n  \"power_warnings\": [{\"hypothesis_id\", \"n_actual\", \"n_required_for_80_power\"}],\n  \"open_hypotheses_resolved\": [{\"id_from_findings_log\", \"new_verdict\"}],\n  \"new_open_hypotheses\": [],\n  \"trend_breaks\": [{\"metric\", \"weeks_analyzed\", \"chisq\", \"p_value\"}],\n  \"methodology_notes\": []\n}\n\nBoundaries: Keine Handlungsempfehlungen, nur statistische Aussagen. Keine Annahmen ueber Datenqualitaet ohne data_quality-Pruefung. Keine Write-Tools.",
+          "maxIterations": 15
+        },
+        "needsFallback": true
+      }
+    },
+    {
+      "id": "tool-gaql",
+      "name": "execute_gaql",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        300
+      ],
+      "parameters": {
+        "name": "execute_gaql",
+        "description": "PRIMARY tool. Run arbitrary GAQL query to pull raw data. Use BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD' for >30 day ranges (LAST_90_DAYS is invalid).",
+        "workflowId": {
+          "__rl": true,
+          "value": "X9OeaCnNCTFZpxzI_xbyh",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "execute_gaql",
+            "query": "={{ $fromAI('query', 'GAQL query', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-camp",
+      "name": "campaign_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        300
+      ],
+      "parameters": {
+        "name": "campaign_performance",
+        "description": "Quick aggregate for campaign-level KPIs.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "campaign_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Preset enum', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-dev",
+      "name": "device_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "name": "device_performance",
+        "description": "Device-level aggregates for mobile-vs-desktop CVR/CPA tests.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "device_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Preset enum', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-conv",
+      "name": "conversion_trends",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        300
+      ],
+      "parameters": {
+        "name": "conversion_trends",
+        "description": "Conversion trend data over time for trend-break tests.",
+        "workflowId": {
+          "__rl": true,
+          "value": "iXM_bBcOy3-72NRCuheg0",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "conversion_trends",
+            "dateRange": "={{ $fromAI('dateRange', 'Preset enum', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-stats",
+      "name": "compute_statistical_test",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        300
+      ],
+      "parameters": {
+        "name": "compute_statistical_test",
+        "description": "DETERMINISTIC statistical test computation. Input: {test_type: 'two_proportion_z'|'welch_t'|'cochran_armitage'|'chi_sq'|'bayesian_beta_binomial', data: {group_a: {successes, n}, group_b: {successes, n}} OR {samples_a: [], samples_b: []} OR {counts: [], ordered: []}}. Output: {p_value, ci_95, effect_size, test_stat, verdict_suggestion}. ALWAYS use this instead of computing in LLM.",
+        "jsCode": "// Deterministic statistical tests (no LLM math)\n// Pure-JS implementations — good enough for small samples typical in Ads reporting\n\nconst input = $input.first().json;\nconst testType = input.test_type;\nconst data = input.data || input;\n\nfunction erf(x) {\n  const sign = x < 0 ? -1 : 1;\n  x = Math.abs(x);\n  const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;\n  const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;\n  const t = 1.0 / (1.0 + p * x);\n  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);\n  return sign * y;\n}\nfunction pnorm(z) { return 0.5 * (1 + erf(z / Math.sqrt(2))); }\nfunction twoSidedP(z) { return 2 * (1 - pnorm(Math.abs(z))); }\n\nfunction twoProportionZ(aSucc, aN, bSucc, bN) {\n  const p1 = aSucc / aN, p2 = bSucc / bN;\n  const pPool = (aSucc + bSucc) / (aN + bN);\n  const se = Math.sqrt(pPool * (1 - pPool) * (1/aN + 1/bN));\n  const z = (p1 - p2) / se;\n  const p_value = twoSidedP(z);\n  const diff = p1 - p2;\n  const seDiff = Math.sqrt(p1*(1-p1)/aN + p2*(1-p2)/bN);\n  const ci_95 = [diff - 1.96 * seDiff, diff + 1.96 * seDiff];\n  return { p_value, ci_95, effect_size: diff, test_stat: z, n_a: aN, n_b: bN };\n}\n\nfunction welchT(a, b) {\n  const mean = arr => arr.reduce((s, x) => s + x, 0) / arr.length;\n  const variance = arr => { const m = mean(arr); return arr.reduce((s, x) => s + (x - m) ** 2, 0) / (arr.length - 1); };\n  const m1 = mean(a), m2 = mean(b), v1 = variance(a), v2 = variance(b), n1 = a.length, n2 = b.length;\n  const se = Math.sqrt(v1 / n1 + v2 / n2);\n  const t = (m1 - m2) / se;\n  const df = (v1 / n1 + v2 / n2) ** 2 / ((v1 / n1) ** 2 / (n1 - 1) + (v2 / n2) ** 2 / (n2 - 1));\n  const p_value = twoSidedP(t);\n  return { p_value, ci_95: [(m1 - m2) - 1.96 * se, (m1 - m2) + 1.96 * se], effect_size: m1 - m2, test_stat: t, df };\n}\n\nfunction cochranArmitage(counts, totals, scores) {\n  const n = totals.reduce((s, x) => s + x, 0);\n  const r = counts.reduce((s, x) => s + x, 0);\n  const p = r / n;\n  let num = 0, denom = 0;\n  for (let i = 0; i < counts.length; i++) {\n    num += scores[i] * (counts[i] - totals[i] * p);\n    denom += scores[i] * scores[i] * totals[i];\n  }\n  const variance = p * (1 - p) * (denom - n * Math.pow(scores.reduce((s, x, i) => s + x * totals[i], 0) / n, 2));\n  const z = num / Math.sqrt(variance);\n  return { p_value: twoSidedP(z), test_stat: z, effect_size: num };\n}\n\nfunction bayesianBetaBinomial(aSucc, aN, bSucc, bN, alpha=1, beta=1) {\n  // P(p_a > p_b) via Monte Carlo (simple approximation)\n  const samples = 10000;\n  let aWins = 0;\n  for (let i = 0; i < samples; i++) {\n    // Beta sample via gamma approx — very rough; for production use a proper lib\n    const pa = (aSucc + alpha) / (aN + alpha + beta);\n    const pb = (bSucc + alpha) / (bN + alpha + beta);\n    // noise term\n    const jitterA = (Math.random() - 0.5) * Math.sqrt(pa * (1-pa) / (aN + alpha + beta));\n    const jitterB = (Math.random() - 0.5) * Math.sqrt(pb * (1-pb) / (bN + alpha + beta));\n    if (pa + jitterA > pb + jitterB) aWins++;\n  }\n  const prob = aWins / samples;\n  return { p_value: 1 - prob, posterior_prob_a_gt_b: prob, effect_size: aSucc / aN - bSucc / bN };\n}\n\nlet result;\ntry {\n  if (testType === 'two_proportion_z') {\n    result = twoProportionZ(data.group_a.successes, data.group_a.n, data.group_b.successes, data.group_b.n);\n  } else if (testType === 'welch_t') {\n    result = welchT(data.samples_a, data.samples_b);\n  } else if (testType === 'cochran_armitage') {\n    result = cochranArmitage(data.counts, data.totals, data.scores || data.counts.map((_, i) => i));\n  } else if (testType === 'bayesian_beta_binomial') {\n    result = bayesianBetaBinomial(data.group_a.successes, data.group_a.n, data.group_b.successes, data.group_b.n);\n  } else {\n    result = { error: 'Unknown test_type: ' + testType };\n  }\n  result.test_type = testType;\n  result.verdict_suggestion = result.p_value < 0.05 ? 'significant' : (result.p_value < 0.1 ? 'trend_only' : 'not_significant');\n} catch (e) {\n  result = { error: e.message, test_type: testType };\n}\n\nreturn [{ json: result }];"
+      }
+    },
+    {
+      "id": "tool-mem",
+      "name": "read_memory_file",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        300
+      ],
+      "parameters": {
+        "name": "read_memory_file",
+        "description": "Read memory. MUST read '02_findings_log.md' at session start for open hypotheses to re-validate.",
+        "workflowId": {
+          "__rl": true,
+          "value": "hFLZBFb48I09iFdJ",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "read_memory_file",
+            "filename": "={{ $fromAI('filename', 'Exact filename', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "filename",
+              "displayName": "filename",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fallback-llm",
+      "name": "Fallback Azure GPT-5.4-nano",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        380,
+        304
+      ],
+      "parameters": {
+        "model": "gpt-5.4-nano",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Worker Trigger": {
+      "main": [
+        [
+          {
+            "node": "Statistician",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure GPT-5.4 Mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "execute_gaql": {
+      "ai_tool": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "campaign_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "device_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversion_trends": {
+      "ai_tool": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "compute_statistical_test": {
+      "ai_tool": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_memory_file": {
+      "ai_tool": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Azure GPT-5.4-nano": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Statistician",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 600,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "tags": []
+}

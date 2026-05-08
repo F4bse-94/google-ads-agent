@@ -11,7 +11,7 @@ Der Weekly Google Ads Report folgt einer **fixen Struktur** mit 12 Sektionen plu
 ```markdown
 # Weekly Google Ads Report — KW {{ISO_WEEK}} / {{YEAR}}
 **Zeitraum:** {{START_DATE}} – {{END_DATE}}
-**Account:** MVV Enamic Ads (CID 2011391652)
+**Account:** <ACCOUNT_NAME> (CID <YOUR_CUSTOMER_ID>)
 **Status:** 🟢 GREEN | 🟡 YELLOW | 🔴 RED
 **Data Age:** {{HOURS}} Stunden alt
 **Generiert:** {{TIMESTAMP}} via Claude Code Routine

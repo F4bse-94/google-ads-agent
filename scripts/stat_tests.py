@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Statistical tests for MVV Enamic Ads Weekly Report W16-2026."""
+"""Statistical tests utility for Weekly Report (template / reference implementation)."""
 
 import math
 import random
@@ -70,7 +70,7 @@ print(f"  Current n: desktop={desktop_clicks}, mobile={mobile_clicks}")
 
 print()
 print("=" * 60)
-print("H-default-2: CPA differs between PPA and Energiefonds (90 days)")
+print("H-default-2: CPA differs between PPA and <PRODUKT_B> (90 days)")
 print("=" * 60)
 
 ppa_total_conv = 8.5
@@ -83,7 +83,7 @@ ef_cpa_overall = ef_cost_eur / ef_total_conv
 
 print(f"PPA: {ppa_total_conv} conv, EUR {ppa_cost_eur:.2f} cost, CPA = EUR {ppa_cpa_overall:.2f}")
 print(f"EF:  {ef_total_conv} conv, EUR {ef_cost_eur:.2f} cost, CPA = EUR {ef_cpa_overall:.2f}")
-print(f"Industriestrom: 0 conv -> excluded (CPA undefined)")
+print(f"<PRODUKT_A>: 0 conv -> excluded (CPA undefined)")
 
 # Daily CPA values for days with conversions > 0
 ppa_daily_cpa = [72.76, 28.04, 254.16, 79.76, 116.14, 71.64, 80.23, 81.47, 124.12]

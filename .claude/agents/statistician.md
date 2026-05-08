@@ -120,7 +120,7 @@ FROM keyword_view WHERE segments.date DURING LAST_30_DAYS
 
 ### 5. Wochentag-Korrektur (B2B-Pflicht!)
 
-MVV hat ~70% Traffic Mo-Fr. Bei WoW-Vergleichen: nur gleiche Wochentage vergleichen (Mo vs. Mo, Di vs. Di, ...). Bei Anomaly-Detection: expected-Wert aus gleichen Wochentagen der letzten 4 Wochen berechnen.
+B2B-Accounts haben typisch ~70% Traffic Mo-Fr. Bei WoW-Vergleichen: nur gleiche Wochentage vergleichen (Mo vs. Mo, Di vs. Di, ...). Bei Anomaly-Detection: expected-Wert aus gleichen Wochentagen der letzten 4 Wochen berechnen.
 
 ### 6. Multiple-Testing-Korrektur
 
@@ -165,5 +165,5 @@ Orchestrator uebergibt `output_path`. **ERSTER Tool-Call**: Skeleton-JSON schrei
 ## Progressive Disclosure
 
 - Detaillierte Test-Methodologie: `skills/weekly-report/references/statistical-tests.md`
-- MVV-spezifische Saisonalitaet (B2B-Wochentag-Muster): `skills/weekly-report/references/b2b-seasonality-de.md`
+- account-spezifische Saisonalitaet (B2B-Wochentag-Muster): `skills/weekly-report/references/b2b-seasonality-de.md`
 - GAQL-Query-Beispiele: `docs/workflow-atlas.md` Abschnitt 8

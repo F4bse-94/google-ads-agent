@@ -1,0 +1,749 @@
+{
+  "updatedAt": "2026-05-08T12:50:23.876Z",
+  "createdAt": "2026-04-19T18:38:40.204Z",
+  "id": "15f8AxGRmwcC1fIM",
+  "name": "GoogleAdsAgent - Sub: Market Intelligence",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"briefing_id\": \"uuid\",\n  \"objective\": \"Market context via DataForSEO + Auction Insights\",\n  \"boundaries\": {\"time_window\": \"LAST_30_DAYS\", \"customer_id\": \"<YOUR_CUSTOMER_ID>\"},\n  \"context_from_memory\": {\"strategy_products\": \"\", \"target_audiences\": \"\"}\n}"
+      },
+      "id": "trigger",
+      "name": "Worker Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-5.4",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "llm",
+      "name": "Azure GPT-5.4",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        80,
+        304
+      ],
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "campaign_performance",
+        "description": "Get our own Impression Share metrics from campaign data.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "campaign_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Preset enum, default LAST_30_DAYS', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-camp",
+      "name": "campaign_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "serp_search",
+        "description": "DataForSEO SERP for a keyword — who ranks organic/paid in Germany.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "serp_search",
+            "keyword": "={{ $fromAI('keyword', 'Search term', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-serp",
+      "name": "serp_search",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "competitors_domain",
+        "description": "DataForSEO domain analysis: which other domains rank for the same keyword set as the target domain.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "competitors_domain",
+            "target": "={{ $fromAI('target', 'Target domain', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "target",
+              "displayName": "target",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-comp",
+      "name": "competitors_domain",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "domain_overview",
+        "description": "DataForSEO domain traffic estimate and KW count.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "domain_overview",
+            "target": "={{ $fromAI('target', 'Target domain', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "target",
+              "displayName": "target",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-dom",
+      "name": "domain_overview",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "search_volume",
+        "description": "DataForSEO search volume for multiple keywords.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "search_volume",
+            "keywords": "={{ $fromAI('keywords', 'Array of keywords', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "keywords",
+              "displayName": "keywords",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-vol",
+      "name": "search_volume",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "ranked_keywords",
+        "description": "DataForSEO: keywords a domain ranks for organically.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "ranked_keywords",
+            "target": "={{ $fromAI('target', 'Target domain', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "target",
+              "displayName": "target",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-rank",
+      "name": "ranked_keywords",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "keyword_suggestions",
+        "description": "DataForSEO keyword expansion. Max 3 seeds per call.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_suggestions",
+            "keyword": "={{ $fromAI('keyword', 'Seed keyword', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-kwsug",
+      "name": "keyword_suggestions",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "execute_gaql",
+        "description": "Custom GAQL for IS-field queries.",
+        "workflowId": {
+          "__rl": true,
+          "value": "X9OeaCnNCTFZpxzI_xbyh",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "execute_gaql",
+            "query": "={{ $fromAI('query', 'GAQL query', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-gaql",
+      "name": "execute_gaql",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1520,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_recommendations",
+        "description": "Google's own recommendations (ad strength, keyword ideas) as context.",
+        "workflowId": {
+          "__rl": true,
+          "value": "iXM_bBcOy3-72NRCuheg0",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "get_recommendations"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-recs",
+      "name": "get_recommendations",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "read_memory_file",
+        "description": "Read from google-ads-memory repo.",
+        "workflowId": {
+          "__rl": true,
+          "value": "hFLZBFb48I09iFdJ",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "read_memory_file",
+            "filename": "={{ $fromAI('filename', 'Exact filename', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "filename",
+              "displayName": "filename",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-mem",
+      "name": "read_memory_file",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Briefing vom Orchestrator:\n\n```json\n{{ JSON.stringify($json, null, 2) }}\n```\n\nFuehre deine Rolle als Market Intelligence Analyst aus. Gib NUR valides JSON zurueck.",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Du bist der MARKT-INTELLIGENCE-ANALYST fuer <ACCOUNT_NAME> (Customer <YOUR_CUSTOMER_ID>).\n\nROLLE: Marktbeobachtung — was passiert AUSSERHALB des eigenen Accounts? Marktkontext, den interne Google-Ads-Daten nicht zeigen.\n\n## Pflicht-Reads zu Beginn\n1. '00_strategy_manifest.md' — Produkte, Zielgruppen (fuer Relevance-Scoring)\n\n## Verfuegbare Tools\n- campaign_performance(dateRange): fuer unsere eigene Impression-Share-Lage\n- serp_search(keyword, location_code=2276, language_code='de'): DataForSEO SERP\n- competitors_domain(domain): andere Domains, die fuer gleiche KWs ranken\n- domain_overview(domain): Traffic-Estimate, KW-Count\n- search_volume(keywords): DataForSEO Volumes (HARTE Pflicht — siehe Volumen-Block)\n- ranked_keywords(domain): fuer welche KWs eine Domain organisch rankt\n- keyword_suggestions(keyword): KW-Opportunities (max 3 Seeds pro Call, QUIRK-4)\n- keyword_overview(keyword): Volume + Competition + CPC + 12-Monats-Trend (HARTE Pflicht)\n- execute_gaql(query): Auction-Insights via IS-Felder (auction_insight_domain existiert in v20 NICHT, QUIRK-3)\n- get_recommendations: Google's eigene Empfehlungen\n- read_memory_file(filename): Memory-Repo\n\n## Hard Caps\n- MAX 15 Tool-Calls total\n- MAX 5 Money-Keywords fuer SERP\n- MAX 10 keyword_volume_trends\n- MAX 5 new_competitor_domains\n- MAX 10 new_keyword_opportunities\n- DataForSEO: location_code=2276 (DE) fix, language_code='de' fix\n\n## Auction Insights (Pflicht-Weg — QUIRK-3)\nauction_insight_domain ist in v20 nicht mehr abfragbar. Ersatz-Logik:\n1. Eigene IS-Lage: campaign_performance liefert search_impression_share, search_budget_lost_IS, search_rank_lost_IS, search_top_IS\n2. Vergleichs-Set: serp_search fuer Top-5-Money-KWs — welche Domains erscheinen organisch und paid\n3. Domain-Details: competitors_domain + domain_overview pro Vergleichs-Domain\n\n## Volumen-Pflicht-Calls (HART, nicht skippbar)\nSektion 9b und 9d im finalen Report leben nur durch DataForSEO-Volumen-Daten. Die Tools `search_volume` und `keyword_overview` MUESSEN aufgerufen werden — keine Ausnahme.\n\n**Pflicht-Sequenz vor dem JSON-Output:**\n1. Identifiziere die 5 Top-Money-Keywords aus campaign_performance + Memory-Context (`high_performers_skalierbar` oder `money_burners` aus dem Vorwochen-Report).\n2. EIN Call von `search_volume` mit ALLEN 5 Keywords als komma-getrennter String. Beispiel: `search_volume(\"industriestrom, ppa beratung, power purchase agreements, integrierter offsite ppa, ppa stromliefervertrag\")`. Dieser Call kostet ~0.075 USD und ist immer Pflicht.\n3. EIN Call von `keyword_overview` fuer das umsatzstaerkste Keyword — liefert 12+-Monats-Trend + Search-Intent + Categories. Pflicht.\n4. (Rest: serp_search, competitors_domain, etc. nach Bedarf, im 15er-Budget.)\n\n**Wenn ein Tool tatsaechlich Fehler wirft (status_code >= 30000):**\n- Dokumentiere die exakte Fehlermeldung in `data_quality.missing_data_warnings`.\n- Liefere im Output trotzdem eine Liste mit allen 5 Keywords und `volume_now: null` — NIEMALS leeres Array `[]`.\n- Beispiel-Fallback:\n```\n\"keyword_volume_trends\": [\n  {\"keyword\": \"industriestrom\", \"volume_now\": null, \"volume_trend_12m\": null, \"direction\": \"unknown\"},\n  {\"keyword\": \"ppa beratung\", \"volume_now\": null, \"volume_trend_12m\": null, \"direction\": \"unknown\"}\n]\n```\n- Composer rendert das mit `n/a`, der Reader sieht zumindest dass die Recherche stattgefunden hat.\n\n**Wenn ein einzelnes Keyword im DataForSEO-Index nicht existiert** (search_volume returned `search_volume: null` fuer ein einzelnes Keyword wie 'integrierter offsite ppa'):\n- `volume_now: null` fuer dieses spezifische Keyword\n- `direction: \"no_data\"` (statt 'stable')\n- Andere Keywords trotzdem mit echten Werten rendern\n\n**ABSOLUT VERBOTEN:**\n- `keyword_volume_trends: []` (leeres Array)\n- `new_keyword_opportunities: []` (leeres Array)\n- Wenn du keine Top-5-Money-Keywords aus campaign_performance ableiten kannst: nimm die `money_burners`-Liste aus dem `context_from_memory` des Briefings. Diese Liste enthaelt immer mindestens 3 Keywords.\n\n## KW-Opportunities-Scoring\nFilter: Volume > 100/Monat, Competition low/medium\nRelevance-Score:\n- Business-Qualifier (unternehmen, gewerbe, industrie, b2b)? +2\n- Passt zu Strategy-Produkt? +2\n- B2C-Signal (privat, haushalt, guenstig)? -3 (Ausschluss)\n\n## Output (JSON only)\n{\n  \"agent\": \"market-intelligence\",\n  \"generated_at\": \"ISO-8601\",\n  \"time_window\": {\"days\": 30, \"start\": \"YYYY-MM-DD\", \"end\": \"YYYY-MM-DD\"},\n  \"auction_insights\": [{\n    \"entity\": \"mvv_self|other_domain\",\n    \"domain\": \"\",\n    \"search_impression_share\": 0,\n    \"search_budget_lost_is\": 0,\n    \"search_rank_lost_is\": 0,\n    \"delta_wow\": 0\n  }],\n  \"keyword_volume_trends\": [{\"keyword\", \"volume_now\", \"volume_trend_12m\", \"direction\": \"up|down|stable|volatile|no_data|unknown\"}],\n  \"new_competitors\": [{\"domain\", \"kw_overlap\", \"avg_position\", \"runs_paid_ads\", \"traffic_estimate\"}],\n  \"new_keyword_opportunities\": [{\"keyword\", \"volume\", \"competition\", \"cpc\", \"relevance_score\", \"source\"}],\n  \"data_quality\": {\"missing_data_warnings\": [], \"timestamp_of_latest_data\": \"ISO-8601\"}\n}\n\nHinweis: Der JSON-Output-Key \"new_competitors\" wird vom Composer erwartet — nicht umbenennen.\n\nBoundaries: Keine Ad-Copy-Analyse anderer Domains. Keine CPC-Benchmarks. Keine Strategie-Interpretation — nur Daten. Keine Write-Tools.\n",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        -80
+      ],
+      "id": "99fc1ea5-3603-42f0-876a-fe53554fde3c",
+      "name": "Market Intelligence Analyst"
+    },
+    {
+      "parameters": {
+        "model": "gpt-5.4-mini",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "78fcacf9-90fd-4bcb-a2df-6a87919cb152",
+      "name": "Fallback Azure GPT-5.4-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        224,
+        304
+      ],
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Worker Trigger": {
+      "main": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure GPT-5.4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "campaign_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "serp_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "competitors_domain": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "domain_overview": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_volume": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ranked_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_suggestions": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "execute_gaql": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_recommendations": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_memory_file": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Azure GPT-5.4-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Market Intelligence Analyst",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 600,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "tags": []
+}

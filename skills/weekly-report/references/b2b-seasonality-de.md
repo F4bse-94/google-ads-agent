@@ -1,10 +1,10 @@
-# B2B-Saisonalitaet Deutschland — MVV-Kontext
+# B2B-Saisonalitaet Deutschland — Account-Kontext
 
 Referenz fuer Wochentag-, Monats- und Jahres-Patterns, die bei Anomalie-Detection und WoW-Vergleichen beruecksichtigt werden muessen.
 
 ## Wochentag-Pattern (kritisch!)
 
-MVV-Traffic ist klar B2B-dominiert. Verteilung:
+Traffic ist klar B2B-dominiert. Verteilung:
 
 | Wochentag | Traffic-Anteil (grob) | CVR-Niveau | Bemerkung |
 |---|---|---|---|
@@ -40,7 +40,7 @@ MVV-Traffic ist klar B2B-dominiert. Verteilung:
 | Event | Zeitraum | Ads-Impact |
 |---|---|---|
 | E-world (Messe Essen) | Februar | Traffic-Peak, Brand-Awareness steigt 2-4 Wochen davor |
-| Jahreswechsel Stromvertraege | Oktober-Dezember | Peak-CVR fuer Commodity |
+| Jahreswechsel Stromvertraege | Oktober-Dezember | Peak-CVR fuer Stromvertraege (Beispiel B2B) |
 | Strompreis-Ankuendigungen | variabel | Traffic-Spikes bei politischen Preiserhoehungen |
 | Heizperiode-Start | September-Oktober | Energie-Themen generell relevanter |
 

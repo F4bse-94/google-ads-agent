@@ -1,0 +1,877 @@
+{
+  "updatedAt": "2026-05-08T14:19:48.600Z",
+  "createdAt": "2026-04-19T18:42:15.106Z",
+  "id": "BKKG8gCawOBTvPDo",
+  "name": "GoogleAdsAgent - Main: Orchestrator (Chat + Weekly)",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "chat-trigger",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        -96
+      ],
+      "webhookId": "b354a8a7-f6d4-4823-b9fd-0935c3815b88"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Weekly Schedule (Mo 07:00 Berlin)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m1",
+              "name": "mode",
+              "value": "chat",
+              "type": "string"
+            },
+            {
+              "id": "m2",
+              "name": "user_message",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "m3",
+              "name": "session_id",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-chat",
+      "name": "Chat Mode Params",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m1",
+              "name": "mode",
+              "value": "weekly",
+              "type": "string"
+            },
+            {
+              "id": "m2",
+              "name": "iso_week",
+              "value": "={{ DateTime.now().setZone('Europe/Berlin').toFormat('kkkk-\\'W\\'WW') }}",
+              "type": "string"
+            },
+            {
+              "id": "m3",
+              "name": "year",
+              "value": "={{ DateTime.now().setZone('Europe/Berlin').toFormat('kkkk') }}",
+              "type": "string"
+            },
+            {
+              "id": "m4",
+              "name": "current_start",
+              "value": "={{ DateTime.now().setZone('Europe/Berlin').minus({days: 7}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "m5",
+              "name": "current_end",
+              "value": "={{ DateTime.now().setZone('Europe/Berlin').minus({days: 1}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "m6",
+              "name": "previous_start",
+              "value": "={{ DateTime.now().setZone('Europe/Berlin').minus({days: 14}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "m7",
+              "name": "previous_end",
+              "value": "={{ DateTime.now().setZone('Europe/Berlin').minus({days: 8}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "m8",
+              "name": "recipient_email",
+              "value": "<your-email@example.com>",
+              "type": "string"
+            },
+            {
+              "id": "m9",
+              "name": "user_message",
+              "value": "=Generate the Weekly Google Ads Report for {{ $json.iso_week }}. Execute in this order:\n\n1. read_memory_file for '00_strategy_manifest.md', '02_findings_log.md', '03_pending_actions.md' — collect as memory_context\n2. Call all 4 workers IN PARALLEL with the briefing structure:\n   - call_performance_analyst: time_window=LAST_7_DAYS, customer_id=<YOUR_CUSTOMER_ID>\n   - call_search_keyword_hunter: time_window=LAST_14_DAYS, customer_id=<YOUR_CUSTOMER_ID>\n   - call_statistician: hypotheses_to_test = open items from findings_log, time_window_default=LAST_30_DAYS\n   - call_market_competitive: time_window=LAST_30_DAYS\n3. call_report_composer with all 4 worker outputs + memory_context + recipient_email='<your-email@example.com>' + iso_week + year + start_date + end_date.\n4. Return JSON summary with composer's output.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-weekly",
+      "name": "Weekly Mode Params",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id || 'default' }}",
+        "contextWindowLength": 10
+      },
+      "id": "memory",
+      "name": "Chat Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.user_message }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Du bist der ORCHESTRATOR des Google Ads Agent Systems fuer <ACCOUNT_NAME> (Customer <YOUR_CUSTOMER_ID>).\n\nZwei Modi (bestimmt durch input.mode):\n\n## MODE = 'chat'\nInteraktiver Read-Only-Analyst. Du bekommst freie Fragen von Fabian und beantwortest sie durch gezielten Tool-Einsatz.\n- Nutze Memory-Reads (read_memory_file) um Kontext zu laden (strategy_manifest, findings_log, pending_actions)\n- Delegiere komplexe Analysen an Sub-Agents (call_performance_analyst, call_search_keyword_analyst, call_statistician, call_market_intelligence) wenn sinnvoll — schickt JSON-Briefing, bekommt strukturiertes JSON-Ergebnis\n- Fuer einfache Ad-hoc-Fragen: nutze direkte Tools (campaign_performance, keyword_performance, execute_gaql, serp_search, etc.)\n- Zitiere IMMER Datenquellen + Zeitfenster in der Antwort\n- Keine Empfehlungen ohne Daten-Backup\n- KEINE Write-Operationen auf Google Ads (pause/update/create sind hart verboten)\n- Antwort-Stil: praezise, auf den Punkt, Tabellen wenn KPIs, keine Floskeln\n\n## MODE = 'weekly'\nDeterministischer Weekly-Report-Generator. Du bekommst einen fixen Prompt mit iso_week und musst:\n1. Memory laden (3 read_memory_file-Calls parallel)\n2. Alle 4 Worker parallel dispatchen mit strukturiertem Briefing (briefing_id, objective, boundaries, context_from_memory)\n3. call_report_composer aufrufen mit allen 4 Outputs + memory_context + recipient_email\n4. Finale Summary zurueckgeben\n\n### Briefing-Struktur fuer Worker (JSON)\n{\n  \"briefing_id\": \"<uuid>\",\n  \"orchestrator_run_id\": \"<iso_week>\",\n  \"objective\": \"<1-Satz>\",\n  \"boundaries\": {\n    \"time_window\": \"LAST_7_DAYS | LAST_14_DAYS | LAST_30_DAYS\",\n    \"customer_id\": \"<YOUR_CUSTOMER_ID>\"\n  },\n  \"context_from_memory\": {\n    \"strategy_constraints\": \"<aus 00_strategy_manifest.md>\",\n    \"open_items_from_last_week\": \"<aus 02_findings_log.md>\",\n    \"pending_actions_reference\": \"<aus 03_pending_actions.md>\"\n  }\n}\n\nFuer den Composer zusaetzlich:\n{ iso_week, year, start_date, end_date, performance_json, search_json, stat_json, market_json, memory_context, recipient_email }\nDefault recipient_email: <your-email@example.com>\n\n### Parallelitaet\nOpenAI function calling unterstuetzt parallele Tool-Aufrufe. Feuere die 4 Worker in einem einzigen Response als parallele Tool-Calls.\n\n### Bei Fehlern in einem Worker\nWeiterlaufen, Composer markiert betroffene Sektion als DATA_UNAVAILABLE. Keine Partial-Abort-Logik — Report-Composer regelt.\n\n## Globale Regeln\n- READ-ONLY-Modus fuer Google Ads Data\n- Alle Zeitangaben Europe/Berlin\n- Tool-Budget im Chat-Mode: max 20 Calls pro Frage. Im Weekly-Mode: 4 Worker + 1 Composer + ggf. 3 Memory-Reads = 8 Calls fix, keine zusaetzlichen.\n- Bei Chat-Rueckfragen zur Session-Historie: Buffer Memory wird automatisch verwendet, du musst nicht selber zaehlen.\n- Memory-Writes (write_memory_file) ueberlaesst du dem Composer. Du selbst schreibst NICHT in Memory.",
+          "maxIterations": 20
+        }
+      },
+      "id": "agent",
+      "name": "Orchestrator Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "name": "call_performance_analyst",
+        "description": "Dispatch the Performance Analyst worker for structural KPIs (exec_kpis, campaigns, dimensions, budget pacing, WoW-verified). Takes a JSON briefing with objective, boundaries (time_window, customer_id), context_from_memory. Returns structured JSON.",
+        "workflowId": {
+          "__rl": true,
+          "value": "kl42z9WLAGLZzlBW",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "briefing_id": "={{ $fromAI('briefing_id', 'UUID', 'string') }}",
+            "objective": "={{ $fromAI('objective', 'Short objective', 'string') }}",
+            "boundaries": "={{ $fromAI('boundaries', 'JSON with time_window, customer_id', 'json') }}",
+            "context_from_memory": "={{ $fromAI('context_from_memory', 'JSON with strategy/findings/top_performers context', 'json') }}"
+          },
+          "schema": [
+            {
+              "id": "briefing_id",
+              "displayName": "briefing_id",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "objective",
+              "displayName": "objective",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "boundaries",
+              "displayName": "boundaries",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "context_from_memory",
+              "displayName": "context_from_memory",
+              "required": false,
+              "type": "object",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-perf",
+      "name": "call_performance_analyst",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "call_search_keyword_analyst",
+        "description": "Dispatch the Search & Keyword Analyst for long-tail mining (negatives candidates, keyword opportunities, wasted-spend keywords, ad-copy audit). JSON briefing in/out.",
+        "workflowId": {
+          "__rl": true,
+          "value": "PZa1iNwgtCvcNtIC",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "briefing_id": "={{ $fromAI('briefing_id', 'UUID', 'string') }}",
+            "objective": "={{ $fromAI('objective', 'Short objective', 'string') }}",
+            "boundaries": "={{ $fromAI('boundaries', 'JSON', 'json') }}",
+            "context_from_memory": "={{ $fromAI('context_from_memory', 'JSON', 'json') }}"
+          },
+          "schema": [
+            {
+              "id": "briefing_id",
+              "displayName": "briefing_id",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "objective",
+              "displayName": "objective",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "boundaries",
+              "displayName": "boundaries",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "context_from_memory",
+              "displayName": "context_from_memory",
+              "required": false,
+              "type": "object",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-search",
+      "name": "call_search_keyword_analyst",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        864,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "call_statistician",
+        "description": "Dispatch the Statistician for hypothesis validation with deterministic stat tests. JSON briefing with hypotheses_to_test array.",
+        "workflowId": {
+          "__rl": true,
+          "value": "rBIHMb14pdtLRGTj",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "briefing_id": "={{ $fromAI('briefing_id', 'UUID', 'string') }}",
+            "objective": "={{ $fromAI('objective', 'Short objective', 'string') }}",
+            "hypotheses_to_test": "={{ $fromAI('hypotheses_to_test', 'Array of hypothesis objects', 'json') }}",
+            "boundaries": "={{ $fromAI('boundaries', 'JSON', 'json') }}",
+            "context_from_memory": "={{ $fromAI('context_from_memory', 'JSON', 'json') }}"
+          },
+          "schema": [
+            {
+              "id": "briefing_id",
+              "displayName": "briefing_id",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "objective",
+              "displayName": "objective",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "hypotheses_to_test",
+              "displayName": "hypotheses_to_test",
+              "required": false,
+              "type": "array",
+              "display": true
+            },
+            {
+              "id": "boundaries",
+              "displayName": "boundaries",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "context_from_memory",
+              "displayName": "context_from_memory",
+              "required": false,
+              "type": "object",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-stat",
+      "name": "call_statistician",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "call_market_intelligence",
+        "description": "Dispatch the Market Intelligence analyst (DataForSEO + auction insights). JSON briefing in/out.",
+        "workflowId": {
+          "__rl": true,
+          "value": "15f8AxGRmwcC1fIM",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "briefing_id": "={{ $fromAI('briefing_id', 'UUID', 'string') }}",
+            "objective": "={{ $fromAI('objective', 'Short objective', 'string') }}",
+            "boundaries": "={{ $fromAI('boundaries', 'JSON', 'json') }}",
+            "context_from_memory": "={{ $fromAI('context_from_memory', 'JSON', 'json') }}"
+          },
+          "schema": [
+            {
+              "id": "briefing_id",
+              "displayName": "briefing_id",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "objective",
+              "displayName": "objective",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "boundaries",
+              "displayName": "boundaries",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "context_from_memory",
+              "displayName": "context_from_memory",
+              "required": false,
+              "type": "object",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-market",
+      "name": "call_market_intelligence",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "call_report_composer",
+        "description": "Dispatch the Report Composer to render 12-section weekly report, commit to memory repo, update memory files, and send email. Use only in weekly mode.",
+        "workflowId": {
+          "__rl": true,
+          "value": "6aZgqH9uhcXIngH0",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "iso_week": "={{ $fromAI('iso_week', 'e.g. 2026-W17', 'string') }}",
+            "year": "={{ $fromAI('year', 'e.g. 2026', 'string') }}",
+            "start_date": "={{ $fromAI('start_date', 'YYYY-MM-DD', 'string') }}",
+            "end_date": "={{ $fromAI('end_date', 'YYYY-MM-DD', 'string') }}",
+            "performance_json": "={{ $fromAI('performance_json', 'Output of performance-analyst', 'json') }}",
+            "search_json": "={{ $fromAI('search_json', 'Output of search-keyword-hunter', 'json') }}",
+            "stat_json": "={{ $fromAI('stat_json', 'Output of statistician', 'json') }}",
+            "market_json": "={{ $fromAI('market_json', 'Output of market-competitive', 'json') }}",
+            "memory_context": "={{ $fromAI('memory_context', 'Memory context (strategy, findings, top_performers, session_log, prev_report)', 'json') }}",
+            "recipient_email": "={{ $fromAI('recipient_email', 'Recipient email', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "iso_week",
+              "displayName": "iso_week",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "year",
+              "displayName": "year",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "start_date",
+              "displayName": "start_date",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "end_date",
+              "displayName": "end_date",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "performance_json",
+              "displayName": "performance_json",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "search_json",
+              "displayName": "search_json",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "stat_json",
+              "displayName": "stat_json",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "market_json",
+              "displayName": "market_json",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "memory_context",
+              "displayName": "memory_context",
+              "required": false,
+              "type": "object",
+              "display": true
+            },
+            {
+              "id": "recipient_email",
+              "displayName": "recipient_email",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-composer",
+      "name": "call_report_composer",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "read_memory_file",
+        "description": "Read a file from google-ads-memory GitHub repo. Files: 00_strategy_manifest.md, 02_findings_log.md, 03_pending_actions.md, reports/<YYYY-WNN>-report.md.",
+        "workflowId": {
+          "__rl": true,
+          "value": "hFLZBFb48I09iFdJ",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "read_memory_file",
+            "filename": "={{ $fromAI('filename', 'Exact filename', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "filename",
+              "displayName": "filename",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-mem",
+      "name": "read_memory_file",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1520,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "campaign_performance",
+        "description": "Quick direct access for ad-hoc chat queries. Get campaign-level KPIs for a date range.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "campaign_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Preset enum', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-camp",
+      "name": "campaign_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "execute_gaql",
+        "description": "Quick direct access for ad-hoc GAQL queries in chat mode.",
+        "workflowId": {
+          "__rl": true,
+          "value": "X9OeaCnNCTFZpxzI_xbyh",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "execute_gaql",
+            "query": "={{ $fromAI('query', 'GAQL query', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-gaql",
+      "name": "execute_gaql",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-5.4",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "llm",
+      "name": "Azure GPT-5.4",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        192,
+        400
+      ],
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-5.4-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "fallback-llm",
+      "name": "Fallback Azure GPT-5.4-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        512,
+        400
+      ],
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "Chat Mode Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Schedule (Mo 07:00 Berlin)": {
+      "main": [
+        [
+          {
+            "node": "Weekly Mode Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Mode Params": {
+      "main": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Mode Params": {
+      "main": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "call_performance_analyst": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "call_search_keyword_analyst": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "call_statistician": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "call_market_intelligence": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "call_report_composer": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_memory_file": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "campaign_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "execute_gaql": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure GPT-5.4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Azure GPT-5.4-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Berlin",
+    "executionTimeout": 1800,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "tags": []
+}

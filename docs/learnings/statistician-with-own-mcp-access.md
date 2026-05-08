@@ -24,7 +24,7 @@ type: reference
   "objective": "Validiere folgende Hypothesen statistisch. Ziehe eigene Rohdaten via GAQL.",
   "hypotheses_to_test": [
     {"id": "H1", "statement": "Mobile CVR < Desktop CVR"},
-    {"id": "H2", "statement": "CPA PPA != CPA Energiefonds"}
+    {"id": "H2", "statement": "CPA <PRODUKT_A> != CPA <PRODUKT_B>"}
   ],
   "boundaries": {
     "time_window_start": "LAST_7_DAYS",
@@ -125,7 +125,7 @@ Mit diesem Pattern:
 - Disziplinierte Re-Validation ueber Wochen (Bayesian-Posterior waechst mit Daten)
 - Klares "strukturell unerreichbar" statt vage Aussagen
 
-Erfahrung aus zwei Test-Runs (KW16 MVV Enamic): Der Statistiker hat korrekt erkannt, dass n=1 Mobile-Conversion nach 7 Tagen `trend_only` ist — nach Erweiterung auf 91 Tage dann `significant_confirmed` mit P(H1)=99,82%. Ohne adaptives Zeitfenster waere der Test verworfen worden.
+Erfahrung aus zwei Test-Runs (KW16 <ACCOUNT_NAME>): Der Statistiker hat korrekt erkannt, dass n=1 Mobile-Conversion nach 7 Tagen `trend_only` ist — nach Erweiterung auf 91 Tage dann `significant_confirmed` mit P(H1)=99,82%. Ohne adaptives Zeitfenster waere der Test verworfen worden.
 
 ## Anti-Pattern vermeiden
 

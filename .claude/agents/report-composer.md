@@ -198,7 +198,7 @@ Begruendung (siehe `docs/next-session-todos.md`): Der claude.ai Gmail-Connector 
 **Tool-Call (MCP `mail-bridge`, Tool-Name `send_email`):**
 
 Parameters:
-- `to` (string) — Empfaenger, default `f.smogulla@gmail.com`
+- `to` (string) — Empfaenger, default `<your-email@example.com>`
 - `subject` (string) — `Weekly Google Ads Report — KW {{iso_week}} | Status: {{status_emoji}}` (z.B. "Weekly Google Ads Report — KW 17 | Status: 🟡 YELLOW")
 - `body_html` (string) — **Executive Summary (Sektion 0) als vollstaendiges HTML-Dokument**, NICHT der komplette Report. Plus Link zu GitHub-Report am Ende. Alle Styles inline, keine externen Stylesheets.
 

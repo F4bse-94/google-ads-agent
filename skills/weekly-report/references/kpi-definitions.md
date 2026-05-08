@@ -17,19 +17,19 @@ Anzahl Klicks auf Ad (Search Network). `metrics.clicks`.
 `clicks / impressions * 100` in Prozent. Account-Benchmark fuer B2B Search: 3-8%.
 
 ### Conversions
-Anzahl gezaehlter Conversion-Events gemaess Conversion-Tracking-Setup. Umfasst alle aktiven Conversion-Actions. Fuer MVV: Angebotsanfrage, Webinar-Anmeldung, Download.
+Anzahl gezaehlter Conversion-Events gemaess Conversion-Tracking-Setup. Umfasst alle aktiven Conversion-Actions. Fuer Lead-Gen-B2B: Angebotsanfrage, Webinar-Anmeldung, Download.
 
 ### Conversion Rate (CVR)
 `conversions / clicks * 100` in Prozent. B2B-typisch: 2-8%.
 
 ### CPA (Cost per Acquisition)
-`spend / conversions` in EUR. Target MVV: 30-500 EUR.
+`spend / conversions` in EUR. Target (Beispiel-B2B): 30-500 EUR.
 
 ### CPC (Cost per Click)
 `spend / clicks` in EUR. Nur als Sekundaer-KPI — Entscheidungsgroesse ist CPA.
 
 ### ROAS (Return on Ad Spend)
-Nicht getrackt fuer MVV (Lead-Gen ohne direkten Umsatz-Tracking). **Nicht** in Reports aufnehmen.
+Nicht getrackt fuer Lead-Gen-Accounts (Lead-Gen ohne direkten Umsatz-Tracking). **Nicht** in Reports aufnehmen.
 
 ## Attribution
 
@@ -51,7 +51,7 @@ Nicht getrackt fuer MVV (Lead-Gen ohne direkten Umsatz-Tracking). **Nicht** in R
 ### Search Top IS
 `metrics.search_top_impression_share` — Anteil Impressions auf Position 1-4 (Top-of-Page).
 
-**Diagnose-Regeln fuer MVV:**
+**Diagnose-Regeln fuer Lead-Gen-B2B:**
 - IS Lost Budget > 20% UND CPA gut → Skalier-Kandidat
 - IS Lost Rank > 30% → QS oder Bidding-Problem
 - IS < 50% bei Lead-Kampagne → generelles Wachstums-Potential
@@ -66,7 +66,7 @@ Nicht getrackt fuer MVV (Lead-Gen ohne direkten Umsatz-Tracking). **Nicht** in R
 - **Post-Click Quality Score:** Landing-Page-Qualitaet
 - **Search Predicted CTR:** vorhergesagte CTR
 
-**MVV-Thresholds:**
+**Account-Thresholds:**
 - QS ≥ 7: gut (weiter so)
 - QS 5-6: mittel (ok, aber Luft nach oben)
 - QS ≤ 4 mit signifikantem Spend: Problem (Review dringend)
@@ -78,7 +78,7 @@ Nicht getrackt fuer MVV (Lead-Gen ohne direkten Umsatz-Tracking). **Nicht** in R
 - **Average:** Verbesserungspotenzial (mehr Headlines/Descriptions)
 - **Poor:** Dringend verbessern
 
-**MVV-Regel:** Ad-Strength `average` oder `poor` bei aktiven Lead-Kampagnen ist ein **Yellow-Flag**.
+**Regel:** Ad-Strength `average` oder `poor` bei aktiven Lead-Kampagnen ist ein **Yellow-Flag**.
 
 ## WoW (Week-over-Week) Berechnung
 
@@ -123,7 +123,7 @@ FROM campaign
 WHERE segments.date DURING LAST_90_DAYS
 ```
 
-**Interpretation:** Fuer MVV erwartet:
+**Interpretation:** Fuer B2B-Lead-Gen erwartet:
 - 0-3 Tage: 30-40% der Conversions (sofortige Anfragen)
 - 4-14 Tage: 40-50% (Recherche-Phase)
 - 15-30 Tage: 10-20% (lange Evaluierung)

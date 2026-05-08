@@ -1,8 +1,8 @@
 # Weekly Google Ads Report — KW {{ISO_WEEK}} / {{YEAR}}
 
 **Zeitraum:** {{START_DATE}} – {{END_DATE}}
-**Account:** MVV Enamic Ads (CID `2011391652`)
-**Agentur:** ZweiDigital
+**Account:** <ACCOUNT_NAME> (CID `<YOUR_CUSTOMER_ID>`)
+**Agentur:** <AGENCY>
 **Status:** {{STATUS_EMOJI}} {{STATUS_LABEL}}
 **Data Age:** {{HOURS_OF_LAG}} Stunden alt
 **Generiert:** {{TIMESTAMP_ISO}} via Claude Code Routine
@@ -214,7 +214,7 @@
 |---|---|---|---|---|---|
 {{RECOMMENDATIONS_TABLE}}
 
-**Hinweis:** Diese Vorschlaege werden im MVP NICHT automatisiert ausgefuehrt. Umsetzung durch Fabian / Agentur (ZweiDigital).
+**Hinweis:** Diese Vorschlaege werden im MVP NICHT automatisiert ausgefuehrt. Umsetzung durch Fabian / Agentur (<AGENCY>).
 
 ---
 
@@ -231,7 +231,7 @@
 - **WoW-Definition:** aktuelle 7 Tage vs. direkt vorherige 7 Tage, gleiche Wochentage verglichen
 - **Statistische Tests verwendet:** {{TESTS_USED_LIST}}
 - **Daten-Lag:** Google Ads API ~{{GADS_LAG_HOURS}}h | DataForSEO ~{{DFS_LAG_DAYS}}d
-- **Wochentag-Korrektur:** MVV hat ~70% Traffic Mo-Fr — WoW-Vergleiche und Anomaly-Detection erfolgen wochentag-gematcht
+- **Wochentag-Korrektur:** B2B-Accounts haben typisch ~70% Traffic Mo-Fr — WoW-Vergleiche und Anomaly-Detection erfolgen wochentag-gematcht
 - **Multiple-Testing-Korrektur:** {{MTC_METHOD}} ab 3 parallelen Tests
 
 ### Data Source Timestamps

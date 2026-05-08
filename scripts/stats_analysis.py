@@ -91,8 +91,8 @@ daily = (pre_ppa + pre_ef + pre_ind) / 5
 print(f"Pre-gap daily avg: {daily:.2f} EUR/day")
 print(f"Gap: 14 days (3/25 through 4/07)")
 print(f"Estimated lost spend: {daily * 14:.2f} EUR")
-print(f"  Energiefonds: PAUSED since 3/25 (23+ days, no resumption through 4/16)")
-print(f"  PPA + Industriestrom: Gap 3/25 to 4/07, resumed 4/08")
+print(f"  <PRODUKT_B>: PAUSED since 3/25 (23+ days, no resumption through 4/16)")
+print(f"  PPA + <PRODUKT_A>: Gap 3/25 to 4/07, resumed 4/08")
 print()
 
 # ============================================================

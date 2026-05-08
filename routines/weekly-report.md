@@ -23,35 +23,35 @@ Dauer: ca. 8-15 Minuten pro Run. Cost: ~3-5 USD pro Run (Opus Orchestrator + 4 S
 
 **Gmail (Standard-Connector):** aktivieren. Scope: `send_email`.
 
-**GitHub (Standard-Connector):** aktivieren. Scope: `repo` fuer `F4bse-94/google-ads-memory` (Write-Zugriff fuer Report-Commits + Memory-Updates).
+**GitHub (Standard-Connector):** aktivieren. Scope: `repo` fuer `<your-username>/google-ads-memory` (Write-Zugriff fuer Report-Commits + Memory-Updates).
 
 **9 Custom HTTP MCP Connectors** (manuell hinzufuegen):
 
 | Connector-Name | URL | Headers |
 |---|---|---|
-| google-ads-account | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-account-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| google-ads-campaigns | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-campaign-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| google-ads-ad-groups | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-ad-group-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| google-ads-ads | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-ad-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| google-ads-keywords | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-keyword-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| google-ads-reporting | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-reporting-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| google-ads-insights | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-insights-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| google-ads-gaql | `https://n8n.srv867988.hstgr.cloud/mcp/google-ads-gaql-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
-| dataforseo | `https://n8n.srv867988.hstgr.cloud/mcp/dataforseo-mcp-v2` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-account | `https://<your-n8n-host>/mcp/google-ads-account-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-campaigns | `https://<your-n8n-host>/mcp/google-ads-campaign-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-ad-groups | `https://<your-n8n-host>/mcp/google-ads-ad-group-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-ads | `https://<your-n8n-host>/mcp/google-ads-ad-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-keywords | `https://<your-n8n-host>/mcp/google-ads-keyword-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-reporting | `https://<your-n8n-host>/mcp/google-ads-reporting-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-insights | `https://<your-n8n-host>/mcp/google-ads-insights-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| google-ads-gaql | `https://<your-n8n-host>/mcp/google-ads-gaql-tools` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
+| dataforseo | `https://<your-n8n-host>/mcp/dataforseo-mcp-v2` | `Authorization: Bearer ${N8N_MCP_TOKEN}` |
 
-Token `upkL5r84LOG8fTN2izhvq0EyWr1GkXN9lA_rwdUouSKmPJDS-5fuavkkl09i1Txq` (siehe `google-ads-agent/.mcp.json`). In claude.ai als Environment-Variable `N8N_MCP_TOKEN` hinterlegen, dann in den Connector-Headern referenzieren.
+Token `<YOUR_N8N_MCP_BEARER_TOKEN>` (siehe `google-ads-agent/.mcp.json`). In claude.ai als Environment-Variable `N8N_MCP_TOKEN` hinterlegen, dann in den Connector-Headern referenzieren.
 
 ### 2. Routine erstellen ([claude.ai/code/routines](https://claude.ai/code/routines))
 
 Neues Routine, Klick "New routine". Felder ausfuellen:
 
-**Name:** `Weekly Google Ads Report — MVV Enamic`
+**Name:** `Weekly Google Ads Report — <ACCOUNT_NAME>`
 
 **Prompt:** siehe [Abschnitt unten](#routine-prompt).
 
 **Repositories** (zwei hinzufuegen):
-- `F4bse-94/google-ads-agent` — Branch-Push: `claude/*` (Default, nicht aendern)
-- `F4bse-94/google-ads-memory` — Branch-Push: `main` (Checkbox "Allow unrestricted branch pushes" aktivieren, damit Memory-Updates direkt auf main gehen)
+- `<your-username>/google-ads-agent` — Branch-Push: `claude/*` (Default, nicht aendern)
+- `<your-username>/google-ads-memory` — Branch-Push: `main` (Checkbox "Allow unrestricted branch pushes" aktivieren, damit Memory-Updates direkt auf main gehen)
 
 **Environment:**
 - Default Cloud Environment nutzen
@@ -82,7 +82,7 @@ Alternativ: Token direkt im Connector-Header hardcoden (weniger elegant, aber fu
 Dies ist der exakte Prompt-Text, den du in das Routine-Prompt-Feld kopierst. Er triggert den `weekly-report`-Skill mit dem richtigen Kontext.
 
 ```
-Du bist der Orchestrator fuer das MVV Enamic Ads Weekly Report System.
+Du bist der Orchestrator fuer das <ACCOUNT_NAME> Weekly Report System.
 
 VOR ALLEM ANDEREN: Arbeitsverzeichnis, Memory-Symlink UND Staging-Dir sicherstellen (IDEMPOTENT, keine Rueckfragen).
 
@@ -109,7 +109,7 @@ Starte JETZT den `weekly-report` Skill aus `skills/weekly-report/SKILL.md`.
 
 Kontext:
 - Aktuelle ISO-Kalenderwoche: automatisch aus System-Datum (Europe/Berlin)
-- Account: MVV Enamic Ads (CID 2011391652)
+- Account: <ACCOUNT_NAME> (CID <YOUR_CUSTOMER_ID>)
 - Memory-Root (ueber Symlink): `memory/` → `../google-ads-memory/`
 - Staging-Dir fuer Sub-Agent-Outputs: `/tmp/w<NN>-staging/` (siehe Bootstrap oben)
 - Agent-Definitionen: `.claude/agents/*.md`
@@ -134,13 +134,12 @@ D. Dispatche report-composer mit **Path-only-Briefing** (siehe docs/handoff-cont
 E. Composer:
    - Rendert Template aus `skills/weekly-report/template.md`
    - Committet nach `google-ads-memory/reports/YYYY-WNN-report.md` (Branch: main)
-   - Sendet Executive-Summary via Gmail-Connector `send_email` an `f.smogulla@gmail.com`
+   - Sendet Executive-Summary via Gmail-Connector `send_email` an `<your-email@example.com>`
 
-F. Memory-Updates (Composer schreibt direkt via Git):
-   - `01_session_log.md`: append mit Rollover bei >12 Eintraegen
-   - `02_findings_log.md`: append neue, update alte Hypothesen
-   - `03_negatives.md`: append neue Hard Negatives (dedupliziert gegen bestehende)
-   - `04_top_performers.md`: append statistisch bestaetigte
+F. Memory-Updates (Composer schreibt via Memory-Bridge / GitHub-Memory-Helper Workflow, Schema v2):
+   - `02_findings_log.md`: open_hypotheses_resolved aus Statistician-Output durchziehen, neue Hypothesen appenden
+   - `03_pending_actions.md`: aktuelle KW-P0/P1 als neuer Block, Vorwochen rotiert, >4 Wochen ins Archiv
+   - `00_strategy_manifest.md` (Sektion 5.2 only): neue High-Priority-Negatives append-with-dedupe in passende Kategorie. Skip wenn keine neuen.
 
 G. Finale Zusammenfassung zurueckgeben (Status, Report-Link, Memory-Changes-Summary).
 
@@ -223,7 +222,7 @@ Verify:
 
 ### T3: Full End-to-End (naechste Woche)
 
-Erster geplanter Run am naechsten Montag. Fabian checkt Posteingang 07:15-07:30 Uhr.
+Erster geplanter Run am naechsten Montag. <Maintainer> checkt Posteingang 07:15-07:30 Uhr.
 
 Falls Fehler: Session-URL aus Routine-Detail-Page zeigt Traceback.
 
@@ -252,7 +251,7 @@ Claude Code Routines haben eine tages-basierte Cap. Bei Ueberschreitung: Routine
 
 ### Manueller Fallback
 
-Wenn Routine kaputt: Fabian oeffnet Claude Code lokal im `google-ads-agent/` Verzeichnis und ruft `Run the weekly-report skill` manuell auf. Funktionell identisch (nutzt `.mcp.json`).
+Wenn Routine kaputt: <Maintainer> oeffnet Claude Code lokal im `google-ads-agent/` Verzeichnis und ruft `Run the weekly-report skill` manuell auf. Funktionell identisch (nutzt `.mcp.json`).
 
 ---
 

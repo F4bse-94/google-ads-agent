@@ -33,8 +33,7 @@ flowchart TB
 
     Comp -->|commit| GH[GitHub<br/>google-ads-memory/reports/]
     Comp -->|send_email| Gmail[Gmail MCP<br/>Empfaenger: Fabian]
-    Comp --> MW[Memory-Writer Tool<br/>deterministisch]
-    MW -->|commit| GH2[GitHub<br/>session_log, findings_log,<br/>negatives, top_performers]
+    Comp -->|write via Helper| GH2[GitHub<br/>findings_log, pending_actions,<br/>strategy_manifest sektion 5.2]
 ```
 
 ## Daten-Flow (detailliert)
@@ -122,14 +121,27 @@ Orchestrator nutzt `Task`-Tool, um 4 Sub-Agents parallel zu triggern. Jeder beko
 4. Validiert gegen 12-Sektionen-Schema
 5. Commit in `google-ads-memory/reports/YYYY-WNN-report.md`
 
-### Phase D — Delivery & Memory-Update
+### Phase D — Delivery & Memory-Update (Schema v2 ab 2026-05-08)
+
+Composer nutzt das **Helper-Webhook-Pattern** (siehe `learnings/code-node-no-httpRequestWithAuthentication.md`) — kein deterministisches Tool, sondern LLM-gesteuerte writes mit Read-Modify-Write-Pattern:
+
 1. Composer ruft Gmail-MCP-Tool `send_email` auf (Body = Executive Summary, Link auf GitHub-Report)
-2. Memory-Writer-Tool (deterministisch, kein LLM):
-   - Append Session-Entry in `01_session_log.md` (max. 12 rollierend)
-   - Update `02_findings_log.md` — neue Hypothesen, resolved Hypotheses
-   - Append neue Negatives in `03_negatives.md` (dedupliziert)
-   - Append neue Top-Performers in `04_top_performers.md`
-3. Push to GitHub
+2. Memory-Updates via Memory-Bridge → GitHub Memory Helper:
+   - **`02_findings_log.md`** — open_hypotheses_resolved aus stat_json wird durchgezogen, neue Hypothesen appendet
+   - **`00_strategy_manifest.md` (Sektion 5.2 only)** — neue High-Priority-Negatives append-with-dedupe in passende Kategorie. Skipp wenn keine neuen.
+   - **`03_pending_actions.md`** — aktuelle KW-P0/P1 als neuer Block, Vorwochen rotiert, >4 Wochen ins Archiv
+3. Push to GitHub via Helper-Webhook
+
+**Memory-Schema v2 (3 Files statt 5):**
+
+| File | Zweck | Schreib-Verantwortung |
+|---|---|---|
+| `00_strategy_manifest.md` | Strategy + kontoweite Pflicht-Negatives | Mensch (manuell), Composer ergaenzt nur Sektion 5.2 |
+| `02_findings_log.md` | Hypothesen mit IDs (F-XXX), Statistiker-Verdicts | Composer |
+| `03_pending_actions.md` | Offene P0/P1-Recommendations aus Reports | Composer (Rotation) + Mensch (`[x]`-Marker fuer done) |
+| `reports/<iso_week>-report.md` | Vollstaendige Daten-Wahrheit pro Woche | Composer |
+
+**Entfernt im v2-Refactor:** `01_session_log.md` (redundant zu Reports), `03_negatives.md` (in Sektion 5 des Manifests gemerged), `04_top_performers.md` (derivativ aus Reports Sektion 3b).
 
 ## Koordinations-Mechanismus
 

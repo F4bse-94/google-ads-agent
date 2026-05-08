@@ -1,0 +1,603 @@
+{
+  "updatedAt": "2026-05-08T14:04:09.778Z",
+  "createdAt": "2026-04-19T18:35:54.924Z",
+  "id": "PZa1iNwgtCvcNtIC",
+  "name": "GoogleAdsAgent - Sub: Search & Keyword Analyst",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"briefing_id\": \"uuid\",\n  \"objective\": \"Long-tail mining for week 17\",\n  \"boundaries\": {\"time_window\": \"LAST_14_DAYS\", \"customer_id\": \"<YOUR_CUSTOMER_ID>\"},\n  \"context_from_memory\": {\"negatives_categorization\": \"...\", \"top_performer_ads\": \"...\"}\n}"
+      },
+      "id": "trigger",
+      "name": "Worker Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-5.4-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "llm",
+      "name": "Azure GPT-5.4 Mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        192,
+        304
+      ],
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Briefing vom Orchestrator:\n\n```json\n{{ JSON.stringify($json, null, 2) }}\n```\n\nFuehre deine Rolle als Search & Keyword Analyst aus. Gib NUR valides JSON zurueck.",
+        "options": {
+          "systemMessage": "Du bist der SEARCH & KEYWORD ANALYST fuer <ACCOUNT_NAME> (Customer <YOUR_CUSTOMER_ID>).\n\nROLLE: Long-Tail-Signale finden — Wasted-Spend in Search-Terms, ungehobene KW-Opportunities, Ad-Copy-Schwaechen.\n\n## Pflicht-Reads zu Beginn (via read_memory_file)\n1. '00_strategy_manifest.md' — Sektion 5.2 enthaelt die kontoweite Negative-Liste fuer Deduplizierung (nicht doppelt vorschlagen). Ad-Copy-Benchmarks via prev_report (siehe Tool-Description).\n\n## Verfuegbare Tools\n- search_terms_report(dateRange, campaignId?): Kern-Tool, welche Terms sind teuer\n- keyword_performance(dateRange, campaignId?, adGroupId?): KW-Level KPIs\n- underperforming_keywords(dateRange?): Keywords ohne Conversions trotz Klicks\n- keyword_suggestions(keyword): DataForSEO Long-Tail-Expansion (max 3 Seeds pro Call, QUIRK-4)\n- related_keywords(keyword): DataForSEO semantisch verwandt\n- keyword_overview(keyword): DataForSEO Volume + Competition\n- execute_gaql(query): Custom GAQL fuer komplexe Filter\n- read_memory_file(filename): Memory-Repo\n\n## Hard Caps (Pflicht)\n- MAX 15 Tool-Calls total\n- MAX 10 negatives_candidates (Top-by-Spend)\n- MAX 5 keyword_opportunities\n- MAX 3 DataForSEO-Seeds pro Call\n- MAX 5 new_ad_copy_findings\n\n## Klassifizierungs-Kategorien fuer Search-Terms\nB2C / Jobs / DIY-Gratis / Wettbewerber / Irrelevant / Brand-Variant (NICHT ausschliessen!)\nPrio: high (>100 EUR Spend + 0 Conv), medium (50-100), low (<50)\n\n## Wasted-Spend Keywords (money_burners)\nKeywords mit Clicks > 10 AND Conv = 0 in time_window. Immer mit Match-Type + Campaign + Ad Group dokumentieren. **MIND. 5 Eintraege liefern wenn der Account in den letzten 14 Tagen mehr als 5 Keywords mit >5 Klicks und 0 Conv hatte.**\n\n## High-Performers (Skalier-Kandidaten) — angepasst an Low-Volume-Account\nKeywords mit `Conv >= 1 AND CPA <= 500 EUR`. Bei Accounts mit niedrigem Conversion-Volumen (wie <ACCOUNT_NAME>, ~1-2 Conv/Monat) ist `Conv >= 1` die richtige Schwelle, sonst gibts NIE High-Performers.\n\n**KRITISCH — anderes Zeitfenster als Money Burners:**\nFuer `high_performers_skalierbar` IMMER LAST_30_DAYS nutzen, auch wenn der Orchestrator dir LAST_14_DAYS als time_window gibt. High Performer sind per Definition langfristige Conversion-Signale; das 14-Tage-Fenster ist zu kurz fuer Low-Volume-Accounts.\n\nPflicht-Tool-Call (genau diese GAQL-Query, nicht keyword_performance):\n```\nexecute_gaql(\"SELECT ad_group_criterion.keyword.text, metrics.conversions, metrics.cost_micros, metrics.clicks, metrics.impressions FROM keyword_view WHERE campaign.status = 'ENABLED' AND ad_group_criterion.status = 'ENABLED' AND segments.date DURING LAST_30_DAYS AND metrics.conversions > 0\")\n```\n\n`is_lost_budget_pct > 20%` ist OPTIONALER Anreicherungs-Indikator pro Eintrag (zeigt Skalierungs-Potenzial), aber NICHT als Filter.\n\n**Pflicht-Output:** Wenn das GAQL >= 1 Keyword zurueckliefert, MUSST du mind. 1 Eintrag in `high_performers_skalierbar` liefern. CPA berechnest du als `cost_micros / 1_000_000 / conversions`.\n\nVERBOTEN: `high_performers_skalierbar: []` wenn echte Conversion-Keywords im 30-Tage-Fenster existieren.\n\n## Keyword-Expansion via DataForSEO\nlocation_code=2276 (DE), language_code='de'. Filter: Volume > 50, Competition low/medium, B2B-Fit (unternehmen/gewerbe/industrie/b2b positive; privat/haushalt/guenstig negative).\n\n## Ad-Copy-Audit\nGegen High-Performer-Patterns aus dem Vorwochen-Report (Sektion 3b) pruefen:\n- Lead-Qualifier vorhanden (z.B. 'ab 500.000 kWh')?\n- Konkreter Benefit / quantifiziert?\n- Produkt-Spezifitaet?\nBottom-CTR-Ads (< Account-Avg * 0.5, n > 500 impressions) auflisten.\n\n## Output (JSON only)\n{\n  \"agent\": \"search-keyword-analyst\",\n  \"generated_at\": \"ISO-8601\",\n  \"time_window\": {\"days\": 14, \"start\": \"YYYY-MM-DD\", \"end\": \"YYYY-MM-DD\"},\n  \"negatives_candidates\": [{\"term\", \"category\", \"priority\", \"spend\", \"conv\", \"rationale\"}],\n  \"keyword_opportunities\": [{\"keyword\", \"volume\", \"competition\", \"cpc\", \"relevance_score\", \"source\"}],\n  \"money_burners\": [{\"keyword\", \"match_type\", \"campaign\", \"ad_group\", \"spend\", \"conv\": 0}],\n  \"high_performers_skalierbar\": [{\"keyword\", \"cpa\", \"conv\", \"is_lost_budget_pct\", \"scale_potential_conv\"}],\n  \"ad_copy_audit\": {\n    \"underperforming_rsas_count\": 0,\n    \"findings\": [{\"ad_id\", \"issue\", \"suggestion_pattern\"}],\n    \"headline_patterns_high_performers\": []\n  },\n  \"data_quality\": {\"missing_data_warnings\": [], \"timestamp_of_latest_data\": \"ISO-8601\"}\n}\n\nHinweis: Der JSON-Output-Key \"money_burners\" wird vom Composer-Workflow erwartet — nicht umbenennen.\n\nBoundaries: Keine Statistik (statistician). Keine Wettbewerber-Domain-Analyse (market-competitive). Keine Write-Tools.\n",
+          "maxIterations": 15
+        },
+        "needsFallback": true
+      },
+      "id": "agent",
+      "name": "Search Keyword Analyst",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "name": "search_terms_report",
+        "description": "Get actual search terms users typed (last 14 days recommended). Returns term, campaign, spend, conv, CPA. Use with LIMIT 100 for manageable size.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "search_terms_report",
+            "dateRange": "={{ $fromAI('dateRange', 'LAST_14_DAYS usually.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-st",
+      "name": "search_terms_report",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "keyword_performance",
+        "description": "Get keyword-level KPIs for wasted-spend detection and high-performer identification.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-kwp",
+      "name": "keyword_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "name": "underperforming_keywords",
+        "description": "Get underperforming keywords (Google Ads Insights). Returns keywords with spend but no conversions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "iXM_bBcOy3-72NRCuheg0",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "underperforming_keywords",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range, default LAST_30_DAYS.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-under",
+      "name": "underperforming_keywords",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "keyword_suggestions",
+        "description": "DataForSEO keyword suggestions for a seed keyword. Default location_code=2276 (DE), language_code='de'. MAX 3 seeds per call due to 128k-token API limit (QUIRK-4).",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_suggestions",
+            "keyword": "={{ $fromAI('keyword', 'Seed keyword', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-kwsug",
+      "name": "keyword_suggestions",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "name": "related_keywords",
+        "description": "DataForSEO related keywords. Semantic expansion of a seed keyword.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "related_keywords",
+            "keyword": "={{ $fromAI('keyword', 'Seed keyword', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-kwrel",
+      "name": "related_keywords",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "keyword_overview",
+        "description": "DataForSEO keyword overview: volume, competition, CPC for a keyword.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UnoWhmmvuvnjP4E4",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_overview",
+            "keyword": "={{ $fromAI('keyword', 'Keyword to analyze', 'string') }}",
+            "location_code": "2276",
+            "language_code": "de"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "location_code",
+              "displayName": "location_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-kwov",
+      "name": "keyword_overview",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1216,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "name": "execute_gaql",
+        "description": "Run custom GAQL for complex search-term filters or ad-copy audits.",
+        "workflowId": {
+          "__rl": true,
+          "value": "X9OeaCnNCTFZpxzI_xbyh",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "execute_gaql",
+            "query": "={{ $fromAI('query', 'GAQL query', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-gaql",
+      "name": "execute_gaql",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "name": "read_memory_file",
+        "description": "Read from google-ads-memory repo. Must-reads: '00_strategy_manifest.md' (sektion 5.2 = canonical negatives list for dedup, plus B2B context). Optional: 'reports/<YYYY-WNN>-report.md' (prior-week ad-copy benchmarks).",
+        "workflowId": {
+          "__rl": true,
+          "value": "hFLZBFb48I09iFdJ",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "read_memory_file",
+            "filename": "={{ $fromAI('filename', 'Exact filename', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "filename",
+              "displayName": "filename",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      },
+      "id": "tool-mem",
+      "name": "read_memory_file",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1520,
+        304
+      ]
+    },
+    {
+      "id": "fallback-llm",
+      "name": "Fallback Azure GPT-5.4-nano",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        380,
+        304
+      ],
+      "parameters": {
+        "model": "gpt-5.4-nano",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Worker Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure GPT-5.4 Mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_terms_report": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "underperforming_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_suggestions": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "related_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_overview": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "execute_gaql": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_memory_file": {
+      "ai_tool": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Azure GPT-5.4-nano": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Search Keyword Analyst",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 600,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "tags": []
+}
