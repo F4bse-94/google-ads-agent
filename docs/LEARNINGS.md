@@ -24,6 +24,7 @@ Dokumentierte Erkenntnisse fuer google-ads-agent. Jedes Learning ist eine Datei 
 
 - [GitHub-Edit Race-Condition + Atomic-Edit-Code-Node](learnings/github-edit-race-condition-atomic-pattern.md) — parallele SHA-Konflikte loesen via Code-Node mit Re-Fetch-Loop statt 3-Node-Chain
 - [Code-Node hat kein httpRequestWithAuthentication — Helper-Webhook-Pattern](learnings/code-node-no-httpRequestWithAuthentication.md) — n8n 2.35.x Sandbox-Limit; Auth-Calls via Sub-Workflow-Webhook; localhost-URL gegen NAT-Loopback (KW19-Recovery)
+- [n8n AI Agent Node v3.1 — Fallback-LLM, Batch Processing, Streaming](learnings/n8n-ai-agent-v3-1-features.md) — `needsFallback` + 2. LLM-Connection ersetzt manuelle Branch-Logik; Batch-Processing fuer Tool-Rate-Limits; Memory nur fuer Chat-Mode noetig
 - [n8n Format-Code recursive flatten](learnings/n8n-format-code-recursive-flatten.md) — verschachtelte GAQL-Responses brauchen recursive flatten, nicht 1-level
 - [Budget-Pacing burn_rate/forecast Berechnung](learnings/google-ads-budget-pacing-burn-rate-calculation.md) — `budget_pacing` MCP liefert nur Rohdaten, abgeleitete Felder im Format-Code-Node berechnen
 - [ad_performance: adStrength + RSA-Asset-Daten in 1 Call](learnings/google-ads-ad-performance-asset-data-included.md) — GAQL-Erweiterung fuer Sektion 5a/5c/5d; `adGroupId=0` failed

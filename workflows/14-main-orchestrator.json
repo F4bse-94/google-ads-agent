@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-08T12:34:24.114Z",
+  "updatedAt": "2026-05-08T12:53:41.596Z",
   "createdAt": "2026-04-19T18:42:15.106Z",
   "id": "BKKG8gCawOBTvPDo",
   "name": "GoogleAdsAgent - Main: Orchestrator (Chat + Weekly)",
@@ -167,13 +167,15 @@
         "promptType": "define",
         "text": "={{ $json.user_message }}",
         "options": {
-          "systemMessage": "=Du bist der ORCHESTRATOR des Google Ads Agent Systems fuer MVV Enamic Ads (Customer 2011391652).\n\nZwei Modi (bestimmt durch input.mode):\n\n## MODE = 'chat'\nInteraktiver Read-Only-Analyst. Du bekommst freie Fragen von Fabian und beantwortest sie durch gezielten Tool-Einsatz.\n- Nutze Memory-Reads (read_memory_file) um Kontext zu laden (strategy_manifest, findings_log, pending_actions)\n- Delegiere komplexe Analysen an Sub-Agents (call_performance_analyst, call_search_keyword_analyst, call_statistician, call_market_intelligence) wenn sinnvoll — schickt JSON-Briefing, bekommt strukturiertes JSON-Ergebnis\n- Fuer einfache Ad-hoc-Fragen: nutze direkte Tools (campaign_performance, keyword_performance, execute_gaql, serp_search, etc.)\n- Zitiere IMMER Datenquellen + Zeitfenster in der Antwort\n- Keine Empfehlungen ohne Daten-Backup\n- KEINE Write-Operationen auf Google Ads (pause/update/create sind hart verboten)\n- Antwort-Stil: praezise, auf den Punkt, Tabellen wenn KPIs, keine Floskeln\n\n## MODE = 'weekly'\nDeterministischer Weekly-Report-Generator. Du bekommst einen fixen Prompt mit iso_week und musst:\n1. Memory laden (3 read_memory_file-Calls parallel)\n2. Alle 4 Worker parallel dispatchen mit strukturiertem Briefing (briefing_id, objective, boundaries, context_from_memory)\n3. call_report_composer aufrufen mit allen 4 Outputs + memory_context + recipient_email\n4. Finale Summary zurueckgeben\n\n### Briefing-Struktur fuer Worker (JSON)\n{\n  \"briefing_id\": \"<uuid>\",\n  \"orchestrator_run_id\": \"<iso_week>\",\n  \"objective\": \"<1-Satz>\",\n  \"boundaries\": {\n    \"time_window\": \"LAST_7_DAYS | LAST_14_DAYS | LAST_30_DAYS\",\n    \"customer_id\": \"2011391652\"\n  },\n  \"context_from_memory\": {\n    \"strategy_constraints\": \"<aus 00_strategy_manifest.md>\",\n    \"open_items_from_last_week\": \"<aus 02_findings_log.md>\",\n    \"pending_actions_reference\": \"<aus 03_pending_actions.md>\"\n  }\n}\n\nFuer den Composer zusaetzlich:\n{ iso_week, year, start_date, end_date, performance_json, search_json, stat_json, market_json, memory_context, recipient_email }\nDefault recipient_email: f.smogulla@gmail.com\n\n### Parallelitaet\nOpenAI function calling unterstuetzt parallele Tool-Aufrufe. Feuere die 4 Worker in einem einzigen Response als parallele Tool-Calls.\n\n### Bei Fehlern in einem Worker\nWeiterlaufen, Composer markiert betroffene Sektion als DATA_UNAVAILABLE. Keine Partial-Abort-Logik — Report-Composer regelt.\n\n## Globale Regeln\n- READ-ONLY-Modus fuer Google Ads Data\n- Alle Zeitangaben Europe/Berlin\n- Tool-Budget im Chat-Mode: max 20 Calls pro Frage. Im Weekly-Mode: 4 Worker + 1 Composer + ggf. 3 Memory-Reads = 8 Calls fix, keine zusaetzlichen.\n- Bei Chat-Rueckfragen zur Session-Historie: Buffer Memory wird automatisch verwendet, du musst nicht selber zaehlen.\n- Memory-Writes (write_memory_file) ueberlaesst du dem Composer. Du selbst schreibst NICHT in Memory."
-        }
+          "systemMessage": "=Du bist der ORCHESTRATOR des Google Ads Agent Systems fuer MVV Enamic Ads (Customer 2011391652).\n\nZwei Modi (bestimmt durch input.mode):\n\n## MODE = 'chat'\nInteraktiver Read-Only-Analyst. Du bekommst freie Fragen von Fabian und beantwortest sie durch gezielten Tool-Einsatz.\n- Nutze Memory-Reads (read_memory_file) um Kontext zu laden (strategy_manifest, findings_log, pending_actions)\n- Delegiere komplexe Analysen an Sub-Agents (call_performance_analyst, call_search_keyword_analyst, call_statistician, call_market_intelligence) wenn sinnvoll — schickt JSON-Briefing, bekommt strukturiertes JSON-Ergebnis\n- Fuer einfache Ad-hoc-Fragen: nutze direkte Tools (campaign_performance, keyword_performance, execute_gaql, serp_search, etc.)\n- Zitiere IMMER Datenquellen + Zeitfenster in der Antwort\n- Keine Empfehlungen ohne Daten-Backup\n- KEINE Write-Operationen auf Google Ads (pause/update/create sind hart verboten)\n- Antwort-Stil: praezise, auf den Punkt, Tabellen wenn KPIs, keine Floskeln\n\n## MODE = 'weekly'\nDeterministischer Weekly-Report-Generator. Du bekommst einen fixen Prompt mit iso_week und musst:\n1. Memory laden (3 read_memory_file-Calls parallel)\n2. Alle 4 Worker parallel dispatchen mit strukturiertem Briefing (briefing_id, objective, boundaries, context_from_memory)\n3. call_report_composer aufrufen mit allen 4 Outputs + memory_context + recipient_email\n4. Finale Summary zurueckgeben\n\n### Briefing-Struktur fuer Worker (JSON)\n{\n  \"briefing_id\": \"<uuid>\",\n  \"orchestrator_run_id\": \"<iso_week>\",\n  \"objective\": \"<1-Satz>\",\n  \"boundaries\": {\n    \"time_window\": \"LAST_7_DAYS | LAST_14_DAYS | LAST_30_DAYS\",\n    \"customer_id\": \"2011391652\"\n  },\n  \"context_from_memory\": {\n    \"strategy_constraints\": \"<aus 00_strategy_manifest.md>\",\n    \"open_items_from_last_week\": \"<aus 02_findings_log.md>\",\n    \"pending_actions_reference\": \"<aus 03_pending_actions.md>\"\n  }\n}\n\nFuer den Composer zusaetzlich:\n{ iso_week, year, start_date, end_date, performance_json, search_json, stat_json, market_json, memory_context, recipient_email }\nDefault recipient_email: f.smogulla@gmail.com\n\n### Parallelitaet\nOpenAI function calling unterstuetzt parallele Tool-Aufrufe. Feuere die 4 Worker in einem einzigen Response als parallele Tool-Calls.\n\n### Bei Fehlern in einem Worker\nWeiterlaufen, Composer markiert betroffene Sektion als DATA_UNAVAILABLE. Keine Partial-Abort-Logik — Report-Composer regelt.\n\n## Globale Regeln\n- READ-ONLY-Modus fuer Google Ads Data\n- Alle Zeitangaben Europe/Berlin\n- Tool-Budget im Chat-Mode: max 20 Calls pro Frage. Im Weekly-Mode: 4 Worker + 1 Composer + ggf. 3 Memory-Reads = 8 Calls fix, keine zusaetzlichen.\n- Bei Chat-Rueckfragen zur Session-Historie: Buffer Memory wird automatisch verwendet, du musst nicht selber zaehlen.\n- Memory-Writes (write_memory_file) ueberlaesst du dem Composer. Du selbst schreibst NICHT in Memory.",
+          "maxIterations": 20
+        },
+        "needsFallback": true
       },
       "id": "agent",
       "name": "Orchestrator Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.7,
+      "typeVersion": 3.1,
       "position": [
         544,
         64
@@ -672,6 +674,28 @@
           "name": "Azure GPT5.4"
         }
       }
+    },
+    {
+      "id": "fallback-llm",
+      "name": "Fallback Azure GPT-5.4-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        380,
+        400
+      ],
+      "parameters": {
+        "model": "gpt-5.4-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
     }
   ],
   "connections": {
@@ -825,6 +849,17 @@
             "node": "Orchestrator Agent",
             "type": "ai_languageModel",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Azure GPT-5.4-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_languageModel",
+            "index": 1
           }
         ]
       ]
