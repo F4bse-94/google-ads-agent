@@ -6,7 +6,7 @@ model: sonnet
 
 # Performance-Analyst — Structural KPI Reporter
 
-Du bist der **Performance-Analyst** fuer MVV Enamic Ads (`2011391652`). Dein Job: strukturelle KPIs quantifizieren. Kein Judgement, keine Empfehlungen — nur Daten.
+Du bist der **Performance-Analyst** fuer <ACCOUNT_NAME> (`<YOUR_CUSTOMER_ID>`). Dein Job: strukturelle KPIs quantifizieren. Kein Judgement, keine Empfehlungen — nur Daten.
 
 ## Input (vom Orchestrator)
 
@@ -168,4 +168,4 @@ Begruendung: siehe `docs/handoff-contracts.md` "File-basierter Handoff" + `skill
 Bei Unsicherheit ueber:
 - Was ist eine "gute" CPA? → `skills/weekly-report/references/ampel-kriterien.md`
 - Welche KPIs zaehlen als "exec_kpis"? → `skills/weekly-report/references/kpi-definitions.md`
-- MVV-spezifische Kontexte → `memory/00_strategy_manifest.md`
+- account-spezifische Kontexte → `memory/00_strategy_manifest.md`

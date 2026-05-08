@@ -1,6 +1,6 @@
 ---
 name: weekly-report
-description: Generiert den wochentlichen Google Ads Report fuer MVV Enamic Ads (CID 2011391652) — orchestriert 4 parallele Sub-Agents (Performance-Analyst, Search-Keyword-Hunter, Statistiker, Market-Competitive), synthesiert 12-Sektionen-Report-Markdown, committet nach GitHub und sendet Executive-Summary per Gmail. Nutze dies wenn der User "weekly report", "wochentliches reporting", "google ads wochenbericht" oder sinngemaess fragt, oder wenn eine Claude Code Routine mit scheduled Trigger startet.
+description: Generiert den wochentlichen Google Ads Report fuer <ACCOUNT_NAME> (CID <YOUR_CUSTOMER_ID>) — orchestriert 4 parallele Sub-Agents (Performance-Analyst, Search-Keyword-Hunter, Statistiker, Market-Competitive), synthesiert 12-Sektionen-Report-Markdown, committet nach GitHub und sendet Executive-Summary per Gmail. Nutze dies wenn der User "weekly report", "wochentliches reporting", "google ads wochenbericht" oder sinngemaess fragt, oder wenn eine Claude Code Routine mit scheduled Trigger startet.
 ---
 
 # Weekly Report Skill
@@ -59,25 +59,25 @@ Orchestrator dispatcht `report-composer` mit **`run_in_background: true`** (Pfli
 
 **Self-Fallback:** Wenn Composer scheitert (Stream-Timeout, `error`-Status, > 120s ohne Abschluss): Orchestrator uebernimmt die Komposition direkt mit dem gleichen Split-Write-Pattern. Keine Rueckfrage an Nutzer — Routine ist autonom.
 
-### Phase E — Persist (Report + Memory-Writer, strikt getrennt)
+### Phase E — Persist (Report + Memory-Updates via Memory-Bridge, Schema v2)
 
 Composer:
-1. Schreibt `memory/reports/YYYY-WNN-report.md` inkl. `MEMORY_UPDATE_PAYLOAD`-JSON-Block am Ende
-2. **Ruft `scripts/memory_writer.py` auf** (Bash, deterministisch, kein LLM) — das Script liest den JSON-Block und updated die 4 Memory-Files:
-   - `01_session_log.md` (append mit Rollover bei > 12)
-   - `02_findings_log.md` (append neue Hypothesen, update alte)
-   - `03_negatives.md` (append neue Hard Negatives mit Deduplizierung)
-   - `04_top_performers.md` (append statistisch bestaetigte)
-3. `git add memory/reports/ memory/0*.md` + `git commit` + `git push` im memory-Repo
+1. Schreibt `memory/reports/YYYY-WNN-report.md` (12-Sektionen-Markdown) via Memory-Bridge MCP-Tool
+2. Updated drei Memory-Files (Schema v2, Stand 2026-05-08) via Memory-Bridge → GitHub-Memory-Helper Sub-Workflow:
+   - **`02_findings_log.md`** — open_hypotheses_resolved aus Statistician-Output durchziehen, neue Hypothesen appenden (mit fortlaufenden IDs F-XXX)
+   - **`03_pending_actions.md`** — aktuelle KW-P0/P1 als neuer Block anlegen, Vorwochen rotieren, >4 Wochen ins Archiv
+   - **`00_strategy_manifest.md` (Sektion 5.2 only)** — neue High-Priority-Negatives append-with-dedupe in passende Kategorie. Skip wenn keine neuen Kandidaten.
 
-**Wichtig — Source-of-Truth-Regel:** Composer schreibt **nur** den Report-Markdown. Die 4 Memory-Files werden **ausschliesslich** vom Python-Script aktualisiert. Kein Composer-Inline-Write auf `01_session_log.md` etc. Begruendung: Deterministik + Dedup-Logik (z.B. Negatives-Dedup) ist im Script, nicht im LLM.
+**Schema v2-Refactor (2026-05-08):** Statt 5 Memory-Files (alt: session_log, findings_log, negatives, top_performers + strategy_manifest) sind es jetzt 3 (strategy_manifest mit eingebetteten Negatives + findings_log + pending_actions). Reports unter `reports/` sind die vollstaendige Daten-Wahrheit pro Woche; session_log und top_performers sind redundant zu Reports und entfallen.
+
+**Race-Condition-Schutz:** GitHub-Memory-Helper nutzt Atomic-Edit-Pattern mit Re-Fetch-Loop bei SHA-Konflikten (siehe `docs/learnings/github-edit-race-condition-atomic-pattern.md`).
 
 ### Phase F — Email via Mail-Bridge MCP
 
 Composer ruft den MCP `mail-bridge` auf, Tool `send_email` (n8n-Workflow-ID `MWsWFnQubZ1Z21QL`):
 
 Parameters:
-- `to` — default `f.smogulla@gmail.com`
+- `to` — default `<your-email@example.com>`
 - `subject` — `Weekly Google Ads Report — KW {{iso_week}} | Status: {{status_emoji}}`
 - `body_html` — vollstaendiges HTML-Dokument, Executive Summary (Sektion 0) + Link zu GitHub-Report
 
@@ -93,7 +93,7 @@ Orchestrator gibt finale Zusammenfassung zurueck:
 Session: 2026-W17 completed
 - Status: 🟡 YELLOW
 - Report: memory/reports/2026-W17-report.md
-- Email sent: f.smogulla@gmail.com
+- Email sent: <your-email@example.com>
 - Memory updates: 2 new findings, 5 new negatives (dedup), 0 top_performers, 1 session_log entry
 - Duration: Xm Ys
 ```
@@ -124,5 +124,5 @@ Siehe `.claude/agents/report-composer.md` "Qualitaets-Checkliste".
 - KPI-Definitionen: `references/kpi-definitions.md`
 - Statistische Tests: `references/statistical-tests.md`
 - B2B-Saisonalitaet DE: `references/b2b-seasonality-de.md`
-- MVV-Account-Kontext: `references/mvv-account-context.md`
+- Account-Kontext: lebt im Memory-Repo unter `memory/00_strategy_manifest.md`
 - Ampel-Kriterien: `references/ampel-kriterien.md`

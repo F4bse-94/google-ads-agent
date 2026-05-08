@@ -48,8 +48,8 @@ Jedes Sub-Agent-Briefing folgt diesem Schema:
   "boundaries": {
     "time_window": "LAST_7_DAYS | LAST_14_DAYS | LAST_30_DAYS | CUSTOM",
     "time_window_custom": { "start": "YYYY-MM-DD", "end": "YYYY-MM-DD" },
-    "customer_id": "2011391652",
-    "login_customer_id": "5662771991",
+    "customer_id": "<YOUR_CUSTOMER_ID>",
+    "login_customer_id": "<YOUR_LOGIN_CUSTOMER_ID>",
     "read_only": true,
     "do_not": ["make_recommendations", "apply_changes", "..."]
   },
@@ -402,7 +402,7 @@ Der Composer bekommt **Pfade** zu Sub-Agent-Outputs, nicht die Outputs selbst. E
   "output_targets": {
     "github_path": "memory/reports/2026-W17-report.md",
     "email": {
-      "to": "f.smogulla@gmail.com",
+      "to": "<your-email@example.com>",
       "subject_template": "Weekly Google Ads Report — KW {{iso_week}} | Status: {{status}}",
       "body_style": "executive_summary_only_with_github_link"
     }

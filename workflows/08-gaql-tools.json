@@ -64,13 +64,13 @@
             {
               "id": "58e1c312-d8ce-41b4-acfc-3fbc0ce86b83",
               "name": "loginCustomerId",
-              "value": "5662771991",
+              "value": "<YOUR_LOGIN_CUSTOMER_ID>",
               "type": "string"
             },
             {
               "id": "92f1c312-d8ce-41b4-acfc-3fbc0ce86b84",
               "name": "customerId",
-              "value": "2011391652",
+              "value": "<YOUR_CUSTOMER_ID>",
               "type": "string"
             }
           ]
@@ -276,7 +276,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -315,7 +315,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -509,13 +509,13 @@
               {
                 "id": "58e1c312-d8ce-41b4-acfc-3fbc0ce86b83",
                 "name": "loginCustomerId",
-                "value": "5662771991",
+                "value": "<YOUR_LOGIN_CUSTOMER_ID>",
                 "type": "string"
               },
               {
                 "id": "92f1c312-d8ce-41b4-acfc-3fbc0ce86b84",
                 "name": "customerId",
-                "value": "2011391652",
+                "value": "<YOUR_CUSTOMER_ID>",
                 "type": "string"
               }
             ]
@@ -721,7 +721,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },
@@ -760,7 +760,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },

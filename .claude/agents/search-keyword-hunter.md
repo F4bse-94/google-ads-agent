@@ -79,7 +79,7 @@ Vor jedem Run:
    - **DIY/Gratis** (kostenlos, vorlage, diy)
    - **Wettbewerber** (eon, rwe, vattenfall, ...)
    - **Irrelevant** (thematisch nicht passend)
-   - **Brand-Variant** (MVV-Keyword-Varianten — nicht ausschliessen!)
+   - **Brand-Variant** (Brand-Keyword-Varianten — nicht ausschliessen!)
 3. Dedup gegen `memory/03_negatives.md` — Terme die schon gelistet sind, NICHT wieder vorschlagen
 4. Priorisierung: `high` (>100 EUR Spend + 0 Conv), `medium` (50-100 EUR), `low` (<50 EUR)
 5. Rationale in 1 Satz pro Vorschlag
@@ -103,7 +103,7 @@ Fuer die Top 5 High-Performer-Keywords:
 
 ### 5. Ad-Copy-Audit
 Fuer alle aktiven RSAs:
-- Pruefe gegen Top-Performer-Patterns aus `memory/04_top_performers.md` Abschnitt 2:
+- Pruefe gegen Top-Performer-Patterns aus Memory aus `memory/04_top_performers.md` Abschnitt 2:
   - **Enthaelt Lead-Qualifier** (z.B. "ab 500.000 kWh")? — wenn nicht: flag
   - **Konkreter Benefit** (quantifiziertes Versprechen)?
   - **Produkt-Spezifitaet** (nicht nur generisch)?
@@ -133,4 +133,4 @@ Orchestrator uebergibt `output_path`. **ERSTER Tool-Call**: Skeleton-JSON schrei
 Spezifische Nachschlagewerke:
 - Kategorisierungs-Kriterien fuer Negatives: `memory/03_negatives.md` Abschnitt 1
 - Ad-Copy-Benchmarks: `memory/04_top_performers.md` Abschnitt 2
-- MVV-Produkt-Kontext: `memory/00_strategy_manifest.md` Abschnitt 3
+- Produkt-Kontext: `memory/00_strategy_manifest.md` Abschnitt 3

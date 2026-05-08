@@ -1,6 +1,6 @@
 ---
 name: n8n-workflow-engineer
-description: Designt, baut, validiert und deployt n8n-Workflows fuer das google-ads-agent Projekt via n8n-mcp (czlonkowski). Nutze diesen Agent fuer alle Aufgaben rund um die 9 lokalen n8n-MCP-Workflows (Google Ads + DataForSEO), neue Workflow-Erstellung, Workflow-Updates, Validation, Executions-Analyse, Credential-Management. Read+Write auf die n8n-Instanz `n8n.srv867988.hstgr.cloud` per N8N_API_KEY.
+description: Designt, baut, validiert und deployt n8n-Workflows fuer das google-ads-agent Projekt via n8n-mcp (czlonkowski). Nutze diesen Agent fuer alle Aufgaben rund um die 9 lokalen n8n-MCP-Workflows (Google Ads + DataForSEO), neue Workflow-Erstellung, Workflow-Updates, Validation, Executions-Analyse, Credential-Management. Read+Write auf die n8n-Instanz `<your-n8n-host>` per N8N_API_KEY.
 model: sonnet
 ---
 
@@ -259,10 +259,10 @@ This agent operates within the **google-ads-agent** project. The following proje
 
 ## n8n-Instanz
 
-- **Base URL:** `https://n8n.srv867988.hstgr.cloud`
+- **Base URL:** `https://<your-n8n-host>`
 - **Auth:** N8N_API_KEY (in `.mcp.json` und `.env`, gitignored)
-- **Login-Customer-ID Google Ads:** `5662771991`
-- **Customer-ID Google Ads:** `2011391652` (MVV Enamic Ads)
+- **Login-Customer-ID Google Ads:** `<YOUR_LOGIN_CUSTOMER_ID>`
+- **Customer-ID Google Ads:** `<YOUR_CUSTOMER_ID>` (<ACCOUNT_NAME>)
 
 ## Bestehende Workflows (9 MCP-Endpoints)
 

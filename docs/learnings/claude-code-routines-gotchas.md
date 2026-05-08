@@ -29,8 +29,8 @@ Wenn deine Prompts Memory-Files erwarten, die via Submodule gemountet sind, find
 **Workaround:** Submodule-Parent und Submodule als **zwei separate Repositories** in der Routine-Config hinzufuegen. Beide werden dann geklont (parallel). Der Orchestrator-Prompt muss beide Pfade kennen.
 
 Beispiel: `n8n-projects/google-ads-agent/memory/` verweist via Submodule auf `google-ads-memory`. In der Routine:
-- Repo 1: `F4bse-94/n8n-projects` (main repo mit Prompts/Skills)
-- Repo 2: `F4bse-94/google-ads-memory` (Memory, wird parallel geklont → `./google-ads-memory/`)
+- Repo 1: `<your-username>/n8n-projects` (main repo mit Prompts/Skills)
+- Repo 2: `<your-username>/google-ads-memory` (Memory, wird parallel geklont → `./google-ads-memory/`)
 
 Der Orchestrator-Prompt liest dann `google-ads-memory/00_strategy_manifest.md` statt `memory/00_strategy_manifest.md`.
 

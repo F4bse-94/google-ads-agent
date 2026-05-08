@@ -19,7 +19,7 @@ Wichtige Architektur- und Design-Entscheidungen, damit sie in 3 Monaten noch nac
 
 ## 2026-04-17: Architektur — Pure Anthropic-Stack (Option G)
 
-**Kontext**: Fabian betreibt ein 4-Agenten-Google-Ads-System in Langdock. Diskutiert wurden 5 Alternativen: n8n-native, Claude Code-only, Claude Workspace-only, Hybrid n8n+Claude Code, und Pure Anthropic-Stack. Zwei Tatsachen entschieden:
+**Kontext**:  der Maintainer betreibt ein 4-Agenten-Google-Ads-System in Langdock. Diskutiert wurden 5 Alternativen: n8n-native, Claude Code-only, Claude Workspace-only, Hybrid n8n+Claude Code, und Pure Anthropic-Stack. Zwei Tatsachen entschieden:
 - n8n v1.104.0 (21.07.2025) unterstuetzt HTTP Streamable Transport fuer MCP Server Trigger — das SSE-Problem mit Claude Workspace ist damit behebbar.
 - Claude Code Routines (Research Preview ab 14.04.2026) bieten Cloud-basierte Scheduled Agents auf Anthropic-Infrastruktur.
 
@@ -47,7 +47,7 @@ Wichtige Architektur- und Design-Entscheidungen, damit sie in 3 Monaten noch nac
 
 ## 2026-04-17: Memory — Neuer Repo `google-ads-memory`
 
-**Kontext**: Langdock-System nutzt Repo `F4bse-94/langdock-ads-memory` mit 4 Markdown-Files. Optionen waren: Fork, parallel schreiben, oder neu anlegen.
+**Kontext**: Langdock-System nutzt Repo `<vorgaenger-memory-repo>` mit 4 Markdown-Files. Optionen waren: Fork, parallel schreiben, oder neu anlegen.
 
 **Entscheidung**: Neuer GitHub-Repo `google-ads-memory`. Strategy-Manifest-Inhalte werden manuell uebernommen, Rest faengt frisch an. Langdock-System bleibt unberuehrt parallel laufen.
 

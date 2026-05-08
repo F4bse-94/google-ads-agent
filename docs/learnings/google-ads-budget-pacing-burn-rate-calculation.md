@@ -49,4 +49,4 @@ Diese Schwellen sind in `06-reporting-tools.json` Format-Code hardcoded — bei 
 
 ## Bestaetigt durch
 
-`budget_pacing(THIS_MONTH)` Live-Call am 2026-05-08: Aktive Kampagne `25-06 | DE | Traffic | Commodity PPA` lieferte burn_rate=101.59 EUR, forecast=3149.44 EUR bei monthly_budget=3100 EUR → status=`on_track`. Pausierte Kampagnen mit Budget aber ohne Spend → `underspending`.
+`budget_pacing(THIS_MONTH)` Live-Call am 2026-05-08: Aktive Kampagne `<beispielhafte aktive Kampagne>` lieferte burn_rate=101.59 EUR, forecast=3149.44 EUR bei monthly_budget=3100 EUR → status=`on_track`. Pausierte Kampagnen mit Budget aber ohne Spend → `underspending`.

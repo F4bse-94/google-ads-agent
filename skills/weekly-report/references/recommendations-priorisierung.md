@@ -18,9 +18,9 @@ Referenz fuer den Report-Composer zur Synthese der **Sektion 11 (Recommendations
 | **P1 High** | Low Quality Score (QS <= 3) + signifikanter Spend (> 200 EUR im Zeitfenster) | "Landing Page Review Kampagne Y (QS 3, Spend 280 EUR, Post-Click BELOW_AVERAGE)" |
 | **P1 High** | Negative-Kandidat high priority aus Search-Keyword-Hunter | "Add Hard Negative 'xxx' (Spend 150, 0 Conv, irrelevant-category)" |
 | **P1 High** | High-Performer-Keyword im gemischten Pool → isolieren in eigene Ad Group | "'ppa beratung' in eigene Ad Group mit Exact-Match isolieren (CPA 15, einziger Conv-Treiber)" |
-| **P1 High** | Pausierte Kampagne mit historisch starkem Conv-Track (aus 04_top_performers.md) | "Energiefonds-Status mit Agentur klaeren (seit 25.03. pausiert, ~2.360 EUR entgangen)" |
+| **P1 High** | Pausierte Kampagne mit historisch starkem Conv-Track (aus 04_top_performers.md) | "Pausierte Top-Performer-Kampagne mit Stakeholder klaeren (seit X Wochen pausiert, ~Y EUR entgangen)" |
 | **P2 Medium** | Keyword-Opportunity aus Market-Competitive mit high relevance_score | "Test KW 'corporate ppa' (+325% 12M, Relevanz A)" |
-| **P2 Medium** | Neuer Wettbewerber mit Paid-Aktivitaet in Money-Keywords | "Monitor xxx.de — neu in PPA-SERPs, Position 3" |
+| **P2 Medium** | Neuer Wettbewerber mit Paid-Aktivitaet in Money-Keywords | "Monitor xxx.de — neu in Money-Keyword-SERPs, Position 3" |
 | **P3 Watch** | Soft-Negative-Beobachtungen (trend_only ohne Signifikanz) | "Review 'strom unternehmen' in KW20 — Conv-Rate driftet" |
 | **P3 Watch** | SEO-Gap (nicht direkt Google-Ads, aber strategisch) | "SEO-Strategie evaluieren (0/5 Money-Keyword-SERPs organisch sichtbar)" |
 

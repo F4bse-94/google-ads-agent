@@ -260,7 +260,7 @@
       "parameters": {
         "resource": "file",
         "operation": "get",
-        "owner": "F4bse-94",
+        "owner": "<your-username>",
         "repository": "google-ads-memory",
         "filePath": "={{ $json.filename }}",
         "asBinaryProperty": false,

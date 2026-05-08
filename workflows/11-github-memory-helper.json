@@ -119,7 +119,7 @@
       ],
       "parameters": {
         "method": "GET",
-        "url": "=https://api.github.com/repos/F4bse-94/google-ads-memory/contents/{{ $json.body.filename.split('/').map(encodeURIComponent).join('/') }}",
+        "url": "=https://api.github.com/repos/<your-username>/google-ads-memory/contents/{{ $json.body.filename.split('/').map(encodeURIComponent).join('/') }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "githubApi",
         "sendHeaders": true,
@@ -159,7 +159,7 @@
       ],
       "parameters": {
         "method": "PUT",
-        "url": "=https://api.github.com/repos/F4bse-94/google-ads-memory/contents/{{ $json.body.filename.split('/').map(encodeURIComponent).join('/') }}",
+        "url": "=https://api.github.com/repos/<your-username>/google-ads-memory/contents/{{ $json.body.filename.split('/').map(encodeURIComponent).join('/') }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "githubApi",
         "sendHeaders": true,
@@ -219,7 +219,7 @@
       ],
       "parameters": {
         "method": "DELETE",
-        "url": "=https://api.github.com/repos/F4bse-94/google-ads-memory/contents/{{ $json.body.filename.split('/').map(encodeURIComponent).join('/') }}",
+        "url": "=https://api.github.com/repos/<your-username>/google-ads-memory/contents/{{ $json.body.filename.split('/').map(encodeURIComponent).join('/') }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "githubApi",
         "sendHeaders": true,

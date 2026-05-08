@@ -97,7 +97,7 @@ p_value = 2 * (1 - Phi(|T|))
 
 wobei `t_i` der Zeitpunkt (1, 2, 3, ...), `pbar` die ueberall-gepoolte Proportion.
 
-**Anwendung MVV:** Statistiker testet ueber 4+ Wochen ob z.B. CVR kontinuierlich sinkt.
+**Anwendung Beispiel:** Statistiker testet ueber 4+ Wochen ob z.B. CVR kontinuierlich sinkt.
 
 **Python:** `statsmodels.stats.contingency_tables.cochrans_q` (fuer Reihen-Dichotomie) oder eigene Implementierung.
 
@@ -136,7 +136,7 @@ Jeder individuelle Test verwendet `alpha_corrected` statt 0.05.
 4. `z_today = (cvr_today - mean_historic) / std_historic`
 5. Flag bei `|z| > 2` (95% Konfidenz) oder `|z| > 3` (99% Konfidenz)
 
-**Kritisch fuer MVV:** Ohne Wochentag-Korrektur kommt es zu Fehlalarmen, weil Mo-Fr und Sa-So stark unterschiedlich sind.
+**Kritisch fuer Lead-Gen-Accounts:** Ohne Wochentag-Korrektur kommt es zu Fehlalarmen, weil Mo-Fr und Sa-So stark unterschiedlich sind.
 
 ## Power Analysis
 
@@ -149,7 +149,7 @@ analysis = NormalIndPower()
 n_required = analysis.solve_power(effect_size=0.2, alpha=0.05, power=0.80, alternative='two-sided')
 ```
 
-**Fuer MVV (mit erwarteten p ~ 3-5%):** Detection of 1pp delta braucht ~3000-4000 Clicks pro Gruppe. Realistisch im Weekly-Report selten erreichbar bei Einzel-Keywords.
+**Fuer Lead-Gen-B2B (mit erwarteten p ~ 3-5%):** Detection of 1pp delta braucht ~3000-4000 Clicks pro Gruppe. Realistisch im Weekly-Report selten erreichbar bei Einzel-Keywords.
 
 ## Effect Size
 
@@ -191,7 +191,7 @@ H1: Mobile CVR (2.1%) < Desktop CVR (3.8%) — Delta: -1.7pp [95% KI: -2.3pp, -1
 | >= 0.10 AND power >= 0.80 | — | `significant_rejected` |
 | >= 0.10 AND power < 0.80 | — | `insufficient_data` |
 
-## MVV-spezifische Hinweise
+## account-spezifische Hinweise
 
 - **Sample-Sizes sind KLEIN** (Budget 3-4k EUR = ~50-100 conv/Monat)
 - Bayesian ist oft realistischer als Frequentist

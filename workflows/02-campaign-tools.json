@@ -88,13 +88,13 @@
             {
               "id": "cred2",
               "name": "loginCustomerId",
-              "value": "5662771991",
+              "value": "<YOUR_LOGIN_CUSTOMER_ID>",
               "type": "string"
             },
             {
               "id": "cred3",
               "name": "customerId",
-              "value": "2011391652",
+              "value": "<YOUR_CUSTOMER_ID>",
               "type": "string"
             }
           ]
@@ -655,7 +655,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -694,7 +694,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -733,7 +733,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -772,7 +772,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -811,7 +811,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -850,7 +850,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -889,7 +889,7 @@
       "credentials": {
         "googleAdsOAuth2Api": {
           "id": "LJry2sfRllBhCIan",
-          "name": "Google Ads | MVV Fabian"
+          "name": "Google Ads | Your Account"
         }
       }
     },
@@ -1252,13 +1252,13 @@
               {
                 "id": "cred2",
                 "name": "loginCustomerId",
-                "value": "5662771991",
+                "value": "<YOUR_LOGIN_CUSTOMER_ID>",
                 "type": "string"
               },
               {
                 "id": "cred3",
                 "name": "customerId",
-                "value": "2011391652",
+                "value": "<YOUR_CUSTOMER_ID>",
                 "type": "string"
               }
             ]
@@ -1819,7 +1819,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },
@@ -1858,7 +1858,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },
@@ -1897,7 +1897,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },
@@ -1936,7 +1936,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },
@@ -1975,7 +1975,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },
@@ -2014,7 +2014,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },
@@ -2053,7 +2053,7 @@
         "credentials": {
           "googleAdsOAuth2Api": {
             "id": "LJry2sfRllBhCIan",
-            "name": "Google Ads | MVV Fabian"
+            "name": "Google Ads | Your Account"
           }
         }
       },

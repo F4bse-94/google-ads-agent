@@ -43,7 +43,7 @@ Code-Node nutzt nur `$helpers.httpRequest()` (ohne Auth) gegen den Helper-Webhoo
 
 ## Critical Gotcha: NAT-Loopback / Localhost-URL
 
-**Erste Implementierung mit der oeffentlichen URL `https://n8n.srv867988.hstgr.cloud/webhook/...` lief in 30s-Timeouts.**
+**Erste Implementierung mit der oeffentlichen URL `https://<your-n8n-host>/webhook/...` lief in 30s-Timeouts.**
 
 Hostinger (und viele andere Self-Hosted-Setups hinter Reverse-Proxy / Cloudflare) erlauben Hairpin-NAT nicht — der n8n-Container kann seine eigene oeffentliche Hostname nicht aufloesen / erreichen. Self-HTTP-Calls haengen.
 
