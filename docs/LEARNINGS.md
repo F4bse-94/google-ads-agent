@@ -19,3 +19,10 @@ Dokumentierte Erkenntnisse fuer google-ads-agent. Jedes Learning ist eine Datei 
 
 - [Multi-Agent Orchestrator-Worker mit Struct-Briefings](learnings/anthropic-multi-agent-struct-briefing.md) — JSON-Struct statt NL-Prompts zwischen Agents (90% Perf-Gain laut Anthropic Research)
 - [Statistiker-Agent mit eigenem MCP-Zugriff](learnings/statistician-with-own-mcp-access.md) — Anti-Pattern vermeiden: nicht durchreichen, sondern Hypothesen + adaptives Zeitfenster
+
+## n8n-Workflow-Patterns (KW18 Post-Mortem, 2026-05-08)
+
+- [GitHub-Edit Race-Condition + Atomic-Edit-Code-Node](learnings/github-edit-race-condition-atomic-pattern.md) — parallele SHA-Konflikte loesen via Code-Node mit Re-Fetch-Loop statt 3-Node-Chain
+- [n8n Format-Code recursive flatten](learnings/n8n-format-code-recursive-flatten.md) — verschachtelte GAQL-Responses brauchen recursive flatten, nicht 1-level
+- [Budget-Pacing burn_rate/forecast Berechnung](learnings/google-ads-budget-pacing-burn-rate-calculation.md) — `budget_pacing` MCP liefert nur Rohdaten, abgeleitete Felder im Format-Code-Node berechnen
+- [ad_performance: adStrength + RSA-Asset-Daten in 1 Call](learnings/google-ads-ad-performance-asset-data-included.md) — GAQL-Erweiterung fuer Sektion 5a/5c/5d; `adGroupId=0` failed
