@@ -1,0 +1,572 @@
+{
+  "updatedAt": "2026-05-08T11:50:57.465Z",
+  "createdAt": "2026-04-19T18:34:07.789Z",
+  "id": "kl42z9WLAGLZzlBW",
+  "name": "GoogleAdsAgent - Sub: Performance Analyst",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Worker Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"briefing_id\": \"uuid\",\n  \"orchestrator_run_id\": \"w17-2026-04-21\",\n  \"objective\": \"Structural KPI quantification for week 17\",\n  \"boundaries\": {\n    \"time_window\": \"LAST_7_DAYS\",\n    \"customer_id\": \"2011391652\"\n  },\n  \"context_from_memory\": {\n    \"strategy_constraints\": \"Target CPA 500 EUR\",\n    \"open_items_from_last_week\": []\n  }\n}"
+      }
+    },
+    {
+      "id": "llm",
+      "name": "Azure GPT-5.4 Mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        180,
+        300
+      ],
+      "parameters": {
+        "model": "gpt-5.4-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "cemscitTyEZdJmRi",
+          "name": "Azure GPT5.4"
+        }
+      }
+    },
+    {
+      "id": "agent",
+      "name": "Performance Analyst",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        400,
+        0
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Briefing vom Orchestrator:\n\n```json\n{{ JSON.stringify($json, null, 2) }}\n```\n\nFuehre deine Rolle als Performance-Analyst aus. Nutze die Tools in logischer Reihenfolge (siehe Systemprompt). Gib NUR valides JSON zurueck nach dem im Systemprompt definierten Schema.",
+        "options": {
+          "systemMessage": "Du bist der PERFORMANCE-ANALYST fuer MVV Enamic Ads (Google Ads Customer 2011391652).\n\nROLLE: Strukturelle KPIs quantifizieren. Nur Daten, KEINE Empfehlungen, KEINE Interpretationen, KEINE statistischen Tests.\n\n## Verfuegbare Tools (alle Read-Only)\n- campaign_performance(dateRange, campaignId?): Kampagnen-KPIs\n- ad_performance(dateRange, campaignId?, adGroupId?): Ad-Level KPIs\n- keyword_performance(dateRange, campaignId?, adGroupId?): Keyword-Level KPIs (nur fuer QS-Distribution)\n- device_performance(dateRange, campaignId?): Device-Breakdown\n- geographic_performance(dateRange, campaignId?): Geo-Breakdown\n- hourly_performance(dateRange, campaignId?): Hourly-Breakdown\n- budget_pacing(dateRange): Budget-Pacing\n- execute_gaql(query, customerId?): Custom GAQL fuer WoW-Vergleiche mit expliziten Date-Ranges. ACHTUNG: LAST_90_DAYS existiert NICHT — verwende BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD'.\n- read_memory_file(filename): Liest aus google-ads-memory Repo. Sinnvoll: '00_strategy_manifest.md', '03_pending_actions.md' (offene P0/P1 aus Vorwoche), 'reports/<YYYY-WNN>-report.md' (Vorwochen-Daten).\n\n## Pflicht: WoW-Verifikation (zwei separate Calls)\nFuer Week-over-Week IMMER zwei Calls:\n1. campaign_performance(dateRange='LAST_7_DAYS') — aktuelle Woche\n2. execute_gaql mit BETWEEN '<start-prev>' AND '<end-prev>' — Vorwoche\nBeide Timestamps und Row-Counts in data_quality.wow_verification dokumentieren. Niemals WoW-Deltas ohne Doppel-Call — das waere Halluzination.\n\n## Ampel-Flags pro Kampagne (Pflicht)\n- green: CPA <= 500 EUR UND WoW-Spend-Delta < +30% UND Conv-Rate stabil\n- yellow: CPA 500-600 EUR ODER WoW-Spend-Delta +30-50% ODER Conv-Delta < -30%\n- red: CPA > 600 EUR ODER WoW-Spend-Delta > +50% ODER Conv-Delta < -50%\n\n## Impression-Share-Split (Pflicht pro Kampagne)\n- search_impression_share\n- is_lost_budget (>20% + gute CPA = Skalier-Kandidat)\n- is_lost_rank (>30% = QS/Bidding-Problem)\n\nDie Standard-Tools liefern diese IS-Felder evtl. NICHT. Nutze dann execute_gaql mit: SELECT campaign.id, metrics.search_impression_share, metrics.search_budget_lost_impression_share, metrics.search_rank_lost_impression_share FROM campaign WHERE segments.date DURING LAST_7_DAYS.\n\n## Ad-Strength-Distribution\nPro aktiver RSA zaehlen: excellent / good / average / poor. Top 5 nach Conversions, Bottom 5 nach CTR (nur Ads mit >500 Impressions).\n\n## Tool-Budget\nMAX 15 Tool-Calls total. Bei fehlenden Daten: Feld null + Warning in data_quality.missing_data_warnings.\n\n## Boundaries\n- Keine Signifikanz-Tests (macht statistician)\n- Keine Search-Terms-Analyse (macht search-keyword-hunter)\n- Keine Wettbewerber-Analyse (macht market-competitive)\n- Keine Empfehlungen (macht report-composer)\n- KEINE Write-Tools\n\n## Output-Format\nGib am Ende NUR valides JSON zurueck, keine Prosa. Schema:\n\n{\n  \"agent\": \"performance-analyst\",\n  \"generated_at\": \"ISO-8601\",\n  \"time_window\": {\"start\": \"YYYY-MM-DD\", \"end\": \"YYYY-MM-DD\", \"days\": 7},\n  \"exec_kpis\": {\n    \"spend\": 0, \"conversions\": 0, \"cpa\": 0, \"conv_rate\": 0,\n    \"ctr\": 0, \"impressions\": 0, \"clicks\": 0,\n    \"wow_delta_abs\": {}, \"wow_delta_pct\": {}\n  },\n  \"budget_pacing\": {\"burn_rate\": \"\", \"forecast\": \"\", \"pacing_status\": \"\"},\n  \"campaigns\": [{\n    \"id\": \"\", \"name\": \"\", \"status_color\": \"green|yellow|red\",\n    \"spend\": 0, \"conv\": 0, \"cpa\": 0,\n    \"search_impression_share\": 0, \"is_lost_budget\": 0, \"is_lost_rank\": 0,\n    \"wow_spend_delta_pct\": 0, \"wow_conv_delta_pct\": 0\n  }],\n  \"ads\": {\n    \"rsa_strength_distribution\": {\"excellent\": 0, \"good\": 0, \"average\": 0, \"poor\": 0},\n    \"top_5_by_conv\": [], \"bottom_5_by_ctr\": [], \"asset_performance\": {}\n  },\n  \"dimensions\": {\n    \"device\": [], \"geographic\": [], \"hourly\": []\n  },\n  \"quality_score\": {\"distribution\": {}, \"trend_wow\": \"\"},\n  \"data_quality\": {\n    \"wow_verification\": {\n      \"current_range\": \"YYYY-MM-DD,YYYY-MM-DD\",\n      \"previous_range\": \"YYYY-MM-DD,YYYY-MM-DD\",\n      \"current_row_count\": 0,\n      \"previous_row_count\": 0,\n      \"both_successful\": true\n    },\n    \"missing_data_warnings\": [],\n    \"hours_of_lag\": 0\n  }\n}"
+        }
+      }
+    },
+    {
+      "id": "tool-camp",
+      "name": "campaign_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        300
+      ],
+      "parameters": {
+        "name": "campaign_performance",
+        "description": "Get Google Ads campaign-level KPIs (spend, conv, CPA, IS, clicks, CTR, impressions) for a date range. Returns all active campaigns sorted by spend. Use for main performance overview.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "campaign_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range enum: LAST_7_DAYS, LAST_14_DAYS, LAST_30_DAYS, THIS_MONTH. Default LAST_7_DAYS for weekly reports.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-ad",
+      "name": "ad_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        300
+      ],
+      "parameters": {
+        "name": "ad_performance",
+        "description": "Get Google Ads ad-level KPIs (spend, conv, CPA, CTR, impressions) per Ad. Use for Top/Bottom-Performer analysis and RSA-Strength-Distribution. For campaign/ad-group filtering use execute_gaql with a WHERE clause.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "ad_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range. Default LAST_7_DAYS.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-kw",
+      "name": "keyword_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "name": "keyword_performance",
+        "description": "Get Google Ads keyword-level KPIs. Use for Quality-Score-Distribution analysis. For campaign filtering use execute_gaql with a WHERE clause.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "keyword_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-dev",
+      "name": "device_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        300
+      ],
+      "parameters": {
+        "name": "device_performance",
+        "description": "Get performance broken down by device (mobile, desktop, tablet).",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "device_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-geo",
+      "name": "geographic_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        300
+      ],
+      "parameters": {
+        "name": "geographic_performance",
+        "description": "Get performance broken down by geographic location (country, region).",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "geographic_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range. NOTE: custom BETWEEN ranges cause HTTP 400 - use preset enums only.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-hour",
+      "name": "hourly_performance",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        300
+      ],
+      "parameters": {
+        "name": "hourly_performance",
+        "description": "Get performance broken down by hour of day for daypart analysis.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "hourly_performance",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-budget",
+      "name": "budget_pacing",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        300
+      ],
+      "parameters": {
+        "name": "budget_pacing",
+        "description": "Get budget pacing status (burn rate, forecast, pacing_status) per campaign. Best used with THIS_MONTH.",
+        "workflowId": {
+          "__rl": true,
+          "value": "_MscqooFbXWKSMGS_3Oul",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "budget_pacing",
+            "dateRange": "={{ $fromAI('dateRange', 'Date range. Usually THIS_MONTH.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "dateRange",
+              "displayName": "dateRange",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-gaql",
+      "name": "execute_gaql",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1520,
+        300
+      ],
+      "parameters": {
+        "name": "execute_gaql",
+        "description": "Execute an arbitrary GAQL query for custom date ranges, Impression-Share metrics, or fields missing in other tools. Use this for WoW previous-week data with BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD'. Example: SELECT campaign.id, metrics.search_impression_share FROM campaign WHERE segments.date BETWEEN '2026-04-04' AND '2026-04-10'.",
+        "workflowId": {
+          "__rl": true,
+          "value": "X9OeaCnNCTFZpxzI_xbyh",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "execute_gaql",
+            "query": "={{ $fromAI('query', 'A complete GAQL query string. LAST_90_DAYS does NOT exist - use BETWEEN for >30d ranges.', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tool-mem",
+      "name": "read_memory_file",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        300
+      ],
+      "parameters": {
+        "name": "read_memory_file",
+        "description": "Read a file from the google-ads-memory GitHub repo. Useful: '00_strategy_manifest.md' (B2B rules, CPA targets), '03_pending_actions.md' (open P0/P1 from prior weeks), 'reports/<YYYY-WNN>-report.md' (prior-week data).",
+        "workflowId": {
+          "__rl": true,
+          "value": "hFLZBFb48I09iFdJ",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tool_name": "read_memory_file",
+            "filename": "={{ $fromAI('filename', 'Exact filename, e.g. 00_strategy_manifest.md', 'string') }}"
+          },
+          "schema": [
+            {
+              "id": "tool_name",
+              "displayName": "tool_name",
+              "required": false,
+              "type": "string",
+              "display": true
+            },
+            {
+              "id": "filename",
+              "displayName": "filename",
+              "required": false,
+              "type": "string",
+              "display": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Worker Trigger": {
+      "main": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure GPT-5.4 Mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "campaign_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ad_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "device_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "geographic_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "hourly_performance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "budget_pacing": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "execute_gaql": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_memory_file": {
+      "ai_tool": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 600,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "tags": []
+}
