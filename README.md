@@ -1,144 +1,94 @@
 # google-ads-agent
 
-Multi-Agent-System fuer woechentliches Google-Ads-Reporting nach Anthropic's Orchestrator-Worker-Pattern. Kein Chat-Bot, sondern eine **scheduled Pipeline**: jeden Montag morgen analysieren 4 spezialisierte AI-Agents parallel ein Google-Ads-Konto, ein Report-Composer rendert das Ergebnis als 12-Sektionen-Markdown, der Report wird ins Memory-Repo committet und per Email versendet.
+n8n-basiertes Multi-Agent-System fuer woechentliches Google-Ads-Reporting. Komplett in **n8n** implementiert — keine externen Orchestrierungs-Tools noetig.
 
-> **Status:** Production-ready. Lokale Test-Runs in KW16-19/2026 durchgelaufen. Cloud-Routine-Deploy steht aus. **Read-only:** keine Write-Operationen auf Google-Ads-Konten.
-
----
+Das Repo enthaelt:
+- **9 MCP-Tool-Workflows** — Google Ads + DataForSEO API-Wrapper
+- **8 Agenten-Team-Workflows** — Orchestrator + 4 Sub-Agenten (Performance, Search/KW, Statistiker, Market) + Composer + 2 Memory-Helper
+- **Memory-Templates** — Strategy-Manifest + Findings-Log + Pending-Actions fuer eigenes Memory-Repo
 
 ## Was das System macht
 
-Jeden Montag 07:00 Europe/Berlin (oder beliebiges anderes Cron-Schedule) laeuft eine Claude Code Routine in der Anthropic-Cloud, die:
+Der **Orchestrator** (Workflow `14-main-orchestrator`) wird per Schedule (z.B. Mo 07:00) oder per Chat manuell getriggert. Er:
 
-1. **Memory-Repo klont** (`google-ads-memory` als Submodule) — Strategy-Manifest, offene Hypothesen, P0/P1-Items
-2. **Orchestrator** (Opus 4.7) liest Memory, plant Reporting-Umfang
-3. **4 Sub-Agents parallel:**
-   - **Performance-Analyst** (Sonnet) — strukturelle KPIs (Spend/Conv/CPA, Campaign/Ad/Device/Geo/Hourly)
-   - **Search & Keyword-Hunter** (Sonnet) — Search-Terms-Mining, Negatives-Kandidaten, Keyword-Opportunities via DataForSEO
-   - **Statistiker** (Opus, eigener MCP-Zugriff) — Hypothesen-Validierung, Z-Tests/Welch-t/Cochran-Armitage, Re-Validation offener Items aus Vorwochen
-   - **Market & Competitive** (Sonnet) — DataForSEO Auction Insights, Keyword-Trends, neue Wettbewerber
-4. **Report-Composer** (Sonnet) rendert 12-Sektionen-Template
-5. **Memory-Bridge** (n8n-Workflow) committet Report + aktualisiert findings_log/pending_actions im Memory-Repo
-6. **Mail-Bridge** sendet Executive-Summary per Gmail
-
-## Architektur
-
-```
-                         Claude Code Routine (Cloud)
-                         ──────────────────────────
-                                    │
-                                    ▼
-                ┌──────────────────────────────────────┐
-                │  Orchestrator (Opus 4.7)             │
-                │  liest Memory, dispatcht parallel    │
-                └─┬────────┬────────┬────────┬─────────┘
-                  │        │        │        │
-       ┌──────────┘        │        │        └──────────┐
-       ▼                   ▼        ▼                   ▼
- ┌─────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
- │Performance- │ │Search & KW-  │ │Statistiker   │ │Market &      │
- │Analyst      │ │Hunter        │ │(Opus)        │ │Competitive   │
- │(Sonnet)     │ │(Sonnet)      │ │              │ │(Sonnet)      │
- └──────┬──────┘ └──────┬───────┘ └──────┬───────┘ └──────┬───────┘
-        │               │                │                │
-     n8n MCP         n8n MCP          n8n MCP          DataForSEO
-    (Account,       (SearchTerms,    (GAQL,            MCP
-     Reporting,     Keyword,          Reporting,
-     Insights)      DataForSEO)       Insights)
-        │               │                │                │
-        └───────────────┴────────────────┴────────────────┘
-                                │
-                                ▼
-                    ┌────────────────────────┐
-                    │  Report-Composer       │
-                    │  (Sonnet)              │
-                    │  12-Sektionen-Template │
-                    └─┬───────────────────┬──┘
-                      │                   │
-                      ▼                   ▼
-              ┌────────────────┐  ┌────────────────┐
-              │ Memory-Bridge  │  │ Mail-Bridge    │
-              │ (n8n)          │  │ (n8n)          │
-              │ Report + Logs  │  │ Gmail          │
-              │ → google-ads-  │  │ Executive      │
-              │   memory       │  │ Summary        │
-              └────────────────┘  └────────────────┘
-```
-
-Details: [docs/architecture.md](docs/architecture.md)
-
----
+1. Liest Memory aus GitHub (Strategy, offene Hypothesen, P0/P1-Items)
+2. Dispatcht 4 Sub-Agenten als n8n-Sub-Workflows:
+   - **Performance-Analyst** — strukturelle KPIs (Spend/Conv/CPA, Campaign/Ad/Device/Geo/Hourly)
+   - **Search & Keyword-Hunter** — Search-Terms-Mining, Negatives, Keyword-Opportunities (DataForSEO)
+   - **Statistiker** — Hypothesen-Validierung mit Z-Test, Welch-t-Test, Cochran-Armitage
+   - **Market & Competitive** — Auction Insights, Keyword-Trends, neue Wettbewerber
+3. Uebergibt die 4 JSON-Outputs an den **Report-Composer**
+4. Composer rendert 12-Sektionen-Markdown-Report
+5. Memory-Bridge committet Report + aktualisiert Findings-Log/Pending-Actions im Memory-Repo
+6. Versendet Executive-Summary per Email (via Gmail-Node)
 
 ## Repo-Struktur
 
-| Pfad | Inhalt |
-|---|---|
-| `.claude/agents/` | 7 Sub-Agent-Definitionen (Markdown + YAML-Frontmatter, dispatched via Task-Tool) |
-| `.claude/rules/` | Globale Konventionen (n8n, Git, Documentation) |
-| `skills/weekly-report/` | Skill mit Progressive Disclosure: SKILL.md + template.md + dispatch-playbook.md + references/ |
-| `workflows/` | 17 n8n-Workflow-Backups (8 Google-Ads-MCPs + 1 DataForSEO-MCP + 2 Helper + 6 AI-Agent-Workflows) |
-| `routines/` | Claude Code Routine Configs (Prompt + Cron + Connectors) |
-| `memory/` | Git-Submodule auf `google-ads-memory` (Strategy, Findings, Pending-Actions, Reports) |
-| `templates/memory/` | Memory-Templates fuer neuen Account (kopieren in eigenes Memory-Repo) |
-| `docs/` | Architecture, Workflow-Atlas, Handoff-Contracts, Report-Anatomy, Learnings |
-| `scripts/` | Python-Helpers fuer Statistik-Tests (Referenz-Implementation) |
-
----
+```
+google-ads-agent/
+├── workflows/
+│   ├── mcp-tools/         # 9 MCP-Server-Workflows (Google Ads + DataForSEO)
+│   │   ├── 01-account-tools.json
+│   │   ├── 02-campaign-tools.json
+│   │   ├── 03-ad-group-tools.json
+│   │   ├── 04-ad-tools.json
+│   │   ├── 05-keyword-tools.json
+│   │   ├── 06-reporting-tools.json
+│   │   ├── 07-insights-tools.json
+│   │   ├── 08-gaql-tools.json
+│   │   └── 09-dataforseo-mcp.json
+│   └── agent-team/        # 8 AI-Agenten + Helper-Workflows
+│       ├── 10-memory-bridge.json          # MCP-Server: Memory-Schreibzugriffe
+│       ├── 11-github-memory-helper.json   # Sub-Workflow: Atomic GitHub-Edits
+│       ├── 12-sub-report-composer.json    # AI Agent: Report-Komposition
+│       ├── 13-sub-market-intelligence.json # AI Agent: Market & Competitive
+│       ├── 14-main-orchestrator.json      # AI Agent: Lead (Chat + Schedule)
+│       ├── 15-sub-performance-analyst.json # AI Agent: Performance KPIs
+│       ├── 16-sub-search-keyword-analyst.json # AI Agent: Search/Keywords
+│       └── 17-sub-statistician.json       # AI Agent: Statistik
+├── templates/
+│   └── memory/            # Templates fuer eigenes Memory-Repo
+│       ├── 00_strategy_manifest.md
+│       ├── 02_findings_log.md
+│       ├── 03_pending_actions.md
+│       ├── README.md
+│       └── reports/.gitkeep
+├── docs/
+│   ├── SETUP.md           # Schritt-fuer-Schritt Installations-Anleitung
+│   ├── LEARNINGS.md       # Index dokumentierter Erkenntnisse
+│   └── learnings/         # n8n + Google Ads + DataForSEO Learnings
+├── memory/                # Submodule auf eigenes Memory-Repo
+├── .env.example           # Optional: n8n API-Variablen fuer CLI-Tools
+└── .gitignore
+```
 
 ## Quick Start
 
-**Du bist neu?** Lies zuerst die ausfuehrliche Installations-Anleitung: [docs/SETUP.md](docs/SETUP.md)
+Du brauchst eine eigene n8n-Instanz (≥ v1.104.0), einen Google Ads Account mit API-Zugang, einen DataForSEO Account, ein GitHub Repo fuer das Memory, und einen LLM-Provider (Anthropic oder OpenAI).
 
-Sehr verkuerzt:
+**Komplette Setup-Anleitung:** [docs/SETUP.md](docs/SETUP.md) (~30 min Lesezeit, 2-4h Setup-Zeit)
 
-```bash
-# 1. Clone (mit Submodule)
-git clone --recurse-submodules https://github.com/<user>/google-ads-agent.git
-cd google-ads-agent
+Kurzform:
+1. Repo klonen
+2. Eigenes Memory-Repo aufsetzen (`templates/memory/` als Vorlage)
+3. n8n-Credentials anlegen (Google Ads OAuth, DataForSEO, GitHub PAT, Bearer-Auth, Gmail OAuth, LLM API Key)
+4. 17 Workflows in n8n importieren (mcp-tools/ zuerst, dann agent-team/)
+5. Customer-IDs + Workflow-IDs in den importierten Workflows anpassen
+6. Orchestrator manuell testen via Chat-Trigger
+7. Schedule-Trigger aktivieren
 
-# 2. Eigenes Memory-Repo aufsetzen — Templates kopieren
-# (Details in docs/SETUP.md, Schritt 4)
+## Voraussetzungen
 
-# 3. .env und .mcp.json aus Templates anlegen
-cp .env.example .env             # Credentials eintragen
-cp .mcp.json.example .mcp.json   # MCP-URLs + Bearer-Tokens
+| Komponente | Wofuer |
+|---|---|
+| **n8n self-hosted ≥ v1.104.0** | MCP-Server-Trigger via Streamable HTTP, AI-Agent-Workflows v3.1 |
+| **Google Cloud Project + OAuth-Client** | Google Ads API-Zugriff |
+| **Google Ads Developer Token** | API-Zugang (Test- oder Production-Tier) |
+| **DataForSEO Account (API)** | Keyword-Volumen, SERP, Competitor-Daten — Pay-as-you-go |
+| **GitHub Repo + Personal Access Token** | Memory-Repo (Strategy, Findings, Reports) |
+| **Anthropic / OpenAI API Key** | LLM-Calls in den AI-Agent-Workflows |
+| **Gmail-Account + OAuth-Setup** | Email-Versand der Executive Summary |
 
-# 4. n8n-Workflows importieren (17 Stueck) — siehe SETUP.md, Schritt 5
-# 5. Ersten lokalen Test-Run
-claude
-> Run the weekly-report skill for the current ISO week.
+## Lizenz / Verwendung
 
-# 6. Cloud-Routine konfigurieren — siehe SETUP.md, Schritt 7
-```
-
----
-
-## Stack-Voraussetzungen
-
-| Komponente | Version | Zweck |
-|---|---|---|
-| **n8n** (self-hosted) | ≥ v1.104.0 | MCP-Server-Trigger via Streamable HTTP, AI-Agent-Workflows |
-| **Claude Code** | aktuell (CLI) | lokale Werkstatt + Cloud-Routine-Trigger |
-| **Anthropic Plan** | Pro / Max / Team / Enterprise | Claude Code Routines (Cloud-Scheduling) |
-| **Google Ads API** | v20+ | via n8n OAuth in Workflow-Credentials |
-| **DataForSEO** | API v3 | Keyword-Volumen, SERP, Competitor-Daten |
-| **GitHub PAT** | classic, `repo`-Scope | Memory-Repo Read+Write |
-| **Gmail-Connector** | claude.ai Workspace | Email-Versand der Executive Summary |
-
----
-
-## Read-Only Phase
-
-Aktuell sind **alle Write-Operationen auf Google Ads deaktiviert**. Tools (`create_*`, `update_*`, `pause_*`, `remove_*`) sind in den n8n-Workflows zwar verfuegbar, werden aber von keinem Sub-Agent angerufen. Sub-Agent-Prompts enthalten harte Boundaries (`READ_ONLY: true`).
-
-Phase-2-Roadmap (Write-Operationen mit Approval-Gate): siehe [DECISIONS.md](DECISIONS.md).
-
----
-
-## Originalauftrag
-
-Ueberfuehrung eines Langdock-basierten Multi-Agent-Reportings (4 Agents in einem manuellen Chat-Flow) in eine vollautonom scheduled Cloud-Pipeline mit:
-- 90% Performance-Gain durch Anthropic's Orchestrator-Worker-Pattern (gemaess Anthropic Multi-Agent Research)
-- Memory-Repo als Single-Source-of-Truth zwischen Sessions
-- n8n als deterministisches Tool-Backend (kein AI-Reasoning in n8n)
-- Read-only-Phase fuer Vertrauensaufbau, dann Write-Operations mit Approval-Gate
+Dieses Setup ist als Template gedacht — du nutzt es fuer einen eigenen Google-Ads-Account, befuellst dein eigenes Memory-Repo, und betreibst die Workflows in deiner eigenen n8n-Instanz. Es findet keine Datenuebertragung an Dritte statt (ausser an die Drittanbieter-APIs: Google Ads, DataForSEO, dein LLM-Provider, GitHub).

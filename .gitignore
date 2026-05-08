@@ -7,21 +7,10 @@ Thumbs.db
 .env.local
 secret.json
 credentials.json
-
-# MCP config (enthält API Keys)
 .mcp.json
-
-# Claude Code (Workspace-Assets sind committed, nur persönliche Overrides ignoriert)
-.claude/settings.local.json
-.claude/scheduled_tasks.lock
-.backups/
 
 # Tmp-Verifikations-Ordner (Workflow-Backup-Dumps)
 .tmp-verify*/
-
-# Python venv
-.venv/
-venv/
 
 # Node
 node_modules/
@@ -31,8 +20,6 @@ npm-debug.log
 .vscode/settings.local.json
 .idea/
 
-# Python
-__pycache__/
-*.pyc
-.venv/
-venv/
+# OS
+.Trash-*
+Desktop.ini

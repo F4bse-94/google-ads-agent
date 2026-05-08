@@ -1,24 +1,28 @@
-# Setup-Anleitung — google-ads-agent
+# Setup-Anleitung — google-ads-agent (n8n)
 
-Schritt-fuer-Schritt-Anleitung um das Multi-Agent-Reporting-System fuer einen eigenen Google-Ads-Account aufzusetzen. Lesezeit: ~30 min, Setup-Zeit: 2-4 Stunden (haengt davon ab wie viele Credentials du erstmals einrichtest).
+Schritt-fuer-Schritt-Anleitung um das komplette Multi-Agent-System in einer eigenen n8n-Instanz aufzusetzen. Lesezeit: ~30 min, Setup-Zeit: 2-4 Stunden (haengt davon ab wie viele Credentials du erstmals einrichtest).
 
-> **Zielpublikum:** Marketing-Engineer / SEA-Manager mit n8n-Erfahrung. Kein Dev-Background noetig, aber Vertrautheit mit OAuth, API-Keys und Markdown.
+> **Zielpublikum:** SEA-Manager mit n8n-Erfahrung. OAuth, API-Keys und JSON-Editing sollten dir vertraut sein.
 
 ---
 
 ## Inhaltsverzeichnis
 
 1. [Voraussetzungen & Kosten](#1-voraussetzungen--kosten)
-2. [n8n-Instanz vorbereiten](#2-n8n-instanz-vorbereiten)
-3. [Repos klonen](#3-repos-klonen)
-4. [Eigenes Memory-Repo aufsetzen](#4-eigenes-memory-repo-aufsetzen)
-5. [Credentials in n8n einrichten](#5-credentials-in-n8n-einrichten)
-6. [Workflows in n8n importieren](#6-workflows-in-n8n-importieren)
-7. [.env und .mcp.json aufsetzen](#7-env-und-mcpjson-aufsetzen)
-8. [Lokaler Test-Run mit Claude Code](#8-lokaler-test-run-mit-claude-code)
-9. [Cloud-Routine konfigurieren](#9-cloud-routine-konfigurieren)
-10. [Troubleshooting](#10-troubleshooting)
-11. [Was kommt danach?](#11-was-kommt-danach)
+2. [Architektur-Ueberblick](#2-architektur-ueberblick)
+3. [n8n vorbereiten](#3-n8n-vorbereiten)
+4. [Repo klonen](#4-repo-klonen)
+5. [Eigenes Memory-Repo aufsetzen](#5-eigenes-memory-repo-aufsetzen)
+6. [n8n-Credentials einrichten](#6-n8n-credentials-einrichten)
+7. [MCP-Tool-Workflows importieren](#7-mcp-tool-workflows-importieren)
+8. [Agent-Team-Workflows importieren](#8-agent-team-workflows-importieren)
+9. [Workflow-IDs zwischen Workflows verknuepfen](#9-workflow-ids-zwischen-workflows-verknuepfen)
+10. [Customer-IDs in den Tool-Workflows anpassen](#10-customer-ids-in-den-tool-workflows-anpassen)
+11. [Mail-Bridge anlegen (optional)](#11-mail-bridge-anlegen-optional)
+12. [Test-Run](#12-test-run)
+13. [Schedule aktivieren](#13-schedule-aktivieren)
+14. [Troubleshooting](#14-troubleshooting)
+15. [FAQ](#15-faq)
 
 ---
 
@@ -28,106 +32,133 @@ Schritt-fuer-Schritt-Anleitung um das Multi-Agent-Reporting-System fuer einen ei
 
 | Komponente | Wofuer | Kosten (Stand 2026) |
 |---|---|---|
-| **n8n self-hosted ≥ v1.104.0** | MCP-Server-Trigger via Streamable HTTP, AI-Agent-Workflows | ~7-30 EUR/Monat (Hetzner/DigitalOcean) ODER n8n Cloud ab 20 EUR/Monat |
-| **GitHub-Account + 2 Repos** | Hauptrepo (`google-ads-agent`) + Memory-Repo (`google-ads-memory`) | Kostenlos (private Repos) |
+| **n8n self-hosted ≥ v1.104.0** | MCP-Server-Trigger via Streamable HTTP, AI-Agent-Workflows v3.1, Tool-Workflow-Calls | ~7-30 EUR/Monat (Hetzner/DigitalOcean) ODER n8n Cloud ab 20 EUR/Monat |
+| **GitHub Account + 2 Repos** | Hauptrepo (`google-ads-agent`, kannst du forken) + Memory-Repo (eigenes, privat) | Kostenlos |
 | **Google Ads-Account + Developer Token** | Source-of-Truth fuer Reports | Kostenlos (nur Ad-Spend) |
 | **Google Cloud Project** | OAuth-Client fuer Google Ads API | Kostenlos |
-| **DataForSEO Account** | Keyword-Volumen, SERP, Competitor-Daten | Pay-as-you-go, ~50-100 USD/Monat fuer wenige Reports |
-| **Claude Code (Anthropic Pro/Max/Team)** | lokale Werkstatt + Cloud-Routine-Scheduler | ab 20 USD/Monat (Pro) |
-| **Anthropic API-Key** *(falls AI-Agent-Workflows in n8n direkt LLM aufrufen)* | LLM-Calls innerhalb n8n-Workflows | Pay-as-you-go nach Tokens |
+| **DataForSEO Account** | Keyword-Volumen, SERP, Competitor-Daten | Pay-as-you-go, ~50-100 USD/Monat |
+| **Anthropic ODER OpenAI API-Key** | LLM-Calls in den AI-Agent-Workflows | Pay-as-you-go nach Tokens, ~3-5 USD pro Weekly-Run |
 | **Gmail-Account** | Versand der Executive Summary | Kostenlos |
 
-### Pro-Run-Kosten (geschaetzt)
-
-- ~3-5 USD pro Weekly-Report (Opus-Orchestrator + 4 Sonnet-Sub-Agents + Opus-Statistiker)
-- DataForSEO: ~0.50-2 USD pro Report (Keyword-Volumen + SERP-Calls)
-
-**Gesamt:** ~25-50 USD/Monat fuer 4 Wochenreports.
+**Pro-Run-Kosten:** ~3-5 USD (LLM) + ~0.50-2 USD (DataForSEO). Bei 4 Reports/Monat: **~25-50 USD/Monat**.
 
 ---
 
-## 2. n8n-Instanz vorbereiten
+## 2. Architektur-Ueberblick
 
-### 2.1 Version pruefen
+```
+                              n8n Instanz
+                              ───────────
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│  Orchestrator (Workflow 14)                                     │
+│  ├── Trigger: Chat ODER Schedule (Cron)                         │
+│  ├── LLM: AI Agent v3.1 (Anthropic/OpenAI)                      │
+│  └── Ruft als Sub-Workflow-Tools auf:                           │
+│      ├── call_performance_analyst       → Workflow 15           │
+│      ├── call_search_keyword_analyst    → Workflow 16           │
+│      ├── call_statistician              → Workflow 17           │
+│      ├── call_market_intelligence       → Workflow 13           │
+│      ├── call_report_composer           → Workflow 12           │
+│      ├── read_memory_file               → Workflow 10           │
+│      ├── campaign_performance           → Workflow 06           │
+│      └── execute_gaql                   → Workflow 08           │
+│                                                                 │
+│  Sub-Agenten (Workflows 12, 13, 15, 16, 17)                     │
+│  ├── Trigger: executeWorkflow (vom Orchestrator gerufen)        │
+│  ├── LLM: AI Agent v3.1                                         │
+│  └── Rufen Tool-Workflows als Sub-Workflows auf:                │
+│      ├── Workflow 06 (Reporting), 08 (GAQL), 07 (Insights)      │
+│      ├── Workflow 09 (DataForSEO)                               │
+│      └── Workflow 10 (Memory-Bridge fuer Read+Write)            │
+│                                                                 │
+│  Memory-Bridge (Workflow 10)                                    │
+│  ├── Trigger: MCP-Server (auch von Orchestrator als Tool)       │
+│  └── Sub-Workflow: Workflow 11 (GitHub-API-Wrapper)             │
+│                                                                 │
+│  GitHub-Memory-Helper (Workflow 11)                             │
+│  ├── Trigger: executeWorkflow (von Memory-Bridge)               │
+│  └── Code-Node: Atomic-Edit-Pattern gegen GitHub Contents API   │
+│                                                                 │
+│  MCP-Tool-Workflows (Workflows 01-09)                           │
+│  ├── Trigger: MCP-Server (auch direkt von AI-Agenten gerufen)   │
+│  └── HTTP-Request-Nodes auf Google Ads API / DataForSEO API     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+                    ┌──────────────────────┐
+                    │  GitHub Memory-Repo  │
+                    │  (separates Repo,    │
+                    │   privat empfohlen)  │
+                    │  ├ strategy_manifest │
+                    │  ├ findings_log      │
+                    │  ├ pending_actions   │
+                    │  └ reports/          │
+                    └──────────────────────┘
+```
 
-n8n muss **mindestens v1.104.0** sein, damit MCP-Server-Trigger via Streamable HTTP funktionieren. Aeltere Versionen koennen nur SSE und sind nicht kompatibel mit Claude Code Routines.
+**Zwei Wege wie Workflows verbunden sind:**
+- **Sub-Workflow-Calls** (`Tool: Workflow`-Node oder `Execute Workflow`-Node): direkter Aufruf eines anderen Workflows ueber dessen n8n-ID
+- **MCP-Server-Trigger**: Workflow stellt sich als MCP-Server zur Verfuegung — kann von externen Clients (z.B. Claude.ai) ueber HTTPS angesprochen werden. Im Setup hier nicht zwingend genutzt (alle Calls laufen intern ueber Sub-Workflows), aber die MCP-Trigger sind aktiv und erlauben optional externe Nutzung.
+
+---
+
+## 3. n8n vorbereiten
+
+### 3.1 Version pruefen
+
+n8n muss **mindestens v1.104.0** sein. Aeltere Versionen unterstuetzen den AI-Agent-Node v3.1 oder den Streamable-HTTP-MCP-Trigger nicht voll.
 
 ```bash
-# In n8n-UI: oben rechts auf das Profil-Icon klicken, dann "Settings" → "About"
-# Oder via API:
+# In n8n-UI: oben rechts auf das Profil-Icon → "Settings" → "About"
+# Oder via Public API:
 curl https://<your-n8n-host>/rest/instance | jq .version
 ```
 
-Falls < 1.104.0: Update via Docker / npm / Pakete-Manager je nach Hosting.
+Falls kleiner: Update via Docker / npm / PaaS-Updater.
 
-### 2.2 n8n Public API aktivieren
+### 3.2 n8n Public API aktivieren (optional)
 
-Die `n8n-mcp`-Toolchain (czlonkowski) braucht Read+Write auf die Public API:
+Nur noetig wenn du Workflows per CLI/Script bulk-aktualisieren willst:
 
 1. **Settings → n8n API → Create an API key**
-2. Token kopieren — wird in `.env` als `N8N_API_KEY` benoetigt
+2. Token kopieren — kann in `.env` (lokal) als `N8N_API_KEY` eingetragen werden
 
-### 2.3 Hostname / TLS
+### 3.3 HTTPS sicherstellen
 
-Die n8n-Instanz muss **per HTTPS oeffentlich erreichbar** sein, weil Claude Code Routines (in der Anthropic-Cloud) sonst keine MCP-Calls machen koennen.
+Wenn du die MCP-Trigger spaeter extern nutzen willst (z.B. von Claude.ai aus): die n8n-Instanz muss per HTTPS oeffentlich erreichbar sein. Self-signed Certs funktionieren nicht — Let's Encrypt o.ae. ist Pflicht.
 
-- `https://<your-n8n-host>` muss von `claude.ai` aus erreichbar sein
-- Self-signed Certs funktionieren NICHT — Let's Encrypt o.ae. ist Pflicht
-- Falls hinter VPN / nur intern: alternativ Tailscale-Funnel oder Cloudflare-Tunnel
+Fuer den reinen Internal-Run (Orchestrator und Sub-Agenten rufen sich gegenseitig nur ueber n8n-Sub-Workflows) reicht dein internes n8n-Setup.
 
 ---
 
-## 3. Repos klonen
-
-### 3.1 Hauptrepo
+## 4. Repo klonen
 
 ```bash
-git clone --recurse-submodules https://github.com/<your-user>/google-ads-agent.git
+git clone https://github.com/<dein-user>/google-ads-agent.git
 cd google-ads-agent
 ```
 
-`--recurse-submodules` ist wichtig, damit das `memory/`-Submodule mitgezogen wird (auch wenn du es spaeter durch dein eigenes Memory-Repo ersetzt).
-
-### 3.2 Repo-Struktur
-
-```
-google-ads-agent/
-├── .claude/
-│   ├── agents/           # 7 Sub-Agent-Definitionen
-│   └── rules/            # Globale Konventionen (n8n, Git, Docs)
-├── docs/                 # Architecture, Workflow-Atlas, Setup, Learnings
-├── memory/               # Submodule auf eigenes Memory-Repo (siehe Step 4)
-├── routines/             # Claude Code Routine Configs
-├── scripts/              # Python-Stats-Helper (Referenz-Implementation)
-├── skills/
-│   └── weekly-report/    # Skill: SKILL.md + template.md + dispatch-playbook.md + references/
-├── templates/
-│   └── memory/           # Memory-Templates fuer eigenes Memory-Repo
-├── workflows/            # 17 n8n-Workflow-Backups
-├── .env.example          # Template fuer lokale Credentials (kopieren als .env)
-├── .mcp.json.example     # Template fuer MCP-Server-Config (kopieren als .mcp.json)
-├── CLAUDE.md             # Projektkontext fuer Claude Code
-├── README.md             # Uebersicht
-└── DECISIONS.md          # Architektur-Entscheidungen (historisch)
-```
+Submodul-Init (`memory/`) wird vermutlich fehlschlagen, weil der Submodul-Verweis auf einen Platzhalter zeigt. Das ist beabsichtigt — du verlinkst dein eigenes Memory-Repo in Schritt 5.
 
 ---
 
-## 4. Eigenes Memory-Repo aufsetzen
+## 5. Eigenes Memory-Repo aufsetzen
 
-Das Memory-Repo ist ein **separates GitHub-Repo**, das die Strategie und das Lern-Gedaechtnis des Multi-Agent-Systems speichert. Es wird vom Hauptrepo als Submodule referenziert.
+Das Memory-Repo ist ein **separates GitHub-Repo**, das die Strategie und das Lern-Gedaechtnis des Multi-Agent-Systems speichert. Wird vom Hauptrepo als Submodule referenziert, von der Memory-Bridge ueber GitHub-API gelesen+geschrieben.
 
-### 4.1 Neues GitHub-Repo anlegen
+### 5.1 Neues GitHub-Repo anlegen
 
-Erstell ein neues, **privates** GitHub-Repo namens z.B. `<dein-user>/google-ads-memory`. **Nicht initialisieren** mit README/License — wir pushen leer.
+Erstelle ein neues, **privates** GitHub-Repo namens z.B. `<dein-user>/google-ads-memory`. **Nicht initialisieren** mit README/License — wir pushen leer.
 
-### 4.2 Templates kopieren
+### 5.2 Templates kopieren und committen
 
 ```bash
 # Im Hauptrepo:
 cd google-ads-agent
 
-# Templates kopieren in tmp-Ordner
+# Templates in tmp-Ordner kopieren
 cp -r templates/memory /tmp/my-memory-init
 cd /tmp/my-memory-init
 
@@ -139,17 +170,17 @@ git remote add origin https://github.com/<dein-user>/google-ads-memory.git
 git push -u origin main
 ```
 
-### 4.3 Strategy-Manifest befuellen
+### 5.3 Strategy-Manifest befuellen
 
-Oeffne `00_strategy_manifest.md` in deinem Memory-Repo und ersetze ALLE `<...>`-Platzhalter mit deinen Account-Spezifika:
-- `<ACCOUNT_NAME>` — z.B. "Mein Account"
-- `<CUSTOMER_ID>` — Google Ads Customer-ID (10-stellig, ohne Bindestriche, z.B. `1234567890`)
-- `<LOGIN_CUSTOMER_ID_IF_MCC>` — falls dein Account unter einem MCC liegt: dessen ID. Sonst leer.
-- Produkte, KPIs, Negatives, Kampagnen-Architektur — siehe Inline-Hinweise im Template
+Oeffne `00_strategy_manifest.md` in deinem Memory-Repo (auf GitHub-UI oder lokal) und ersetze ALLE `<...>`-Platzhalter:
+- `<ACCOUNT_NAME>` — Name deines Google Ads Accounts
+- `<CUSTOMER_ID>` — 10-stellige Kunden-ID, ohne Bindestriche (z.B. `1234567890`)
+- `<LOGIN_CUSTOMER_ID_IF_MCC>` — falls dein Account unter einem MCC liegt: dessen ID. Sonst leer lassen.
+- Produkte (Sektion 3), Zielgruppen (Sektion 4), Negatives (Sektion 5), KPI-Schwellen (Sektion 6) — siehe Inline-Hinweise im Template
 
-**Wichtig:** Sektion 5 (Negatives) und Sektion 6 (KPI-Schwellen) werden vom Multi-Agent **gelesen** — wenn die leer sind, gibt es keine sinnvolle Ampel-Logik im Report.
+Wichtig: Sektion 5 (kontoweite Negatives) und Sektion 6 (Ampel-Schwellen fuer GREEN/YELLOW/RED) werden vom Multi-Agent **gelesen**. Wenn die leer bleiben, gibt es keine sinnvolle Ampel-Logik im Report.
 
-### 4.4 Submodule-Verweis im Hauptrepo umstellen
+### 5.4 Submodul-Verweis im Hauptrepo umstellen
 
 ```bash
 cd google-ads-agent
@@ -157,20 +188,20 @@ cd google-ads-agent
 # Alte Submodule-Referenz entfernen
 git submodule deinit memory
 git rm memory
-rm -rf .git/modules/memory  # falls noetig
+rm -rf .git/modules/memory
 
-# Neues Memory-Repo als Submodule hinzufuegen
+# Eigenes Memory-Repo als Submodule hinzufuegen
 git submodule add https://github.com/<dein-user>/google-ads-memory.git memory
 git commit -m "chore(memory): point submodule to own memory repo"
 ```
 
 ---
 
-## 5. Credentials in n8n einrichten
+## 6. n8n-Credentials einrichten
 
-Du brauchst **6 Credential-Typen** in deiner n8n-Instanz. Lege sie unter Credentials → Add Credential an.
+Du brauchst **6 Credential-Typen** in deiner n8n-Instanz. Lege sie unter Credentials → Add Credential an. Jede ID/Name notieren — du brauchst sie beim Workflow-Import.
 
-### 5.1 Google Ads OAuth
+### 6.1 Google Ads OAuth2
 
 | Feld | Wert |
 |---|---|
@@ -178,317 +209,399 @@ Du brauchst **6 Credential-Typen** in deiner n8n-Instanz. Lege sie unter Credent
 | Client ID | aus deinem Google Cloud Project |
 | Client Secret | aus deinem Google Cloud Project |
 | Developer Token | aus Google Ads → Tools & Settings → API Center |
-| Scopes | `https://www.googleapis.com/auth/adwords` |
+| Scope | `https://www.googleapis.com/auth/adwords` |
 
-**Setup-Steps:**
-1. Google Cloud Console → "OAuth consent screen" konfigurieren
+**Setup-Schritte:**
+1. Google Cloud Console → "OAuth consent screen" konfigurieren (Scopes: adwords)
 2. APIs aktivieren: "Google Ads API"
 3. Credentials → "OAuth 2.0 Client IDs" → Web application → Authorized redirect URIs: `https://<your-n8n-host>/rest/oauth2-credential/callback`
-4. In Google Ads: API Center → Developer Token beantragen (Test-Token reicht fuer lokale Tests, fuer Production: Basic/Standard Access beantragen)
+4. In Google Ads: API Center → Developer Token beantragen (Test-Token reicht fuer eigene Accounts; Production: Basic/Standard Access beantragen)
 5. In n8n den OAuth-Flow durchklicken → "Sign in with Google"
 
-### 5.2 DataForSEO Basic Auth
+**Wichtig:** Der OAuth-Account muss Zugriff auf das Google Ads-Konto haben, ueber das du reporten willst.
+
+### 6.2 DataForSEO HTTP Header Auth
+
+DataForSEO nutzt Basic Auth — wir koennen es als Header Auth abbilden:
 
 | Feld | Wert |
 |---|---|
-| Type | HTTP Basic Auth (in DataForSEO-Workflow) ODER Header Auth |
-| Username | dein DataForSEO API Login |
-| Password | dein DataForSEO API Password |
+| Type | HTTP Header Auth |
+| Header Name | `Authorization` |
+| Header Value | `Basic <base64-encoded-login:password>` |
 
-Login + Password gibt es nach Account-Anmeldung unter dataforseo.com → My APIs.
+So generierst du den Base64-Wert (in Bash):
+```bash
+echo -n "<dein-login>:<dein-password>" | base64
+```
+Login + Password gibt's nach Account-Anmeldung unter dataforseo.com → My APIs.
 
-### 5.3 GitHub PAT (Personal Access Token)
+### 6.3 GitHub PAT (Personal Access Token)
 
 Fuer Memory-Bridge-Schreibzugriff auf das Memory-Repo:
 
-1. github.com → Settings → Developer settings → Personal access tokens → Tokens (classic)
+1. github.com → Settings → Developer settings → Personal access tokens → **Tokens (classic)**
 2. Generate new token (classic)
 3. Scope: `repo` (Full control of private repositories)
-4. Token kopieren — kann **nur einmal** angezeigt werden
+4. Token kopieren — wird **nur einmal** angezeigt
 
-In n8n als **Header Auth Credential** anlegen:
+In n8n als **HTTP Header Auth Credential**:
 - Name: `GitHub Memory PAT`
 - Header Name: `Authorization`
 - Header Value: `Bearer <dein-pat>`
 
-### 5.4 HTTP Bearer Auth (Master-Token fuer MCPs)
+### 6.4 HTTP Bearer Auth (Master-Token fuer MCP-Trigger)
 
-Dieses Token sichert alle 9 MCP-Server-Endpoints in n8n. Gleicher Token fuer alle 9 — vereinfacht Rotation.
+Dieses Token sichert alle MCP-Server-Endpoints. Gleicher Token fuer alle Workflows mit MCP-Trigger — vereinfacht Rotation.
 
-1. **Token generieren** (z.B. via `openssl rand -base64 48` oder beliebiger Password-Manager)
+1. **Token generieren** (z.B. mit `openssl rand -base64 48` oder einem Password-Manager)
 2. In n8n: Credentials → Add → "Header Auth"
 3. Name: `Google Ads Agent MCP Bearer`
 4. Header Name: `Authorization`
 5. Header Value: `Bearer <dein-master-token>`
 
-Das gleiche Token musst du **spaeter** in der `.mcp.json` (lokal) und im Claude Code Routine Connector-Setup hinterlegen.
+### 6.5 Gmail OAuth2
 
-### 5.5 Gmail OAuth (fuer Mail-Bridge)
+Setup wie 6.1 (OAuth via Google Cloud), Scope: `https://www.googleapis.com/auth/gmail.send`.
 
-Setup wie 5.1 (OAuth via Google Cloud), Scope: `https://www.googleapis.com/auth/gmail.send`.
+Der OAuth-Account ist die Versand-Adresse fuer die Email.
 
-### 5.6 OpenAI / Anthropic API Key (fuer AI Agent Workflows)
+### 6.6 LLM Provider — Anthropic ODER OpenAI
 
-Die 6 AI-Agent-Workflows (12-17) nutzen `@n8n/n8n-nodes-langchain.lmChatOpenAi` oder Anthropic-Aequivalent. Default ist OpenAI-kompatibles GPT-Model.
+Die 6 AI-Agent-Workflows nutzen entweder Anthropic Claude oder OpenAI GPT. Die Workflows sind so eingerichtet, dass beide Optionen via "Mixed-Mode + Fallback-LLM" konfigurierbar sind (siehe `docs/learnings/n8n-ai-agent-v3-1-features.md`).
 
+**Anthropic** (empfohlen fuer Reasoning-intensive Sub-Agenten wie Statistiker und Orchestrator):
+| Feld | Wert |
+|---|---|
+| Type | Anthropic API |
+| API Key | `sk-ant-...` |
+
+**OpenAI** (gut fuer Composer und einfachere Sub-Agenten):
 | Feld | Wert |
 |---|---|
 | Type | OpenAI API |
-| API Key | dein sk-... Token |
+| API Key | `sk-...` |
 
-> **Hinweis:** Die AI-Agent-Workflows nutzen ein "Mixed-Mode"-Pattern: Hauptanalyse via primary LLM, Fallback-LLM via `needsFallback`-Toggle (siehe `docs/learnings/n8n-ai-agent-v3-1-features.md`). Du kannst beide Slots auf das gleiche Modell setzen — ist dann nur Resilienz gegen API-Outages.
+Du kannst beide einrichten und in den Workflows zwischen primary und Fallback waehlen.
 
 ---
 
-## 6. Workflows in n8n importieren
+## 7. MCP-Tool-Workflows importieren
 
-Im Repo unter `workflows/` liegen 17 JSON-Backups.
+Die 9 MCP-Tool-Workflows liegen unter `workflows/mcp-tools/`. Reihenfolge: 01 → 09 (technisch egal, aber so behaeltst du Ordnung).
 
-### 6.1 Reihenfolge des Imports
+### 7.1 Pro Workflow
 
-| # | Workflow | Typ | Was es tut |
-|---|---|---|---|
-| 1-8 | `01-account-tools.json` ... `08-gaql-tools.json` | MCP-Server-Trigger | Google Ads API Tools (Account, Campaigns, Ad Groups, Ads, Keywords, Reporting, Insights, GAQL) |
-| 9 | `09-dataforseo-mcp.json` | MCP-Server-Trigger | DataForSEO API Tools |
-| 10 | `10-memory-bridge.json` | Webhook | Composer schreibt durch hier in das Memory-Repo |
-| 11 | `11-github-memory-helper.json` | Sub-Workflow | GitHub-API-Wrapper mit Atomic-Edit-Pattern (Race-Condition-Schutz) |
-| 12 | `12-sub-report-composer.json` | AI Agent | Report-Composer (Sonnet) |
-| 13 | `13-sub-market-intelligence.json` | AI Agent | Market & Competitive (Sonnet) |
-| 14 | `14-main-orchestrator.json` | AI Agent | Lead-Agent (Opus) — orchestriert Sub-Agents |
-| 15 | `15-sub-performance-analyst.json` | AI Agent | Performance-Analyst (Sonnet) |
-| 16 | `16-sub-search-keyword-analyst.json` | AI Agent | Search & Keyword-Hunter (Sonnet) |
-| 17 | `17-sub-statistician.json` | AI Agent | Statistiker (Opus) |
+Fuer **jeden** der 9 Workflows:
 
-### 6.2 Import-Schritte fuer jeden Workflow
-
-1. n8n-UI → Workflows → Import from File → JSON-Datei auswaehlen
-2. **VOR Speichern:** Customer-IDs ersetzen (nur in Workflows 1-8):
-   - `<YOUR_CUSTOMER_ID>` → deine Google Ads Customer-ID (z.B. `1234567890`)
-   - `<YOUR_LOGIN_CUSTOMER_ID>` → deine Login-Customer-ID (MCC-ID, falls vorhanden)
+1. **Import:** n8n-UI → Workflows → "Add Workflow" → ⋮-Menu → "Import from File" → JSON auswaehlen
+2. **Customer-ID anpassen** (nur Workflows 01-08, nicht 09 DataForSEO):
+   - Im Workflow per Suchen+Ersetzen (Strg+F): `<YOUR_CUSTOMER_ID>` → deine 10-stellige Customer-ID
+   - `<YOUR_LOGIN_CUSTOMER_ID>` → deine Login-Customer-ID (MCC-ID); falls kein MCC: gleicher Wert wie Customer-ID
+   - Diese stehen als Default-Werte in den HTTP-Request-Nodes (z.B. "list_campaigns", "get_campaign_performance")
 3. **Credentials zuweisen:**
-   - Google Ads OAuth → bei allen HTTP-Request-Nodes mit Google Ads URLs
-   - DataForSEO Auth → in Workflow 9
-   - HTTP Bearer Auth (Master-Token) → in jedem MCP-Server-Trigger (Workflows 1-9, im Trigger-Node "Authentication: Bearer")
-   - GitHub Memory PAT → in Workflow 11 (HTTP-Request-Nodes mit GitHub-URLs)
-   - Gmail OAuth → in Workflow `Mail-Bridge` (siehe Hinweis unten)
-   - OpenAI/Anthropic → in den AI-Agent-Nodes (Workflows 12-17)
-4. **Aktivieren:** Save → Toggle "Active" oben rechts
+   - In ALLEN HTTP-Request-Nodes mit Google-Ads-URLs: Credential `Google Ads OAuth2` (aus 6.1) auswaehlen
+   - In Workflow 09 (DataForSEO): Credential `DataForSEO HTTP Header Auth` (aus 6.2)
+   - Im **MCP-Server-Trigger-Node** (oben links im Workflow): Authentication = "Bearer Auth", Credential = `Google Ads Agent MCP Bearer` (aus 6.4)
+4. **Workflow speichern** (Save oben rechts)
+5. **Workflow aktivieren** (Toggle "Active" oben rechts)
+6. **Workflow-ID notieren** — du siehst sie in der URL (`/workflow/<ID>`) oder unter Settings → Workflow-ID. Notiere dir diese fuer Schritt 9.
 
-### 6.3 Mail-Bridge-Workflow
+### 7.2 Welche Workflow-ID fuer welchen Tool-Workflow
 
-Mail-Bridge ist als separater MCP-Server gedacht (Workflow nicht im Repo, weil Gmail-OAuth-spezifisch). Build-Anleitung:
+Trage die n8n-IDs in eine Tabelle ein. Du brauchst sie spaeter:
 
-1. Neuer Workflow: "Mail-Bridge"
-2. Trigger: MCP Server Trigger, Path: `mail-bridge`, Authentication: Bearer (gleicher Master-Token wie andere)
-3. Tool-Node: "Gmail Send Email" mit OAuth-Credential
-4. Aktivieren
-
-Im `.mcp.json` als zusaetzlicher Server eintragen (siehe Step 7).
-
-### 6.4 Workflow-Validierung via n8n-mcp
-
-Falls du Claude Code lokal mit `.mcp.json` (siehe Step 7) konfiguriert hast, kannst du die Validation automatisieren:
-
-```bash
-claude
-# In Claude Code:
-> Use the n8n-workflow-engineer agent to validate all 17 imported workflows
-```
-
-Oder manuell pro Workflow:
-- Trigger-Node testen ("Execute Node")
-- Tool-Listing pruefen: `curl -H "Authorization: Bearer <token>" https://<your-n8n-host>/mcp/<path>`
+| # | Datei | Workflow-Name in n8n | n8n-Workflow-ID (eintragen) |
+|---|---|---|---|
+| 01 | `01-account-tools.json` | Google Ads MCP - Account Tools | `<deine-id>` |
+| 02 | `02-campaign-tools.json` | Google Ads MCP - Campaign Tools | `<deine-id>` |
+| 03 | `03-ad-group-tools.json` | Google Ads MCP - Ad Group Tools | `<deine-id>` |
+| 04 | `04-ad-tools.json` | Google Ads MCP - Ad Tools | `<deine-id>` |
+| 05 | `05-keyword-tools.json` | Google Ads MCP - Keyword Tools | `<deine-id>` |
+| 06 | `06-reporting-tools.json` | Google Ads MCP - Reporting Tools | `<deine-id>` |
+| 07 | `07-insights-tools.json` | Google Ads MCP - Insights Tools | `<deine-id>` |
+| 08 | `08-gaql-tools.json` | Google Ads MCP - GAQL Tools | `<deine-id>` |
+| 09 | `09-dataforseo-mcp.json` | DataForSEO_MCP_Server_v2 | `<deine-id>` |
 
 ---
 
-## 7. .env und .mcp.json aufsetzen
+## 8. Agent-Team-Workflows importieren
 
-### 7.1 .env
+Die 8 Agent-Team-Workflows liegen unter `workflows/agent-team/`.
 
-```bash
-cp .env.example .env
-# Editor oeffnen und Werte eintragen
-```
+**Reihenfolge wichtig:**
+1. Erst `11-github-memory-helper.json` (Sub-Workflow ohne Abhaengigkeiten)
+2. Dann `10-memory-bridge.json` (ruft 11)
+3. Dann die 5 Sub-Agenten: `12, 13, 15, 16, 17` (rufen MCP-Tools + Memory-Bridge)
+4. Zuletzt `14-main-orchestrator.json` (ruft alle Sub-Agenten + Memory + Tools)
 
-Inhalt:
-```bash
-# n8n Public API (fuer n8n-mcp-Tool zur Workflow-Verwaltung)
-N8N_API_KEY=<aus n8n Settings → API → Create API Key>
-N8N_BASE_URL=https://<your-n8n-host>
+### 8.1 Pro Workflow
 
-# Optional: GitHub PAT fuer lokale Memory-Reads (falls nicht via Submodule)
-# GITHUB_MEMORY_PAT=ghp_xxx
+1. **Import** wie in 7.1
+2. **Credentials zuweisen** (je nach Workflow):
 
-# Optional: Anthropic API-Key fuer lokale Stats-Skripte
-# ANTHROPIC_API_KEY=sk-ant-xxx
-```
+| Workflow | Benoetigte Credentials |
+|---|---|
+| `11-github-memory-helper` | GitHub PAT (6.3) — in den HTTP-Request-Nodes mit `api.github.com` |
+| `10-memory-bridge` | Bearer Auth (6.4) im MCP-Trigger; ruft Workflow 11 als Sub-Workflow |
+| `12-sub-report-composer` | Anthropic ODER OpenAI (6.6) im AI-Agent-Node |
+| `13-sub-market-intelligence` | Anthropic ODER OpenAI (6.6) |
+| `15-sub-performance-analyst` | Anthropic ODER OpenAI (6.6) |
+| `16-sub-search-keyword-analyst` | Anthropic ODER OpenAI (6.6) |
+| `17-sub-statistician` | Anthropic ODER OpenAI (6.6) |
+| `14-main-orchestrator` | Anthropic ODER OpenAI (6.6); Schedule-Trigger (kein Credential) |
 
-### 7.2 .mcp.json
+3. **Anpassungen in `11-github-memory-helper`:**
+   - Im Workflow: 3 HTTP-Request-Nodes haben URL `https://api.github.com/repos/<your-username>/google-ads-memory/contents/...`
+   - **Ersetze `<your-username>` durch deinen GitHub-User**
+4. **Workflow speichern** und **aktivieren**
+5. **Workflow-ID notieren**:
 
-```bash
-cp .mcp.json.example .mcp.json
-# Editor: alle <YOUR_N8N_HOST> + <YOUR_N8N_MCP_BEARER_TOKEN> ersetzen
-```
-
-Das File listet 9 MCP-Server (Google Ads + DataForSEO) plus n8n-mcp (npm-Tool fuer Workflow-Engineering). Nach Aenderung: Claude Code neu starten — die `.mcp.json` wird beim Start gelesen.
-
-### 7.3 n8n-mcp installieren (optional, fuer Workflow-Engineering)
-
-Wenn du Claude Code zum Bau/Update von Workflows nutzen willst:
-
-```bash
-npm install -g n8n-mcp@latest
-```
-
-(Hinweis: Beim Auto-Update via npx gab es 2026 wiederholt Issues — globale Installation ist robuster.)
-
----
-
-## 8. Lokaler Test-Run mit Claude Code
-
-### 8.1 Claude Code starten
-
-```bash
-cd google-ads-agent
-claude
-```
-
-Das laedt die `.mcp.json` und stellt 9 MCP-Server bereit.
-
-### 8.2 Smoke-Test: MCP-Connectivity
-
-```
-> List available MCP tools and show me which Google Ads MCPs respond.
-```
-
-Erwartetes Verhalten: Claude listet alle 9 MCP-Server, jede sollte Tools wie `list_campaigns`, `get_campaign`, etc. zeigen.
-
-### 8.3 Trockentest: Performance-Analyst alleine
-
-```
-> Run the performance-analyst sub-agent for LAST_7_DAYS using a minimal briefing JSON. Save output to /tmp/test-perf.json.
-```
-
-Erwartetes Verhalten: Sub-Agent aus `.claude/agents/performance-analyst.md` wird via Task-Tool gestartet, ruft 5-8 MCP-Tools auf, gibt JSON zurueck.
-
-### 8.4 Full-Run: Weekly Report
-
-```
-> Run the weekly-report skill for the current ISO week.
-```
-
-Dauer: 8-15 min. Erwartetes Verhalten:
-1. Memory wird gelesen (`memory/00_strategy_manifest.md`, `memory/02_findings_log.md`)
-2. 4 Sub-Agents laufen parallel (Task-Tool-Outputs sichtbar)
-3. Report-Composer rendert Template
-4. Report wird in `memory/reports/YYYY-WNN-report.md` geschrieben (lokales Submodule-Pendant — du kannst ihn pushen via `cd memory && git push`)
-5. Falls Mail-Bridge konfiguriert: Email kommt an
-
-### 8.5 Validation des Reports
-
-Oeffne `memory/reports/<aktueller-iso-week>-report.md`. Pruefe:
-- Sind alle 12 Sektionen befuellt? (Sektion 0-11)
-- Stimmen die KPI-Zahlen mit Google Ads UI ueberein? (Spend, Conversions sollten match — Toleranz ±5% wegen Daten-Lag)
-- Sind die Negative-Keyword-Kandidaten plausibel?
-- Hat der Statistiker mindestens eine Hypothese getestet?
+| # | Datei | Workflow-Name in n8n | n8n-Workflow-ID (eintragen) |
+|---|---|---|---|
+| 10 | `10-memory-bridge.json` | Google Ads Memory Bridge | `<deine-id>` |
+| 11 | `11-github-memory-helper.json` | GitHub Memory Helper (Auth Wrapper for Memory Bridge) | `<deine-id>` |
+| 12 | `12-sub-report-composer.json` | GoogleAdsAgent - Sub: Report Composer | `<deine-id>` |
+| 13 | `13-sub-market-intelligence.json` | GoogleAdsAgent - Sub: Market Intelligence | `<deine-id>` |
+| 14 | `14-main-orchestrator.json` | GoogleAdsAgent - Main: Orchestrator (Chat + Weekly) | `<deine-id>` |
+| 15 | `15-sub-performance-analyst.json` | GoogleAdsAgent - Sub: Performance Analyst | `<deine-id>` |
+| 16 | `16-sub-search-keyword-analyst.json` | GoogleAdsAgent - Sub: Search & Keyword Analyst | `<deine-id>` |
+| 17 | `17-sub-statistician.json` | GoogleAdsAgent - Sub: Statistician | `<deine-id>` |
 
 ---
 
-## 9. Cloud-Routine konfigurieren
+## 9. Workflow-IDs zwischen Workflows verknuepfen
 
-Sobald lokaler Test laeuft: Setup der **Claude Code Routine** fuer wiederkehrende Cloud-Ausfuehrung. Komplette Anleitung: [routines/weekly-report.md](../routines/weekly-report.md).
+Hier die wichtigste — und am haeufigsten uebersehene — Setup-Aufgabe.
 
-Kurzform:
+### 9.1 Was passiert?
 
-1. **claude.ai/settings/connectors** — Gmail + GitHub Connectors aktivieren
-2. **9 Custom HTTP MCP Connectors** anlegen (gleiche URLs + Bearer-Token wie in `.mcp.json`)
-3. **claude.ai/code/routines** → New routine
-4. Repos: `<your-user>/google-ads-agent` + `<your-user>/google-ads-memory`
-5. Prompt aus [routines/weekly-report.md](../routines/weekly-report.md) Abschnitt "Routine-Prompt" kopieren
-6. Trigger: Schedule, Weekly Monday 07:00 Europe/Berlin
-7. **Run now** klicken — Smoke-Test
-8. Pruefen: GitHub-Commit im Memory-Repo? Email kam an?
+Die Sub-Agenten und der Orchestrator rufen andere Workflows als **Sub-Workflows** auf. Die Workflow-IDs in den importierten JSON-Dateien sind die **alten n8n-IDs aus dem Quell-System** und zeigen NICHT auf deine n8n-Workflows. Du musst sie ersetzen.
+
+Wenn du sie nicht ersetzt: Beim ersten Run des Orchestrators kommt der Fehler **"Workflow ID not found"**.
+
+### 9.2 ID-Mapping-Tabelle
+
+In den importierten Workflows tauchen diese Quell-IDs auf. Ersetze sie alle durch deine eigenen Workflow-IDs aus Schritt 7.2 + 8.1:
+
+| Alte Quell-ID (in JSON) | Tool-Name im Agent | Zeigt auf | **Deine n8n-ID** |
+|---|---|---|---|
+| `kl42z9WLAGLZzlBW` | call_performance_analyst | Workflow 15 | `<deine-id-15>` |
+| `PZa1iNwgtCvcNtIC` | call_search_keyword_analyst | Workflow 16 | `<deine-id-16>` |
+| `rBIHMb14pdtLRGTj` | call_statistician | Workflow 17 | `<deine-id-17>` |
+| `15f8AxGRmwcC1fIM` | call_market_intelligence | Workflow 13 | `<deine-id-13>` |
+| `6aZgqH9uhcXIngH0` | call_report_composer | Workflow 12 | `<deine-id-12>` |
+| `hFLZBFb48I09iFdJ` | read_memory_file / write_memory_file | Workflow 10 | `<deine-id-10>` |
+| `_MscqooFbXWKSMGS_3Oul` | campaign_performance / Reporting-Tools | Workflow 06 | `<deine-id-06>` |
+| `X9OeaCnNCTFZpxzI_xbyh` | execute_gaql / GAQL-Tools | Workflow 08 | `<deine-id-08>` |
+| `iXM_bBcOy3-72NRCuheg0` | get_recommendations / Insights-Tools | Workflow 07 | `<deine-id-07>` |
+| `UnoWhmmvuvnjP4E4` | serp_search / DataForSEO | Workflow 09 | `<deine-id-09>` |
+
+### 9.3 Wo die IDs ersetzen?
+
+In **diesen Workflows** kommen die IDs vor (Suchen+Ersetzen im Editor in n8n):
+
+| Workflow | Welche Quell-IDs sind drin |
+|---|---|
+| **14-main-orchestrator** | Alle 8 oberen IDs (Sub-Agenten 12/13/15/16/17 + Memory 10 + Reporting 06 + GAQL 08) |
+| **15-sub-performance-analyst** | `_MscqooFbXWKSMGS_3Oul` (06), `X9OeaCnNCTFZpxzI_xbyh` (08), `hFLZBFb48I09iFdJ` (10) |
+| **16-sub-search-keyword-analyst** | `_MscqooFbXWKSMGS_3Oul` (06), `iXM_bBcOy3-72NRCuheg0` (07), `X9OeaCnNCTFZpxzI_xbyh` (08), `UnoWhmmvuvnjP4E4` (09), `hFLZBFb48I09iFdJ` (10) |
+| **17-sub-statistician** | `_MscqooFbXWKSMGS_3Oul` (06), `iXM_bBcOy3-72NRCuheg0` (07), `X9OeaCnNCTFZpxzI_xbyh` (08), `hFLZBFb48I09iFdJ` (10) |
+| **13-sub-market-intelligence** | `_MscqooFbXWKSMGS_3Oul` (06), `iXM_bBcOy3-72NRCuheg0` (07), `X9OeaCnNCTFZpxzI_xbyh` (08), `UnoWhmmvuvnjP4E4` (09), `hFLZBFb48I09iFdJ` (10) |
+| **12-sub-report-composer** | `hFLZBFb48I09iFdJ` (10) |
+
+### 9.4 Wie ersetzen?
+
+**Variante A — UI-Klick-Methode (sicher, langsam):**
+1. Workflow oeffnen in n8n
+2. Auf jeden `Tool: Workflow`- oder `Execute Workflow`-Node klicken
+3. Im Feld "Workflow" das Dropdown oeffnen → deine importierte n8n-ID auswaehlen
+4. Workflow speichern
+5. Wiederholen fuer alle Workflows aus 9.3
+
+**Variante B — Direkt im JSON (schnell):**
+1. Workflow aus n8n exportieren (Workflows-Liste → ⋮ → "Download")
+2. Im Editor: Suchen+Ersetzen `kl42z9WLAGLZzlBW` → `<deine-id-15>` (etc. fuer alle 10 IDs)
+3. Modifiziertes JSON wieder importieren (alten Workflow loeschen, neu hochladen)
+
+Variante A ist robuster, weil Variante B leicht zu Inkonsistenz fuehrt (z.B. Cache-Felder im JSON die nicht aktualisiert werden).
 
 ---
 
-## 10. Troubleshooting
+## 10. Customer-IDs in den Tool-Workflows anpassen
+
+Bereits erledigt in Schritt 7.1 falls du die Anweisung dort befolgt hast. Stell sicher dass:
+
+- **In den 8 Google-Ads-Tool-Workflows (01-08):** in jedem HTTP-Request-Node mit Google-Ads-URL ist als Customer-ID **deine** ID eingetragen, nicht `<YOUR_CUSTOMER_ID>`
+- **In Workflow 11 (GitHub-Memory-Helper):** alle 3 GitHub-API-URLs zeigen auf **dein** `<dein-user>/google-ads-memory`
+
+Quick-Check via n8n:
+```
+Workflows-Liste → ⋮-Menu → "Search across workflows" → "<YOUR_CUSTOMER_ID>"
+```
+Sollte 0 Treffer zeigen.
+
+---
+
+## 11. Mail-Bridge anlegen (optional)
+
+Der Report-Composer kann den Report per Email versenden. Im Repo ist der Mail-Bridge-Workflow nicht enthalten (weil Gmail-OAuth-spezifisch), aber er ist schnell selbst gebaut:
+
+### 11.1 Neuer Workflow in n8n
+
+1. **Workflows → Add Workflow → "Mail-Bridge"**
+2. **Trigger:** "MCP Server Trigger"
+   - Path: `mail-bridge`
+   - Authentication: "Bearer Auth" → Credential `Google Ads Agent MCP Bearer` (6.4)
+3. **Tool-Node:** "Gmail" → Operation: "Send"
+   - Credential: `Gmail OAuth2` (6.5)
+   - To: `={{ $json.to }}`
+   - Subject: `={{ $json.subject }}`
+   - Message: `={{ $json.body_html }}` (HTML enabled)
+4. Speichern + aktivieren
+
+### 11.2 Composer-Workflow anpassen
+
+Im **Workflow 12 (Report-Composer)** im AI-Agent: Tool `send_email` per Sub-Workflow ergaenzen, das auf deinen Mail-Bridge-Workflow zeigt. Alternativ: Den `MCP Client`-Node nutzen, der ueber HTTP-Bearer auf `https://<your-n8n-host>/mcp/mail-bridge` zugreift.
+
+Wenn du keine Email willst: ueberspringe diesen Schritt — Composer schreibt den Report trotzdem ins Memory-Repo.
+
+---
+
+## 12. Test-Run
+
+### 12.1 Voraussetzungen-Check
+
+Vor dem ersten Run:
+- [ ] Alle 17 Workflows importiert + aktiviert + Workflow-IDs notiert
+- [ ] Alle Workflow-ID-Refs aus Schritt 9 ersetzt
+- [ ] Customer-IDs in 01-08 ersetzt
+- [ ] Memory-Repo befuellt mit Strategy-Manifest
+- [ ] Credentials in allen Nodes zugewiesen (Quick-Check: rote Punkte an Nodes = fehlende Credential)
+
+### 12.2 Smoke-Test pro MCP-Workflow
+
+Pro Tool-Workflow (z.B. 01-account-tools): Workflow oeffnen → "Execute workflow" → MCP-Trigger → Workflow durchlaufen lassen. Erwartet: Tools werden aufgelistet, Sample-Calls funktionieren ohne Auth-Fehler.
+
+### 12.3 Smoke-Test des Memory-Helpers
+
+Workflow 11 (GitHub-Memory-Helper) hat einen `executeWorkflowTrigger` — du kannst ihn manuell triggern mit Test-Input:
+```json
+{
+  "tool_name": "read_memory_file",
+  "filename": "00_strategy_manifest.md"
+}
+```
+Erwartet: Datei-Inhalt aus deinem Memory-Repo wird zurueckgegeben.
+
+### 12.4 Full-Run via Chat-Trigger
+
+Der **Orchestrator (Workflow 14)** hat einen Chat-Trigger:
+
+1. Workflow 14 in n8n oeffnen
+2. Oben rechts: "Open chat" Button
+3. Eingabe: `Run weekly report for current ISO week`
+4. Erwartet:
+   - Orchestrator liest Memory (read_memory_file × 2)
+   - Orchestrator dispatcht 4 Sub-Agenten parallel
+   - Jeder Sub-Agent ruft mehrere Tool-Workflows auf
+   - Composer wird gerufen, rendert Report
+   - Memory wird via Memory-Bridge geschrieben
+   - Total ca. 8-15 min
+
+### 12.5 Validation
+
+1. **GitHub Memory-Repo:** sollte `reports/<aktuelle-iso-week>-report.md` enthalten (Contents inspizieren)
+2. **`02_findings_log.md`:** sollte neue Eintraege haben
+3. **`03_pending_actions.md`:** sollte aktuelle KW als neuer Block haben
+4. **Email** (wenn 11 konfiguriert): kommt an mit Executive Summary
+
+Wenn der Report leer in einer Sektion ist (z.B. Sektion 5 leer): siehe Troubleshooting.
+
+---
+
+## 13. Schedule aktivieren
+
+Im Orchestrator (Workflow 14) gibt es zwei Trigger:
+- **Chat-Trigger** — fuer manuelle Runs
+- **Schedule-Trigger** — fuer wiederkehrende Runs
+
+### 13.1 Schedule-Trigger konfigurieren
+
+1. Workflow 14 oeffnen
+2. Schedule-Trigger-Node anklicken
+3. Mode: "Custom (Cron)" — Beispiel: `0 7 * * 1` (jeden Montag 07:00)
+4. Timezone: `Europe/Berlin` (oder deine Wunsch-TZ)
+5. Workflow speichern + Toggle "Active" pruefen
+
+### 13.2 Cron-Test
+
+Setze die Cron-Expression initial auf z.B. 10 Minuten in der Zukunft:
+```
+[Min] [Stunde] * * *
+```
+Beobachte ob der Orchestrator startet. Dann zurueck auf den eigentlichen Schedule.
+
+---
+
+## 14. Troubleshooting
 
 | Symptom | Ursache | Loesung |
 |---|---|---|
-| `401 Unauthorized` auf MCP-Call | Bearer-Token in `.mcp.json` falsch oder abgelaufen | Token in n8n-Credential pruefen, `.mcp.json` updaten, Claude Code neu starten |
-| Workflow zeigt keine Tools | MCP-Server-Trigger inaktiv | Workflow → Toggle "Active" oben rechts |
-| `429 Too Many Requests` von Google Ads API | Rate-Limit | Sub-Agent-Prompts haben "Hard Caps" — pruefen ob jemand sie umgangen hat. Sonst: Developer-Token-Tier erhoehen |
-| Statistiker liefert nur `insufficient_data` | Sample-Size zu klein bei kurzen Zeitfenstern | Statistiker erweitert automatisch auf 14d/30d/90d. Bei sehr neuem Account: warten bis genug Daten |
-| Composer-Report ist leer in Sektion X | Sub-Agent X hat `DATA_UNAVAILABLE` zurueckgegeben | Session-URL oeffnen, Sub-Agent-Logs pruefen. MCP-Timeout? Tool-Cap erreicht? |
-| GitHub-Commit-Fail im Memory-Bridge | PAT-Scope falsch oder Repo-Permissions | PAT muss `repo`-Scope haben; n8n muss Schreibrechte haben |
-| Gmail-Send schlaegt fehl | OAuth-Scope fehlt | `gmail.send` Scope nachtragen, neu autorisieren |
-| Custom-IDs `<YOUR_CUSTOMER_ID>` werden nicht ersetzt | Workflows nicht angepasst nach Import | Schritt 6.2 wiederholen — `<YOUR_CUSTOMER_ID>` und `<YOUR_LOGIN_CUSTOMER_ID>` in JSON-Editor in n8n ersetzen |
-| n8n-mcp meldet `npx`-Errors | Globale Installation fehlt | `npm install -g n8n-mcp@latest`, dann in `.mcp.json` `command: "n8n-mcp"` (nicht `npx`) |
+| `Workflow ID not found` beim Sub-Workflow-Call | Quell-ID nicht ersetzt | Schritt 9 wiederholen |
+| `401 Unauthorized` auf Google Ads API | OAuth-Token abgelaufen / falscher Account | OAuth-Credential in n8n re-authorisieren; pruefen ob Account-Login Zugriff auf Customer-ID hat |
+| `403 USER_PERMISSION_DENIED` | Login-Customer-ID falsch oder Account hat keinen API-Zugang | Login-Customer-ID = MCC-ID; Customer-ID muss MCC-Subkonto sein. Bei Single-Account: Login-Customer-ID = Customer-ID. Falls API-Zugang fehlt: Developer Token Tier erhoehen. |
+| `429 Too Many Requests` Google Ads | Rate-Limit | Sub-Agenten haben "Hard Caps" (max Tool-Calls); pruefen ob jemand sie umgangen hat. Sonst Developer-Token-Tier erhoehen. |
+| Sub-Agent gibt leeres JSON zurueck | LLM-Tokens zu klein / Streaming-Timeout | LLM-Modell pruefen (Anthropic Sonnet/Opus 4 minimum), maxIterations im AI-Agent-Node erhoehen |
+| Composer-Report ist leer in Sektion X | Sub-Agent X hat `DATA_UNAVAILABLE` zurueckgegeben | Workflow-Execution X anschauen — welcher Tool-Call hat versagt? Meist Auth- oder Rate-Limit-Problem |
+| Memory-Bridge Schreibfehler `409 Conflict` | Race-Condition bei parallelen Edits | Memory-Helper hat Atomic-Edit-Pattern eingebaut — sollte automatisch retryen. Bei wiederholtem Fehler: GitHub-PAT-Scope pruefen (`repo` voll noetig) |
+| Memory-Helper `404 Not Found` | GitHub-User oder Repo-Name falsch | Workflow 11 anschauen → URLs auf `api.github.com/repos/<dein-user>/google-ads-memory/...` korrigieren |
+| Statistiker liefert nur `insufficient_data` | Sample-Size zu klein | Bei sehr neuem Account: warten bis genug Daten. Bei laufendem Account: GAQL-Range-Adapter pruefen (sollte automatisch auf 14d/30d/90d erweitern) |
+| Customer-IDs `<YOUR_CUSTOMER_ID>` werden nicht ersetzt | Workflows nicht angepasst nach Import | Schritt 7.1 / Schritt 10 wiederholen |
+| Schedule feuert nicht | Workflow nicht aktiv | Toggle "Active" oben rechts pruefen |
 
-### Debug-Mode aktivieren
+### Debug-Workflow
 
-```bash
-# In .env
-DEBUG=1
-LOG_LEVEL=debug
-
-# Claude Code starten mit Verbose-Logging
-claude --debug
-```
-
-### Logs anschauen
-
-- **n8n-Workflows:** Executions-View pro Workflow → "View" → Step-fuer-Step JSON-Outputs
-- **Claude Code lokal:** `~/.claude/logs/` (je nach OS)
-- **Cloud-Routine:** [claude.ai/code/sessions](https://claude.ai/code/sessions) → Routine-Run anklicken → Vollstaendiges Transcript
+1. **n8n-Executions-View** (Workflows → Executions): jeder Run wird hier geloggt mit Step-fuer-Step JSON-Outputs
+2. **Pro Sub-Agent:** AI-Agent-Node anklicken → "View output" → "Logs" zeigt LLM-Calls + Tool-Calls
+3. **Pro Tool-Call:** Sub-Workflow-Execution oeffnen, sehen welche Inputs/Outputs
 
 ---
 
-## 11. Was kommt danach?
+## 15. FAQ
 
-### Iterieren am Report
+**F: Brauche ich alle 17 Workflows?**
+A: Ja, es ist ein integriertes System. Wenn du z.B. den Statistiker raus laesst, faellt Sektion 8 im Report leer aus. Wenn du Memory-Bridge raus laesst, kann nichts ins Memory-Repo geschrieben werden.
 
-Nach 2-3 Wochen-Reports wirst du sehen, wo die Schwachstellen liegen:
-- **Zu generische Empfehlungen?** → Sub-Agent-Prompt schaerfen (`.claude/agents/<name>.md`)
-- **Statistiker-Hypothesen drueben?** → Default-Hypothesen in `statistician.md` anpassen
-- **Negatives haeufen sich?** → Strategy-Manifest Sektion 5.2 manuell konsolidieren
+**F: Kann ich Anthropic UND OpenAI parallel nutzen?**
+A: Ja — die AI-Agent-Workflows v3.1 unterstuetzen "Mixed-Mode + Fallback-LLM". Du kannst z.B. Anthropic primary + OpenAI fallback einrichten. Siehe `docs/learnings/n8n-ai-agent-v3-1-features.md`.
 
-Aenderungen pushen, dann naechster Run nutzt sofort die neuen Prompts.
+**F: Wie aendere ich die Sub-Agent-Prompts?**
+A: Pro Sub-Agent-Workflow (12, 13, 15, 16, 17) ist der Prompt im **AI Agent Node** im Feld "System Message" hinterlegt. Workflow oeffnen → AI Agent Node → "System Message" aendern. Speichern.
 
-### Write-Operationen aktivieren (Phase 2)
+**F: Wie passe ich das Report-Template an?**
+A: Im **Workflow 12 (Report-Composer)** ist das Template als System-Message des AI Agent Nodes hinterlegt. Direkt dort editieren.
 
-Aktuell `READ_ONLY = true`. Wenn das Vertrauen in das System steht:
+**F: Kann ich mehrere Google-Ads-Accounts parallel reporten?**
+A: Aktuell nicht ohne Workflow-Duplizierung. Customer-ID ist hardcoded in den Tool-Workflows. Multi-Tenant-Setup ist als Erweiterung moeglich (Customer-ID als Workflow-Variable + Routing).
 
-1. Sub-Agent fuer "Action-Apply" hinzufuegen (z.B. `negative-keyword-applier.md`)
-2. Approval-Gate: Email mit "Apply yes/no?" → Reply triggert Routine mit Write-Mode
-3. Audit-Log in Memory mit jedem Apply
+**F: Wie deaktiviere ich Search-Term-Mining (Workflow 16)?**
+A: Im Orchestrator (Workflow 14): den Tool-Node `call_search_keyword_analyst` deaktivieren oder loeschen. Dann wird der Sub-Agent nicht aufgerufen, Sektion 6 im Report bleibt leer.
 
-Roadmap-Skizze: siehe [DECISIONS.md](../DECISIONS.md).
+**F: Wo sehe ich die Kosten der LLM-Calls?**
+A: Auf der Anthropic/OpenAI-Konsole. n8n trackt die Kosten nicht. Pro Run typisch 30-50k Token = ~3-5 USD.
 
-### Mehrere Accounts / Multi-Tenant
-
-Pro Account: eigenes Memory-Repo + eigene Routine + (optional) eigener n8n-Workflow-Set falls Customer-IDs in Workflows hardcoded sind. Cleaner Long-Term: Customer-ID als Routine-ENV-Var, n8n-Workflows lesen sie dynamisch.
-
-### Cost-Optimierung
-
-- Sub-Agent-Modelle pruefen — laeuft Statistiker auch mit Sonnet? (Test-Cycles, dann downgraden)
-- Caching auf MCP-Server-Ebene (n8n hat kein natives Cache, aber ein simpler Cache-Workflow vor MCP-Trigger ist machbar)
-- Tool-Caps senken in Sub-Agent-Prompts wenn Reports konsistent unter Cap bleiben
+**F: Was, wenn ich keine MCP-Server (extern erreichbar) brauche?**
+A: Kein Problem — die Workflows nutzen MCP-Trigger nur fuer optionale externe Anbindung. Intern laufen alle Calls ueber n8n-Sub-Workflows. Du kannst die MCP-Trigger sogar deaktivieren wenn du nur intern arbeitest.
 
 ---
 
 ## Verwandte Dokumente
 
 - [README.md](../README.md) — Projekt-Uebersicht
-- [DECISIONS.md](../DECISIONS.md) — Architektur-Entscheidungen, historisch
-- [docs/architecture.md](architecture.md) — Detailtiefe der Multi-Agent-Topologie
-- [docs/workflow-atlas.md](workflow-atlas.md) — Welcher Workflow macht was, mit Endpoints
-- [docs/handoff-contracts.md](handoff-contracts.md) — JSON-Schemas der Sub-Agent-Outputs
-- [docs/report-anatomy.md](report-anatomy.md) — 12-Sektionen-Template-Logik
-- [docs/LEARNINGS.md](LEARNINGS.md) — Index aller dokumentierten Erkenntnisse
-- [routines/weekly-report.md](../routines/weekly-report.md) — Cloud-Routine-Setup-Detail
+- [docs/LEARNINGS.md](LEARNINGS.md) — Index dokumentierter Erkenntnisse zu n8n / Google Ads / DataForSEO
 - [templates/memory/README.md](../templates/memory/README.md) — Memory-Repo-Struktur
 
 ---
 
-*Bei Problemen oder Fragen: Issue im Repo oeffnen oder Maintainer ansprechen.*
+*Bei Problemen: Issue im Repo oeffnen oder den Maintainer ansprechen.*
