@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-08T12:49:47.551Z",
+  "updatedAt": "2026-05-08T12:56:16.187Z",
   "createdAt": "2026-04-19T18:35:54.924Z",
   "id": "PZa1iNwgtCvcNtIC",
   "name": "GoogleAdsAgent - Sub: Search & Keyword Analyst",
@@ -448,7 +448,7 @@
     },
     {
       "id": "fallback-llm",
-      "name": "Fallback Azure GPT-5.4-mini",
+      "name": "Fallback Azure GPT-5.4-nano",
       "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
       "typeVersion": 1,
       "position": [
@@ -456,7 +456,7 @@
         304
       ],
       "parameters": {
-        "model": "gpt-5.4-mini",
+        "model": "gpt-5.4-nano",
         "options": {
           "temperature": 0.2
         }
@@ -580,7 +580,7 @@
         ]
       ]
     },
-    "Fallback Azure GPT-5.4-mini": {
+    "Fallback Azure GPT-5.4-nano": {
       "ai_languageModel": [
         [
           {
