@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-26T08:19:24.126Z",
+  "updatedAt": "2026-05-08T12:33:26.247Z",
   "createdAt": "2026-04-19T18:37:27.303Z",
   "id": "rBIHMb14pdtLRGTj",
   "name": "GoogleAdsAgent - Sub: Statistician",
@@ -23,7 +23,7 @@
     },
     {
       "id": "llm",
-      "name": "Azure GPT-5.4",
+      "name": "Azure GPT-5.4 Mini",
       "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
       "typeVersion": 1,
       "position": [
@@ -31,7 +31,7 @@
         300
       ],
       "parameters": {
-        "model": "gpt-5.4",
+        "model": "gpt-5.4-mini",
         "options": {
           "temperature": 0.1
         }
@@ -298,7 +298,7 @@
         ]
       ]
     },
-    "Azure GPT-5.4": {
+    "Azure GPT-5.4 Mini": {
       "ai_languageModel": [
         [
           {

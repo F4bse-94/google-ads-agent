@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-08T12:04:46.485Z",
+  "updatedAt": "2026-05-08T12:34:24.114Z",
   "createdAt": "2026-04-19T18:42:15.106Z",
   "id": "BKKG8gCawOBTvPDo",
   "name": "GoogleAdsAgent - Main: Orchestrator (Chat + Weekly)",
@@ -653,13 +653,13 @@
     },
     {
       "parameters": {
-        "model": "gpt-5.4",
+        "model": "gpt-5.4-mini",
         "options": {
           "temperature": 0.2
         }
       },
       "id": "llm",
-      "name": "Azure GPT-5.4",
+      "name": "Azure GPT-5.4 Mini",
       "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
       "typeVersion": 1,
       "position": [
@@ -818,7 +818,7 @@
         ]
       ]
     },
-    "Azure GPT-5.4": {
+    "Azure GPT-5.4 Mini": {
       "ai_languageModel": [
         [
           {
